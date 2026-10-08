@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-08",
+  "model": "HGNN_CVA",
+  "epoch": 80,
+  "python_browser_max_abs_error": 9.5367431640625e-07,
+  "reference_input_count": 4,
+  "occupancy_mismatches": 0,
+  "final_layout_parity": {
+    "length": 10800,
+    "width": 10800,
+    "seed": 123,
+    "budget": 2400,
+    "selected_candidate": 2032,
+    "floor_grids_identical": true
+  },
+  "browser_checks": [
+    "real model inference and generator",
+    "condition patch and units",
+    "plans / 3D / topology / raw forecast",
+    "geometry identity round-trip",
+    "offline showcase HTML",
+    "refresh recovery",
+    "cancel / unsupported / search errors",
+    "1440 / 1100 / 768 / 390 widths"
+  ],
+  "proxy_checks": [
+    "origin / body / output validation",
+    "per-isolate throttle",
+    "live qwen-plus hosted call"
+  ],
+  "live_end_to_end": true,
+  "site": "https://www.spacemodal.com/generator-studio/",
+  "proxy": "https://spacemodal-parser.silent-tnt.chatgpt.site",
+  "project_accepted": null
+}
