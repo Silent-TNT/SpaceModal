@@ -1,0 +1,28 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>数据看板 · SpaceModal</title><link rel="stylesheet" href="/style.css?v=4"></head><body><header class="topbar">
+  <a class="brand" href="/" aria-label="SpaceModal 空间模态首页"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-name">SpaceModal<span class="brand-cn">空间模态</span></span></a>
+  <nav aria-label="主导航"><a href="/"><span>01</span>首页</a><a class="active" aria-current="page" href="/studio.html"><span>02</span>数据看板</a><a href="/about.html"><span>03</span>关于我</a></nav>
+  <span class="header-note"><i></i> A SPATIAL STUDY</span>
+</header><main class="dashboard"><div class="dash-head"><div><span class="eyebrow">02 / 空间数据看板</span><h1>数据看板<span>SPATIAL ATLAS</span></h1><p>从一个房间出发，查看平面、三维与拓扑之间的对应。</p></div><div class="dash-controls"><label>案例 <select id="case-select"></select></label><label class="review-switch"><input type="checkbox" id="review-toggle"><span>本地核对</span></label><a class="transcribe-link" href="/studio.html">图纸转录 ↗</a></div></div><div class="atlas-strip" aria-label="首批案例"><button class="atlas-case selected" data-case="1002"><span><small>HOUSE / 01</small><strong>1002</strong></span><span>14.1 × 9.9 m<i>两层 · 独立住宅</i></span></button><button class="atlas-case" data-case="1003"><span><small>HOUSE / 02</small><strong>1003</strong></span><span>12.0 × 11.1 m<i>两层 · 独立住宅</i></span></button><button class="atlas-case" data-case="1010"><span><small>HOUSE / 03</small><strong>1010</strong></span><span>16.5 × 11.1 m<i>两层 · 独立住宅</i></span></button></div><div class="case-meta" id="case-meta"></div><div class="workbench">
+  <div class="atlas-views" aria-label="同屏空间数据视图">
+    <section class="atlas-view" aria-labelledby="plan-title">
+      <div class="atlas-view-head"><div><span class="view-index">01 / GEOMETRY</span><h2 id="plan-title">平面图</h2></div><div class="floor-switch" aria-label="平面楼层"><button class="active" data-floor="1">一层</button><button data-floor="2">二层</button><button data-floor="0">两层</button></div></div>
+      <div class="view-canvas" id="plan-canvas"></div>
+      <p class="atlas-view-note">功能体块的平面位置 · 点击选择</p>
+    </section>
+    <section class="atlas-view" aria-labelledby="volume-title">
+      <div class="atlas-view-head"><div><span class="view-index">02 / VOLUME</span><h2 id="volume-title">三维图</h2></div><span class="view-head-aside">两层体块</span></div>
+      <div class="view-canvas" id="volume-canvas"></div>
+      <p class="atlas-view-note">拖动旋转，查看对应的三维位置</p>
+    </section>
+    <section class="atlas-view graph-view" aria-labelledby="graph-title">
+      <div class="atlas-view-head"><div><span class="view-index">03 / RELATION</span><h2 id="graph-title">异构拓扑图</h2></div><span class="view-head-aside">住宅 / 楼层 / 空间</span></div>
+      <div class="view-canvas" id="graph-canvas"></div>
+      <div class="graph-key"><span><i class="key-house"></i>住宅</span><span><i class="key-floor"></i>楼层</span><span><i class="key-room"></i>功能空间</span><span><i class="key-contact"></i>几何贴邻</span></div>
+      <p class="atlas-view-note">层级线表示归属；彩色线表示观察到的几何贴邻，不代表门或可通行路径。</p>
+    </section>
+  </div>
+  <div class="atlas-inspector">
+    <aside class="side-panel"><div class="panel-title">空间目录 <span id="room-count"></span></div><div class="filter"><input id="room-search" placeholder="搜索功能或编号" aria-label="搜索功能或编号"></div><div class="room-list" id="room-list"></div></aside>
+    <aside class="detail-panel"><div class="panel-title">空间信息 <span>SELECTED SPACE</span></div><div id="detail"></div><div class="legend" id="legend"></div></aside>
+  </div>
+</div><div class="atlas-caption"><span>GEOMETRY / TOPOLOGY / SEMANTICS</span><span>点选一个空间，在三个视图中追踪它。</span></div><section id="review-panel" class="review-panel" hidden><div class="review-heading"><div><span class="eyebrow">LOCAL REVIEW / 本地核对</span><h2>对照原图，逐项确认。</h2><p>图纸仅在本机读取。编辑记录保存在当前浏览器，导出后再由你决定是否写回数据集。</p></div><button class="button dark" id="export-review">导出本次修改 ↗</button></div><div class="review-grid"><div><div class="panel-title">原始图纸 <span>选择楼层对应</span></div><div id="source-list" class="source-list"></div><p class="small-note">请依据图中的楼层标高确认配对；此处不自动判断一、二层。</p></div><div><div class="panel-title">体块调整 <span>300 mm 模数</span></div><div id="edit-box"></div><div class="review-fields"><label>定尺依据<select id="scale-basis"><option value="unselected">待判定</option><option value="dimension">图纸尺寸</option><option value="reference">参照估算</option></select></label><label>判断<select id="review-status"><option value="pending">待核对</option><option value="confirmed">已确认</option><option value="uncertain">待判定</option><option value="needs-fix">需要调整</option></select></label><label class="wide">修改依据 / 备注<textarea id="review-note" rows="3" placeholder="例如：原图中该房间与走道的关系，当前体块需要调整……"></textarea></label></div></div><div><div class="panel-title">逐套核对 <span>CHECKLIST</span></div><div id="review-checklist"></div><div class="suspects" id="suspects"></div></div></div></section></main><footer class="site-footer"><div class="footer-top"><a href="/" class="footer-brand">SpaceModal<span>空间模态</span></a><div class="footer-contact"><a href="/">首页 ↗</a><a href="/studio.html">数据看板 ↗</a></div></div><div class="footer-bottom"><span>© 2026 · 词与物的间隙</span><span>从平面图，到空间数据</span><a href="#">回到顶部 ↑</a></div></footer><script type="module" src="/studio.js?v=3"></script></body></html>
