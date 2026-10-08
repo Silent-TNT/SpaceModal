@@ -55,16 +55,16 @@
       const box=canvas.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2);
       if(!box.width||!box.height)return;
       canvas.width=box.width*ratio;canvas.height=box.height*ratio;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,box.width,box.height);
-      const scale=Math.min(box.width/(model.nx+model.ny+12),box.height/(model.nx+model.ny+20))*zoom;
-      const project=(x,y,z)=>{x-=model.nx/2;y-=model.ny/2;const rx=x*Math.cos(angle)-y*Math.sin(angle),ry=x*Math.sin(angle)+y*Math.cos(angle);return [box.width/2+rx*scale,box.height*.62+ry*scale*tilt-z*scale*.85,ry+z*.01];};
+      const scale=Math.min(box.width/(model.nx+model.ny)*1.4,box.height/(.6*(model.nx+model.ny)+20)*1.2)*zoom;
+      const project=(x,y,z)=>{x-=model.nx/2;y-=model.ny/2;const rx=x*Math.cos(angle)-y*Math.sin(angle),ry=x*Math.sin(angle)+y*Math.cos(angle);return [box.width/2+rx*scale,box.height*.62+ry*scale*tilt-z*scale*.85,ry*.85+z*tilt];};
       const faces=[];
       const face=(points,color,shade)=>faces.push({p:points.map(p=>project(...p)),color,shade});
       for(const b of cuboids){if(b.z>=showFloors*10)continue;const {x,y,w,h,z,d}=b,c=LABELS[b.label][1];
         face([[x,y,z+d],[x+w,y,z+d],[x+w,y+h,z+d],[x,y+h,z+d]],c,0);
-        face([[x,y,z],[x+w,y,z],[x+w,y,z+d],[x,y,z+d]],c,.17);
-        face([[x+w,y,z],[x+w,y+h,z],[x+w,y+h,z+d],[x+w,y,z+d]],c,.25);
-        face([[x+w,y+h,z],[x,y+h,z],[x,y+h,z+d],[x+w,y+h,z+d]],c,.17);
-        face([[x,y+h,z],[x,y,z],[x,y,z+d],[x,y+h,z+d]],c,.25);
+        if(Math.cos(angle)<0)face([[x,y,z],[x+w,y,z],[x+w,y,z+d],[x,y,z+d]],c,.17);
+        if(Math.sin(angle)>0)face([[x+w,y,z],[x+w,y+h,z],[x+w,y+h,z+d],[x+w,y,z+d]],c,.25);
+        if(Math.cos(angle)>0)face([[x+w,y+h,z],[x,y+h,z],[x,y+h,z+d],[x+w,y+h,z+d]],c,.17);
+        if(Math.sin(angle)<0)face([[x,y+h,z],[x,y,z],[x,y,z+d],[x,y+h,z+d]],c,.25);
       }
       faces.sort((a,b)=>a.p.reduce((s,p)=>s+p[2],0)/4-b.p.reduce((s,p)=>s+p[2],0)/4);
       for(const f of faces){ctx.beginPath();f.p.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=f.color;ctx.fill();if(f.shade){ctx.fillStyle=`rgba(20,35,30,${f.shade})`;ctx.fill();}ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=.5;ctx.stroke();}
