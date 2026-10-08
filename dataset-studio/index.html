@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数据集制作演示 · SpaceModal</title>
+  <link rel="stylesheet" href="./assets/style.css?v=1">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><div><strong><a href="../" style="color:inherit;text-decoration:none">SpaceModal</a></strong><small>中期演示 · 平面图转数据</small></div></div>
+    <button id="queue-toggle" class="button ghost" aria-label="显示图纸队列">图纸队列</button>
+    <div class="case-title"><span id="case-title">选择一套图纸</span><span id="case-status" class="badge">未打开</span></div>
+    <div class="top-actions">
+      <button id="upload-plans-btn" class="button ghost">上传两层图纸</button><span id="cloud-state" class="cloud-state">检查视觉模型…</span>
+      <select id="vision-provider" hidden class="provider-select" aria-label="视觉识别模型"></select>
+      <button id="vision-btn" class="button ghost">载入预置标注</button>
+      <span id="save-state" role="status" aria-live="polite">未打开</span>
+      <button id="export-draft-btn" class="button ghost">下载草稿</button>
+      <button id="reload-latest-btn" class="button ghost">打开已保存版</button>
+      <button id="save-btn" class="button ghost">保存到浏览器</button>
+      <button id="validate-btn" class="button ghost">运行检测</button>
+      <button id="approve-btn" class="button primary">导出几何 JSON</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside id="case-panel" class="case-panel">
+      <div class="panel-heading"><h2>图纸队列</h2><span id="case-count">—</span><button id="queue-pin" class="pin-drawer-btn" type="button" aria-pressed="false">固定</button></div>
+      <input id="case-search" class="field" placeholder="搜索 ID 或项目名">
+      <select id="case-filter" class="field">
+        <option value="all">全部案例</option>
+        <option value="draft">草稿</option>
+        <option value="manual_existing">预置示例</option>
+        <option value="approved">已导出</option>
+        
+      </select>
+      <div id="case-list" class="case-list"></div>
+    </aside>
+    <button id="drawer-backdrop" class="drawer-backdrop" aria-label="关闭抽屉"></button>
+
+    <main class="workspace">
+      <div class="workspace-toolbar">
+        <div class="mode-group" role="toolbar" aria-label="编辑工具">
+          <button data-mode="select" class="tool active" title="选择体块或移动轴线">选择</button>
+          <button data-mode="calibrate" class="tool" title="依次点击建筑图像的左上角和右下角">校准图纸</button>
+          <button data-mode="axis_x" class="tool" title="点击增加一条竖向轴线">竖向轴线</button>
+          <button data-mode="axis_y" class="tool" title="点击增加一条横向轴线">横向轴线</button>
+          <button data-mode="room" class="tool" title="拖出一个矩形体块">画体块</button>
+          <button data-mode="assign" class="tool" title="点击待分类体块，附着当前选中的功能图层">附着功能层</button>
+          <button data-mode="align" class="tool" title="在两层图纸依次点击同一个结构基准点">对齐楼层</button>
+          <button id="undo-btn" class="tool" title="撤回上一步" disabled>↶ 撤回</button>
+          <button id="redo-btn" class="tool" title="重做刚撤回的步骤" disabled>↷ 重做</button>
+        </div>
+        <div class="toolbar-right">
+          <label class="inline-field"><input id="demo-show-rooms" type="checkbox" checked>体块标注</label><label class="inline-field"><input id="show-grid" type="checkbox" checked>300 mm 虚线网格</label>
+          <label class="inline-field"><input id="show-guides" type="checkbox" checked>分割参考线</label>
+          <button id="clear-guides-btn" class="tool" title="清除当前案例未锁定的参考线">清除未锁定参考线</button>
+          <label class="inline-field"><input id="show-axes" type="checkbox">显示轴线</label>
+          <label class="inline-field">线型 <select id="axis-kind"><option value="wall">墙中心线</option><option value="virtual">虚拟分割线</option></select></label>
+          <label class="inline-field">新体块 <select id="new-room-type"></select></label>
+          <button id="swap-btn" class="tool">交换图纸层序</button>
+          <button id="rotate-btn" class="tool">旋转 90°</button>
+          <button id="reset-view-btn" class="tool">重置视图</button>
+          <button id="inspector-toggle" class="tool" aria-pressed="false">编辑面板</button>
+          <span id="zoom-level" class="zoom-level" aria-label="当前缩放比例">100%</span>
+        </div>
+      </div>
+      <div class="plans" aria-label="两层平面图共享画布">
+        <canvas id="plan-canvas" aria-label="二层与一层平面图；滚轮缩放，按住 Shift 或鼠标中键拖动画布；从标尺拖出参考线"></canvas>
+        <div class="canvas-help">滚轮缩放 · Shift 平移 · 拖动四边控制点调尺寸 · 右键参考线锁定</div>
+        <span id="floor-2-name" class="floor-name" hidden></span>
+        <span id="floor-1-name" class="floor-name" hidden></span>
+      </div>
+      <div class="bottom-status"><span id="message">10 套内置示例 · 本地上传与修改保存在此浏览器 · 预置标注不代表在线识别</span><span id="position">—</span></div>
+    </main>
+
+    <aside id="inspector" class="inspector">
+      <section class="section preview-section">
+        <div class="section-title"><h2>实时三维</h2><span>拖动旋转</span><button id="inspector-pin" class="pin-drawer-btn" type="button" aria-pressed="false">固定</button></div>
+        <canvas id="preview-3d"></canvas>
+        <div class="legend"><span class="legend-dot wall"></span>墙轴<span class="legend-dot virtual"></span>虚拟线<span class="legend-dot room"></span>功能体块</div>
+      </section>
+      <section class="section">
+        <div class="section-title"><h2>项目参数</h2></div>
+        <div class="size-grid"><label>宽度 X<input id="size-x" type="number" step="300" min="300"></label><label>进深 Y<input id="size-y" type="number" step="300" min="300"></label></div>
+        <div class="unit-hint">单位 mm · 自动吸附 300 mm 模数</div>
+        <button id="apply-size-btn" class="button full ghost">应用尺寸与轴线缩放</button>
+        <button id="grid-btn" class="button full ghost">从当前轴线生成未分类矩形</button>
+        <button id="merge-btn" class="button full ghost">合并相邻同类矩形</button>
+      </section>
+      <section class="section">
+        <div class="section-title"><h2>演示说明</h2></div>
+        <p class="muted">内置图纸配有预先制备的体块。上传图纸在当前浏览器手动标注，不上传至服务器；清理浏览器数据会删除本地进度。</p>
+        <button hidden id="wall-review-btn" class="button full ghost" disabled>打开墙体复核</button>
+      </section>
+      <section class="section">
+        <div class="section-title"><h2>功能图层与体块</h2><span id="active-layer-name">当前：客厅</span></div>
+        <p class="muted layer-hint">在体块上右键可直接切换功能。勾选框控制图层显隐；也可选中图层后点击待分类体块。</p>
+        <div id="function-layers" class="function-layers"></div>
+        <div class="combined-list-heading"><strong>体块清单</strong><span id="room-count">0 个</span></div>
+        <div class="room-batch-controls">
+          <select id="room-list-filter" class="field" aria-label="筛选体块"><option value="all">全部体块</option><option value="unassigned">仅待分类</option><option value="1">仅一层</option><option value="2">仅二层</option></select>
+          <button id="apply-batch-room-type" class="button full ghost">附着当前图层到勾选体块</button>
+          <div class="room-batch-shortcuts"><button id="select-unassigned" class="button ghost">勾选待分类</button><button id="clear-room-checks" class="button ghost">清除勾选</button></div>
+        </div>
+        <div id="room-list" class="room-list"></div>
+      </section>
+      <section class="section">
+        <div class="section-title"><h2>当前选择</h2><span id="selection-kind">未选择</span></div>
+        <div id="selection-empty" class="muted">点击图中体块或轴线。</div>
+        <div id="room-editor" hidden>
+          <label>功能类别<select id="room-type" class="field"></select></label>
+          <div id="room-coords" class="unit-hint"></div>
+          <div class="room-size-summary">宽 <strong id="room-width">—</strong> mm × 进深 <strong id="room-depth">—</strong> mm</div>
+          <button id="open-resize-dialog" class="button full ghost">四边调整与拖动编辑</button>
+          <label class="check-row"><input id="double-height" type="checkbox">贯通两层（楼梯／挑空客厅）</label>
+          <div class="button-row"><button id="split-btn" class="button ghost">按轴线切分</button><button id="delete-room-btn" class="button danger">删除体块</button></div>
+        </div>
+        <div id="axis-editor" hidden>
+          <label>轴线类型<select id="selected-axis-kind" class="field"><option value="wall">墙中心线</option><option value="virtual">虚拟分割线</option></select></label>
+          <div id="axis-position" class="unit-hint"></div>
+          <button id="delete-axis-btn" class="button full danger">删除轴线</button>
+        </div>
+      </section>
+      <section class="section qc-section">
+        <div class="section-title"><h2>几何检测</h2><span id="qc-count">未运行</span></div>
+        <div id="qc-list" class="qc-list"><p class="muted">保存前检查体块类别、300 mm 模数、两层高度与重叠。</p></div>
+      </section>
+    </aside>
+  </div>
+  <div id="resize-dialog" class="resize-dialog-backdrop" hidden>
+    <section class="resize-dialog" role="dialog" aria-modal="true" aria-labelledby="resize-title">
+      <div class="resize-dialog-heading"><div><h2 id="resize-title">调整体块尺寸</h2><p>选择较大步长快速调整，或直接拖动画布上的四边控制点</p></div><button id="close-resize-dialog" class="tool" aria-label="关闭">×</button></div>
+      <div class="resize-current-size">宽度 <strong id="resize-width">—</strong> mm <span>×</span> 进深 <strong id="resize-depth">—</strong> mm</div>
+      <label class="resize-step-row">单次调整步长<select id="resize-step"><option value="300">300 mm</option><option value="600">600 mm</option><option value="900">900 mm</option><option value="1500">1500 mm</option><option value="3000">3000 mm</option></select></label>
+      <div class="resize-edge-list">
+        <div><strong>左边</strong><button data-edge="left" data-edge-operation="out" data-edge-label="← 向外">← 向外 300</button><button data-edge="left" data-edge-operation="in" data-edge-label="→ 向内">→ 向内 300</button></div>
+        <div><strong>右边</strong><button data-edge="right" data-edge-operation="in" data-edge-label="← 向内">← 向内 300</button><button data-edge="right" data-edge-operation="out" data-edge-label="→ 向外">→ 向外 300</button></div>
+        <div><strong>上边</strong><button data-edge="top" data-edge-operation="in" data-edge-label="↓ 向内">↓ 向内 300</button><button data-edge="top" data-edge-operation="out" data-edge-label="↑ 向外">↑ 向外 300</button></div>
+        <div><strong>下边</strong><button data-edge="bottom" data-edge-operation="in" data-edge-label="↑ 向内">↑ 向内 300</button><button data-edge="bottom" data-edge-operation="out" data-edge-label="↓ 向外">↓ 向外 300</button></div>
+      </div>
+      <p class="muted">调整只改变选中矩形体块的对应边；不能缩至小于 300 mm 或超出建筑尺寸。</p>
+    </section>
+  </div>
+  <script src="./assets/demo.js?v=1"></script>
+  <script src="./assets/app.js?v=1" defer></script>
+<dialog id="upload-dialog" class="upload-dialog">
+      <form id="upload-form"><h2>上传两层图纸</h2>
+      <p>图片仅保存在当前浏览器。选择楼层并填写尺寸后，开始手动划分体块。</p>
+      <label>案例名称<input name="name" maxlength="60" required value="本地图纸"></label>
+      <label>一层图片<input name="floor1" type="file" accept="image/png,image/jpeg,image/webp" required></label>
+      <label>二层图片<input name="floor2" type="file" accept="image/png,image/jpeg,image/webp" required></label>
+      <div class="upload-sizes"><label>建筑宽度（mm）<input name="width" type="number" min="300" max="60000" step="300" value="18000" required></label>
+      <label>建筑进深（mm）<input name="depth" type="number" min="300" max="60000" step="300" value="12000" required></label></div>
+      <p>尺寸是标注尺度，请按图纸填写；上传后用“校准图纸”框选建筑范围。</p>
+      <p id="upload-error" role="alert"></p><div class="button-row"><button type="button" id="upload-cancel" class="button ghost">取消</button><button type="submit" class="button primary">开始标注</button></div>
+      </form></dialog></body>
+</html>
