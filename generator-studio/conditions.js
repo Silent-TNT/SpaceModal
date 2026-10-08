@@ -54,7 +54,12 @@ patch 只包含用户本轮明确修改的字段：length,width（毫米，6000�
     if(!response.ok)throw Error(data.error||('需求解析接口返回 '+response.status));
     const parsed=data;
     if(!Array.isArray(parsed.unsupported)||parsed.unsupported.some(s=>typeof s!=='string'))throw Error('大模型返回的限制说明格式无效');
-    return {patch:validate(parsed.patch),unsupported:parsed.unsupported};
+    const patch=validate(parsed.patch);
+    // Some models echo current values despite being asked for a patch. Do not
+    // attribute an unmentioned, unchanged default to an explicit user request.
+    const mentions={length:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|length/i,width:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|width/i,bedrooms:/卧|bedroom/i,bathrooms:/卫|浴|bathroom/i,seed:/种子|seed|换|另一|再来|新方案/i,budget:/预算|搜索|候选|budget/i};
+    for(const k of Object.keys(patch))if(patch[k]===current[k]&&!mentions[k].test(text))delete patch[k];
+    return {patch,unsupported:parsed.unsupported};
   }
   const api={DEFAULTS,validate,local,remote};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.Conditions=api;
