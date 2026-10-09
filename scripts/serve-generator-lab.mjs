@@ -14,8 +14,9 @@ const server=http.createServer(async(req,res)=>{
    const allowed=new Set([`http://127.0.0.1:${server.address().port}`,`http://localhost:${server.address().port}`]);
    if(req.headers.origin&&!allowed.has(req.headers.origin)){res.writeHead(403);res.end('Origin rejected');return;}
    if(req.method!=='POST'||!req.headers['content-type']?.startsWith('application/json')){res.writeHead(415);res.end('JSON POST required');return;}
-   const chunks=[];let length=0;for await(const chunk of req){length+=chunk.length;if(length>12000){res.writeHead(413);res.end();return;}chunks.push(chunk);}
-   const result=await worker.fetch(new Request('https://www.spacemodal.com'+url.pathname,{method:req.method,headers:{Origin:'https://www.spacemodal.com','Content-Type':'application/json','CF-Connecting-IP':'local-demo'},body:req.method==='POST'?Buffer.concat(chunks):undefined}),env);
+   const requestController=new AbortController();req.once('aborted',()=>requestController.abort());res.once('close',()=>{if(!res.writableEnded)requestController.abort();});
+   const chunks=[];let length=0;for await(const chunk of req){length+=chunk.length;if(length>24000){res.writeHead(413);res.end();return;}chunks.push(chunk);}
+   const result=await worker.fetch(new Request('https://www.spacemodal.com'+url.pathname,{method:req.method,signal:requestController.signal,headers:{Origin:'https://www.spacemodal.com','Content-Type':'application/json','CF-Connecting-IP':'local-demo'},body:req.method==='POST'?Buffer.concat(chunks):undefined}),env);
    res.writeHead(result.status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(await result.text());return;
   }
   const name=path.resolve(root,'.'+decodeURIComponent(url.pathname)+(url.pathname.endsWith('/')?'index.html':''));

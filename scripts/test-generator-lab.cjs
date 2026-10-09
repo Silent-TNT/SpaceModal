@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const Design=require('../generator-lab/design.js'),Free=require('../generator-lab/free-core.js');
+const Design=require('../generator-lab/design.js'),Free=require('../generator-lab/partition-core.js');
 const BrowserModel=require('../generator-studio/inference.js');
 const neural=new BrowserModel(require('../generator-studio/model.json'));
 const conditions={length:12000,width:12000,bedrooms:3,bathrooms:2,seed:123,budget:32};
@@ -12,7 +12,7 @@ for(const seed of [11,42,123])for(const mode of ['central','edge','split']){
  const plan=Design.defaults(conditions,mode),program=Design.compile(plan),forecast=neural.predict(program,12000,12000);
  const result=Free.generate({...conditions,seed,plan,program,priors:forecast.priors});
  assert.ok(Free.evaluate(result.model,plan).accepted);
- assert.ok(result.model.floorSpaces.flat().some(v=>v===-1));
+ assert.ok(result.model.floorSpaces.flat().every(v=>v>=0));
  assert.equal(result.model.spaces.filter(r=>r.label===4).length,3);
  assert.ok(result.model.generation.neuralUsed);
  fingerprints.add(JSON.stringify(result.model.floorSpaces));
@@ -36,16 +36,16 @@ const {chromium}=require(process.env.PLAN_PLAYWRIGHT_PATH||'playwright');
   for(const view of ['plans','volume','topology','forecast'])await page.locator(`[data-view="${view}"]`).click();
   const jsonDownload=page.waitForEvent('download');await page.locator('#download-json').click();
   const downloaded=await jsonDownload;const data=JSON.parse(fs.readFileSync(await downloaded.path(),'utf8'));
-  assert.ok(data.undefined_reserve_regions.length);assert.ok(data.target_topology.rooms.length);assert.ok(data.actual_topology.length);
+  assert.equal(data.undefined_reserve_regions.length,0);assert.equal(data.voxel_grid.dimensions[2],20);assert.ok(data.rule_validation.accepted);assert.ok(data.collaboration_history.length);assert.ok(data.target_topology.rooms.length);assert.ok(data.actual_topology.length);
   const htmlDownload=page.waitForEvent('download');await page.locator('#download-showcase').click();const html=await htmlDownload;
   const artifact=path.resolve(__dirname,'../qa-artifacts/topology-voxel-showcase.html');fs.mkdirSync(path.dirname(artifact),{recursive:true});await html.saveAs(artifact);
   const showcase=await browser.newPage();await showcase.goto('file:///'+artifact.replace(/\\/g,'/'));
-  assert.equal(await showcase.locator('#plans svg').count(),2);assert.equal(await showcase.locator('#topology svg').count(),1);await showcase.locator('#floors').selectOption('1');
+  assert.equal(await showcase.locator('#plans svg').count(),2);assert.equal(await showcase.locator('#topology svg').count(),1);assert.ok((await showcase.locator('#checks').textContent()).includes('R1'));await showcase.locator('#floors').selectOption('1');
   await page.reload();assert.ok(await page.evaluate(()=>GeneratorState.result));
   await page.locator('#prompt').fill('不要厨房，卧室改为四间');await page.locator('#send').click();
   const planned=JSON.parse(await page.locator('.condition-card pre').last().textContent()).target_topology;
   assert.equal(planned.rooms.filter(r=>r.type==='kitchen').length,0);assert.equal(planned.rooms.filter(r=>r.type==='bedroom').length,4);
-  for(const width of [1440,1100,768,390]){await page.setViewportSize({width,height:1000});await page.waitForTimeout(100);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow '+width);}
+  for(const width of [1440,1100,768,390]){await page.setViewportSize({width,height:1000});await page.waitForTimeout(100);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'horizontal overflow '+width);const bounds=await page.evaluate(()=>{const box=document.getElementById('plans').getBoundingClientRect();return [...document.querySelectorAll('.plan-panel')].every(p=>{const b=p.getBoundingClientRect();return b.top>=box.top-1&&b.bottom<=box.bottom+1;});});assert.ok(bounds,'clipped plan '+width);}
   await page.setViewportSize({width:1440,height:1000});await page.locator('[data-view="plans"]').click();await page.screenshot({path:path.resolve(__dirname,'../qa-artifacts/topology-lab.png'),fullPage:true});
   assert.deepEqual(errors,[]);console.log('PASS topology preview, actual model generation, four views, JSON reserve/graphs, offline HTML, restoration, explicit counts, responsive widths');
  }finally{await browser.close();}

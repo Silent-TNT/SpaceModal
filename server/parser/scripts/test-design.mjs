@@ -8,7 +8,8 @@ const original=globalThis.fetch;
 globalThis.fetch=async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify(output)}}]}));
 const request=(text,previous=null)=>new Request('https://proxy.test/design',{method:'POST',headers:{Origin:'https://www.spacemodal.com','Content-Type':'application/json','CF-Connecting-IP':'design-tests'},body:JSON.stringify({text,current,current_plan:previous})});
 try{
- let response=await worker.fetch(request('不要厨房'),env);assert.equal(response.status,200);assert.equal((await response.json()).strategies[0].requirements.counts.kitchen,0);
+ output.strategies[0].requirements.counts={kitchen:0,bedrooms:3,bathrooms:2};
+ let response=await worker.fetch(request('不要厨房，楼梯靠边'),env);assert.equal(response.status,200);const first=await response.json();assert.equal(first.strategies[0].requirements.counts.kitchen,0);assert.equal(first.strategies[0].requirements.lockedMode,'edge');
  output.strategies=[Design.defaults(current)];assert.equal((await worker.fetch(request('不要厨房'),env)).status,502);
  assert.equal((await worker.fetch(request('换方案',{requirements:{counts:{kitchen:0}}}),env)).status,502);
  output.strategies=[Design.defaults(current)];output.strategies[0].edges=[];assert.equal((await worker.fetch(request('三间卧室'),env)).status,502);
