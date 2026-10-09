@@ -2,6 +2,10 @@
 
 独立开发页面 `/generator-lab/`，不替换线上 `/generator-studio/`。自然语言由保管密钥的代理解析；模型推理和网格生成在浏览器运行。默认示例建议 12×12 米，三卧两卫，预算32。
 
+## 下一阶段设计规范
+
+用户新增的矩形满铺、300mm三维体素、楼梯贯通与简单形状要求，以及大模型—生成器反馈闭环，详见[协同生成流程与设计规则](DESIGN_RULES.md)。以下内容描述当前实现；留空与切角属于待替换的旧行为，尚未完成新规范验收。
+
 ## 本地预览
 
 安装 Node.js 后，在网站仓库运行 `node scripts/serve-generator-lab.mjs`，打开 `http://127.0.0.1:8898/generator-lab/`。代理从环境变量 `PARSER_API_KEY` 或 `DASHSCOPE_API_KEY` 读取密钥，也支持用 `SPACEMODAL_ENV_FILE` 指向仓库外的环境文件。密钥不进入网页、Git或导出文件。没有密钥时，在连接设置切换“本地策略”。
