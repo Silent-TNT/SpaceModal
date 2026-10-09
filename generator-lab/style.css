@@ -5,3 +5,9 @@
 .run-history{padding:12px 20px;border-top:1px solid #dde2d7;max-height:240px;overflow:auto;font-size:12px}.run-history pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}
 
 #plans{align-items:stretch}.plan-panel{display:flex;flex-direction:column;min-height:0}.plan-panel h3{flex-shrink:0}.plan-svg{flex:1;min-height:0;height:100%;width:100%;max-height:100%}@media(min-width:721px) and (max-width:1000px){.plan-panel{flex:1;width:100%}}
+
+.process-step{border-left:2px solid #8ca28e;padding:8px 12px;margin:12px 0;line-height:1.65}.process-step p{margin:6px 0;overflow-wrap:anywhere}.process-checks{padding-left:18px;display:grid;gap:5px}.design-note{font-size:12px;line-height:1.7;color:#3c5546}
+
+.workspace:has(.run-history[open]:not([hidden])){min-height:900px}@media(max-width:720px){.workspace:has(.run-history[open]:not([hidden])) .result{height:900px}}
+
+.run-history{max-height:none;overflow:visible;flex-shrink:0}.run-history>summary{cursor:pointer;padding:2px 0}.run-history[open] #history-content{max-height:190px;overflow:auto}

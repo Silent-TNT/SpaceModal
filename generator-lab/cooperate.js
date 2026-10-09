@@ -2,7 +2,7 @@
  'use strict';
  const Design=typeof module!=='undefined'&&module.exports?require('./design.js'):root.Design;
  async function run({conditions,plan,solve,revise,onEvent=()=>{},signal,maxRevisions=3,timeoutMs=180000}){
-  const controller=new AbortController(),abort=()=>controller.abort(signal?.reason),timer=setTimeout(()=>controller.abort('total_timeout'),timeoutMs),history=[],started=Date.now();let current=structuredClone(plan);
+  const controller=new AbortController(),abort=()=>controller.abort(signal?.reason),timer=setTimeout(()=>controller.abort('total_timeout'),timeoutMs),history=[{round:0,outcome:'start',plan:structuredClone(plan),conditions:{...conditions}}],started=Date.now();let current=structuredClone(plan);
   signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
   try{
    for(let round=0;round<=maxRevisions;round++){
@@ -10,7 +10,7 @@
     onEvent({phase:'generate',round,plan:current});
     try{
      const result=await solve({...conditions,seed:attemptSeed},current,controller.signal);controller.signal.throwIfAborted();
-     history.push({round,attempt_seed:attemptSeed,plan:current,outcome:'accepted',rules:result.model.validation.rules,local_repairs:result.model.generation.localRepairs});
+     history.push({round,attempt_seed:attemptSeed,plan:current,outcome:'accepted',rules:result.model.validation.rules,local_repairs:result.model.generation.localRepairs,areas:result.model.spaces.filter(s=>s.label!==7).map(s=>({key:s.key,target:current.rooms.find(r=>r.key===s.key)?.area,actual:Math.round(result.model.floorSpaces.reduce((n,g)=>n+Array.from(g).filter(id=>id===s.id).length,0)*.09*100)/100}))});
      return {...result,computeSeconds:result.elapsedSeconds,elapsedSeconds:(Date.now()-started)/1000,history};
     }catch(error){
      controller.signal.throwIfAborted();if(error.report?.type!=='search_exhausted')throw error;
@@ -18,8 +18,8 @@
      if(!revise||round>=maxRevisions){error.history=history;throw error;}
      onEvent({phase:'revise',round:round+1});const updated=await revise(current,error.report,history,controller.signal);controller.signal.throwIfAborted();
      Design.assertRevision(plan,updated,conditions);
-     history.push({round:round+1,outcome:'revision',changes:{mode:{before:current.mode,after:updated.mode},areas:updated.rooms.filter(r=>r.area!==current.rooms.find(o=>o.key===r.key)?.area).map(r=>({key:r.key,before:current.rooms.find(o=>o.key===r.key)?.area,after:r.area}))}});
-     current=updated;
+     history.push({round:round+1,outcome:'revision',plan:structuredClone(updated),changes:{preferredAdded:updated.edges.filter(e=>e.kind==='preferred_contact'&&!current.edges.some(o=>o.kind===e.kind&&[o.a,o.b].sort().join('|')===[e.a,e.b].sort().join('|'))),preferredRemoved:current.edges.filter(e=>e.kind==='preferred_contact'&&!updated.edges.some(o=>o.kind===e.kind&&[o.a,o.b].sort().join('|')===[e.a,e.b].sort().join('|'))),mode:{before:current.mode,after:updated.mode},areas:updated.rooms.filter(r=>r.area!==current.rooms.find(o=>o.key===r.key)?.area).map(r=>({key:r.key,before:current.rooms.find(o=>o.key===r.key)?.area,after:r.area}))}});
+     onEvent({phase:'revised',round:round+1,entry:history[history.length-1]});current=updated;
     }
    }
   }catch(error){if(typeof error!=='object'||error===null)error=Error(controller.signal.aborted?'协同生成已停止或达到总时间限制':String(error));error.history=history;throw error;}

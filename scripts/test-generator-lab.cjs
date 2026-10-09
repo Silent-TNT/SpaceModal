@@ -40,7 +40,7 @@ const {chromium}=require(process.env.PLAN_PLAYWRIGHT_PATH||'playwright');
   const htmlDownload=page.waitForEvent('download');await page.locator('#download-showcase').click();const html=await htmlDownload;
   const artifact=path.resolve(__dirname,'../qa-artifacts/topology-voxel-showcase.html');fs.mkdirSync(path.dirname(artifact),{recursive:true});await html.saveAs(artifact);
   const showcase=await browser.newPage();await showcase.goto('file:///'+artifact.replace(/\\/g,'/'));
-  assert.equal(await showcase.locator('#plans svg').count(),2);assert.equal(await showcase.locator('#topology svg').count(),1);assert.ok((await showcase.locator('#checks').textContent()).includes('R1'));await showcase.locator('#floors').selectOption('1');
+  assert.equal(await showcase.locator('#plans svg').count(),2);assert.equal(await showcase.locator('#topology svg').count(),1);assert.ok((await showcase.locator('#checks').textContent()).includes('上下层楼梯位置对齐'));await showcase.locator('#floors').selectOption('1');
   await page.reload();assert.ok(await page.evaluate(()=>GeneratorState.result));
   await page.locator('#prompt').fill('不要厨房，卧室改为四间');await page.locator('#send').click();
   const planned=JSON.parse(await page.locator('.condition-card pre').last().textContent()).target_topology;
