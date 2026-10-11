@@ -6,7 +6,7 @@ try{const preferences=JSON.parse(localStorage.getItem('spacemodal-generator-pref
 const parserRevision=window.SpaceModalParser?.revision||'defense-1';
 try{
   const previous=JSON.parse(localStorage.getItem('spacemodal-generator-preferences')||'null');
-  if(previous?.parserRevision!==parserRevision&&(!previous?.endpoint||previous.endpoint==='https://spacemodal-parser.silent-tnt.chatgpt.site/parse'))state.endpoint=DEFAULT_ENDPOINT;
+  if(previous?.parserRevision!==parserRevision&&(!previous?.endpoint||['https://spacemodal-parser.silent-tnt.chatgpt.site/parse','https://spacemodal-parser-silent-tnts-projects.vercel.app/parse'].includes(previous.endpoint)))state.endpoint=DEFAULT_ENDPOINT;
 }catch{}
 if(new URLSearchParams(location.search).get('parser')==='local')state.mode='local';
 function useLocalParser(text){

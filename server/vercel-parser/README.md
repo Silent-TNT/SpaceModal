@@ -35,8 +35,10 @@
 ## 已发布版本（2026-10-11）
 
 - Team：`silent-tnts-projects`；Project：`spacemodal-parser`
-- 正式接口：`https://spacemodal-parser-silent-tnts-projects.vercel.app/parse`
+- 正式接口：`https://parser.spacemodal.com/parse`
 - Deployment：`dpl_3NcsnjTbfacq92ed962sRGxqKLbw`
 - 正式稳定域名允许匿名访问；预览和独立部署地址继续保留登录保护。
 - 已通过匿名健康检查、跨域预检、真实千问解析，以及全新浏览器中的真实训练模型生成和视图切换。用户平板和答辩现场网络仍需实际打开确认。
 - 本地备用：`https://www.spacemodal.com/generator-studio/?parser=local`
+
+2026-10-11：DNSPod CNAME 已验证，专用域名 HTTPS 证书已签发，匿名健康检查、跨域预检和真实浏览器全流程已通过。网页自动迁移两个历史默认接口；用户自定义接口保持原设置。手机热点与答辩现场网络仍需用户实测。
