@@ -1,0 +1,7112 @@
+{
+  "schema": "training_area_prior_v1",
+  "units": "m2",
+  "training_case_count": 300,
+  "source_directory": "E:\\Documents\\GraphSpace\\data\\processed_1",
+  "split_manifest": "data\\05_review_drafts\\training_v1\\manifest.json",
+  "source_sha256": "b1d3e3173a04f9c4ed5f47967fe0ddf933132bd576a0e145d072ea90c62f0a22",
+  "split_sha256": "96a39273c42561246ad4ada72e312a0e899bd54389283330ae703f47fff26fb0",
+  "validation_cases_used": 0,
+  "independent_cases_used": 0,
+  "explicit_group_records": 1262,
+  "floor_instance_count": 6816,
+  "grouping": "Union 300 mm XY cells by explicit functional_group_id per house/floor; otherwise original record id. No inferred adjacency merges.",
+  "categories": {
+    "1:balcony": {
+      "count": 34,
+      "house_count": 26,
+      "area": {
+        "p25": 3.0375,
+        "median": 4.365,
+        "p75": 6.7725
+      },
+      "fraction": {
+        "p25": 0.01529771,
+        "median": 0.02800115,
+        "p75": 0.03786855
+      }
+    },
+    "1:bathroom": {
+      "count": 490,
+      "house_count": 299,
+      "area": {
+        "p25": 4.41,
+        "median": 5.4,
+        "p75": 6.48
+      },
+      "fraction": {
+        "p25": 0.02636742,
+        "median": 0.03316953,
+        "p75": 0.04186714
+      }
+    },
+    "1:bedroom": {
+      "count": 599,
+      "house_count": 296,
+      "area": {
+        "p25": 12.87,
+        "median": 14.85,
+        "p75": 16.83
+      },
+      "fraction": {
+        "p25": 0.07603809,
+        "median": 0.0911641,
+        "p75": 0.10733722
+      }
+    },
+    "1:corridor": {
+      "count": 424,
+      "house_count": 291,
+      "area": {
+        "p25": 2.7,
+        "median": 4.95,
+        "p75": 9.765
+      },
+      "fraction": {
+        "p25": 0.01855893,
+        "median": 0.03232125,
+        "p75": 0.05965101
+      }
+    },
+    "1:dining_room": {
+      "count": 304,
+      "house_count": 300,
+      "area": {
+        "p25": 12.8025,
+        "median": 15.12,
+        "p75": 18.81
+      },
+      "fraction": {
+        "p25": 0.07893348,
+        "median": 0.09664509,
+        "p75": 0.11899505
+      }
+    },
+    "1:entryway": {
+      "count": 324,
+      "house_count": 300,
+      "area": {
+        "p25": 6.93,
+        "median": 9.9,
+        "p75": 14.85
+      },
+      "fraction": {
+        "p25": 0.04350312,
+        "median": 0.06254392,
+        "p75": 0.09255725
+      }
+    },
+    "1:kitchen": {
+      "count": 302,
+      "house_count": 296,
+      "area": {
+        "p25": 8.91,
+        "median": 11.34,
+        "p75": 13.86
+      },
+      "fraction": {
+        "p25": 0.05953869,
+        "median": 0.07142857,
+        "p75": 0.08659051
+      }
+    },
+    "1:living_room": {
+      "count": 302,
+      "house_count": 300,
+      "area": {
+        "p25": 18.9,
+        "median": 22.68,
+        "p75": 28.8
+      },
+      "fraction": {
+        "p25": 0.12292556,
+        "median": 0.14979818,
+        "p75": 0.18098331
+      }
+    },
+    "1:multi_purpose": {
+      "count": 111,
+      "house_count": 90,
+      "area": {
+        "p25": 11.61,
+        "median": 13.86,
+        "p75": 17.415
+      },
+      "fraction": {
+        "p25": 0.05575595,
+        "median": 0.07236842,
+        "p75": 0.0867192
+      }
+    },
+    "1:stairs": {
+      "count": 303,
+      "house_count": 300,
+      "area": {
+        "p25": 8.64,
+        "median": 9.72,
+        "p75": 11.34
+      },
+      "fraction": {
+        "p25": 0.05271623,
+        "median": 0.06485261,
+        "p75": 0.0772803
+      }
+    },
+    "1:utility": {
+      "count": 179,
+      "house_count": 139,
+      "area": {
+        "p25": 4.05,
+        "median": 5.85,
+        "p75": 10.755
+      },
+      "fraction": {
+        "p25": 0.02427399,
+        "median": 0.03244997,
+        "p75": 0.05963663
+      }
+    },
+    "2:balcony": {
+      "count": 531,
+      "house_count": 276,
+      "area": {
+        "p25": 5.4,
+        "median": 8.82,
+        "p75": 16.29
+      },
+      "fraction": {
+        "p25": 0.03158934,
+        "median": 0.0546875,
+        "p75": 0.09950442
+      }
+    },
+    "2:bathroom": {
+      "count": 514,
+      "house_count": 297,
+      "area": {
+        "p25": 4.41,
+        "median": 5.4,
+        "p75": 6.48
+      },
+      "fraction": {
+        "p25": 0.02689566,
+        "median": 0.03319783,
+        "p75": 0.04156239
+      }
+    },
+    "2:bedroom": {
+      "count": 938,
+      "house_count": 297,
+      "area": {
+        "p25": 12.87,
+        "median": 14.85,
+        "p75": 16.83
+      },
+      "fraction": {
+        "p25": 0.07631161,
+        "median": 0.09243697,
+        "p75": 0.11059159
+      }
+    },
+    "2:corridor": {
+      "count": 422,
+      "house_count": 297,
+      "area": {
+        "p25": 3.15,
+        "median": 6.3,
+        "p75": 13.5
+      },
+      "fraction": {
+        "p25": 0.02040816,
+        "median": 0.03930814,
+        "p75": 0.08289825
+      }
+    },
+    "2:dining_room": {
+      "count": 5,
+      "house_count": 5,
+      "area": {
+        "p25": 14.04,
+        "median": 16.38,
+        "p75": 17.28
+      },
+      "fraction": {
+        "p25": 0.06446281,
+        "median": 0.09191919,
+        "p75": 0.09462366
+      }
+    },
+    "2:entryway": {
+      "count": 1,
+      "house_count": 1,
+      "area": {
+        "p25": 9.36,
+        "median": 9.36,
+        "p75": 9.36
+      },
+      "fraction": {
+        "p25": 0.03018868,
+        "median": 0.03018868,
+        "p75": 0.03018868
+      }
+    },
+    "2:kitchen": {
+      "count": 9,
+      "house_count": 9,
+      "area": {
+        "p25": 10.53,
+        "median": 10.53,
+        "p75": 11.88
+      },
+      "fraction": {
+        "p25": 0.04958678,
+        "median": 0.05296514,
+        "p75": 0.05910165
+      }
+    },
+    "2:living_room": {
+      "count": 220,
+      "house_count": 213,
+      "area": {
+        "p25": 18.72,
+        "median": 24.525,
+        "p75": 32.4
+      },
+      "fraction": {
+        "p25": 0.11787508,
+        "median": 0.15996816,
+        "p75": 0.19990138
+      }
+    },
+    "2:multi_purpose": {
+      "count": 294,
+      "house_count": 210,
+      "area": {
+        "p25": 10.08,
+        "median": 12.87,
+        "p75": 17.28
+      },
+      "fraction": {
+        "p25": 0.06173661,
+        "median": 0.07890762,
+        "p75": 0.09934533
+      }
+    },
+    "2:stairs": {
+      "count": 303,
+      "house_count": 300,
+      "area": {
+        "p25": 8.64,
+        "median": 9.72,
+        "p75": 11.34
+      },
+      "fraction": {
+        "p25": 0.05271623,
+        "median": 0.06485261,
+        "p75": 0.0772803
+      }
+    },
+    "2:utility": {
+      "count": 207,
+      "house_count": 164,
+      "area": {
+        "p25": 4.32,
+        "median": 6.3,
+        "p75": 9.36
+      },
+      "fraction": {
+        "p25": 0.02594875,
+        "median": 0.03861004,
+        "p75": 0.05728689
+      }
+    }
+  },
+  "floor_reserved_fractions": {
+    "1:corridor": {
+      "p25": 0.03528223,
+      "median": 0.05816783,
+      "p75": 0.08392915
+    },
+    "1:stairs": {
+      "p25": 0.05384942,
+      "median": 0.06495192,
+      "p75": 0.07750896
+    },
+    "2:corridor": {
+      "p25": 0.04757065,
+      "median": 0.07368581,
+      "p75": 0.10274166
+    },
+    "2:stairs": {
+      "p25": 0.05384942,
+      "median": 0.06495192,
+      "p75": 0.07750896
+    }
+  },
+  "conditioning": {
+    "footprint_p25": 130.3425,
+    "footprint_p75": 185.895,
+    "minimum_instances": 20,
+    "minimum_houses": 10,
+    "profiles": {
+      "large|*|*|1:balcony": {
+        "count": 16,
+        "house_count": 11,
+        "area": {
+          "p25": 2.97,
+          "median": 4.725,
+          "p75": 8.1
+        },
+        "fraction": {
+          "p25": 0.0138322,
+          "median": 0.02301502,
+          "p75": 0.03236557
+        }
+      },
+      "large|*|*|1:bathroom": {
+        "count": 139,
+        "house_count": 75,
+        "area": {
+          "p25": 4.995,
+          "median": 5.94,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.02099269,
+          "median": 0.02636535,
+          "p75": 0.03333333
+        }
+      },
+      "large|*|*|1:bedroom": {
+        "count": 166,
+        "house_count": 72,
+        "area": {
+          "p25": 14.04,
+          "median": 16.38,
+          "p75": 18.72
+        },
+        "fraction": {
+          "p25": 0.06120527,
+          "median": 0.07296178,
+          "p75": 0.08416722
+        }
+      },
+      "large|*|*|1:corridor": {
+        "count": 113,
+        "house_count": 74,
+        "area": {
+          "p25": 3.6,
+          "median": 7.02,
+          "p75": 13.23
+        },
+        "fraction": {
+          "p25": 0.0162037,
+          "median": 0.02959927,
+          "p75": 0.05844156
+        }
+      },
+      "large|*|*|1:dining_room": {
+        "count": 78,
+        "house_count": 75,
+        "area": {
+          "p25": 15.1425,
+          "median": 17.73,
+          "p75": 21.6
+        },
+        "fraction": {
+          "p25": 0.06528562,
+          "median": 0.07963415,
+          "p75": 0.09643986
+        }
+      },
+      "large|*|*|1:entryway": {
+        "count": 81,
+        "house_count": 75,
+        "area": {
+          "p25": 9.0,
+          "median": 13.5,
+          "p75": 18.63
+        },
+        "fraction": {
+          "p25": 0.03954802,
+          "median": 0.05327696,
+          "p75": 0.08355438
+        }
+      },
+      "large|*|*|1:kitchen": {
+        "count": 77,
+        "house_count": 73,
+        "area": {
+          "p25": 11.88,
+          "median": 13.86,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.05079365,
+          "median": 0.06166983,
+          "p75": 0.07256778
+        }
+      },
+      "large|*|*|1:living_room": {
+        "count": 76,
+        "house_count": 75,
+        "area": {
+          "p25": 21.6,
+          "median": 27.45,
+          "p75": 34.4475
+        },
+        "fraction": {
+          "p25": 0.09827446,
+          "median": 0.12365609,
+          "p75": 0.14870813
+        }
+      },
+      "large|*|*|1:multi_purpose": {
+        "count": 54,
+        "house_count": 39,
+        "area": {
+          "p25": 12.96,
+          "median": 16.11,
+          "p75": 19.44
+        },
+        "fraction": {
+          "p25": 0.04849498,
+          "median": 0.06176901,
+          "p75": 0.08290467
+        }
+      },
+      "large|*|*|1:stairs": {
+        "count": 77,
+        "house_count": 75,
+        "area": {
+          "p25": 9.36,
+          "median": 11.34,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04,
+          "median": 0.04891304,
+          "p75": 0.05987526
+        }
+      },
+      "large|*|*|1:utility": {
+        "count": 66,
+        "house_count": 43,
+        "area": {
+          "p25": 4.86,
+          "median": 6.75,
+          "p75": 12.0375
+        },
+        "fraction": {
+          "p25": 0.0191972,
+          "median": 0.02929552,
+          "p75": 0.04761436
+        }
+      },
+      "large|*|*|2:balcony": {
+        "count": 158,
+        "house_count": 72,
+        "area": {
+          "p25": 6.3,
+          "median": 9.72,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.02573393,
+          "median": 0.04055772,
+          "p75": 0.07379821
+        }
+      },
+      "large|*|*|2:bathroom": {
+        "count": 150,
+        "house_count": 75,
+        "area": {
+          "p25": 5.04,
+          "median": 6.3,
+          "p75": 7.2
+        },
+        "fraction": {
+          "p25": 0.02173175,
+          "median": 0.02701221,
+          "p75": 0.03287208
+        }
+      },
+      "large|*|*|2:bedroom": {
+        "count": 259,
+        "house_count": 75,
+        "area": {
+          "p25": 14.04,
+          "median": 16.2,
+          "p75": 18.9
+        },
+        "fraction": {
+          "p25": 0.06043823,
+          "median": 0.07148936,
+          "p75": 0.08251984
+        }
+      },
+      "large|*|*|2:corridor": {
+        "count": 109,
+        "house_count": 74,
+        "area": {
+          "p25": 4.41,
+          "median": 8.1,
+          "p75": 18.9
+        },
+        "fraction": {
+          "p25": 0.01856764,
+          "median": 0.03914259,
+          "p75": 0.08
+        }
+      },
+      "large|*|*|2:dining_room": {
+        "count": 3,
+        "house_count": 3,
+        "area": {
+          "p25": 15.66,
+          "median": 17.28,
+          "p75": 23.49
+        },
+        "fraction": {
+          "p25": 0.06191601,
+          "median": 0.06446281,
+          "p75": 0.10013264
+        }
+      },
+      "large|*|*|2:entryway": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 9.36,
+          "median": 9.36,
+          "p75": 9.36
+        },
+        "fraction": {
+          "p25": 0.03018868,
+          "median": 0.03018868,
+          "p75": 0.03018868
+        }
+      },
+      "large|*|*|2:kitchen": {
+        "count": 5,
+        "house_count": 5,
+        "area": {
+          "p25": 10.8,
+          "median": 11.88,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04958678,
+          "median": 0.05069124,
+          "p75": 0.05296514
+        }
+      },
+      "large|*|*|2:living_room": {
+        "count": 53,
+        "house_count": 50,
+        "area": {
+          "p25": 24.48,
+          "median": 30.78,
+          "p75": 38.88
+        },
+        "fraction": {
+          "p25": 0.10322581,
+          "median": 0.12727273,
+          "p75": 0.17697466
+        }
+      },
+      "large|*|*|2:multi_purpose": {
+        "count": 88,
+        "house_count": 54,
+        "area": {
+          "p25": 12.87,
+          "median": 16.38,
+          "p75": 22.3425
+        },
+        "fraction": {
+          "p25": 0.0541336,
+          "median": 0.07055053,
+          "p75": 0.09213534
+        }
+      },
+      "large|*|*|2:stairs": {
+        "count": 77,
+        "house_count": 75,
+        "area": {
+          "p25": 9.36,
+          "median": 11.34,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04,
+          "median": 0.04891304,
+          "p75": 0.05987526
+        }
+      },
+      "large|*|*|2:utility": {
+        "count": 63,
+        "house_count": 46,
+        "area": {
+          "p25": 4.68,
+          "median": 7.2,
+          "p75": 11.115
+        },
+        "fraction": {
+          "p25": 0.02067158,
+          "median": 0.02962963,
+          "p75": 0.04661614
+        }
+      },
+      "large|*|1|1:balcony": {
+        "count": 8,
+        "house_count": 8,
+        "area": {
+          "p25": 3.375,
+          "median": 4.725,
+          "p75": 6.4125
+        },
+        "fraction": {
+          "p25": 0.0152809,
+          "median": 0.02301502,
+          "p75": 0.02695322
+        }
+      },
+      "large|*|1|1:bathroom": {
+        "count": 18,
+        "house_count": 18,
+        "area": {
+          "p25": 5.04,
+          "median": 5.715,
+          "p75": 9.18
+        },
+        "fraction": {
+          "p25": 0.0212361,
+          "median": 0.02835327,
+          "p75": 0.03617545
+        }
+      },
+      "large|*|1|1:bedroom": {
+        "count": 7,
+        "house_count": 7,
+        "area": {
+          "p25": 14.58,
+          "median": 16.38,
+          "p75": 19.755
+        },
+        "fraction": {
+          "p25": 0.06557082,
+          "median": 0.08038278,
+          "p75": 0.09783249
+        }
+      },
+      "large|*|1|1:corridor": {
+        "count": 39,
+        "house_count": 39,
+        "area": {
+          "p25": 7.92,
+          "median": 13.23,
+          "p75": 25.785
+        },
+        "fraction": {
+          "p25": 0.03878968,
+          "median": 0.06349206,
+          "p75": 0.11020051
+        }
+      },
+      "large|*|1|1:dining_room": {
+        "count": 72,
+        "house_count": 72,
+        "area": {
+          "p25": 15.1875,
+          "median": 18.315,
+          "p75": 22.86
+        },
+        "fraction": {
+          "p25": 0.06743697,
+          "median": 0.08038743,
+          "p75": 0.09623506
+        }
+      },
+      "large|*|1|1:entryway": {
+        "count": 69,
+        "house_count": 69,
+        "area": {
+          "p25": 8.19,
+          "median": 12.96,
+          "p75": 18.63
+        },
+        "fraction": {
+          "p25": 0.03954802,
+          "median": 0.05247813,
+          "p75": 0.08490566
+        }
+      },
+      "large|*|1|1:kitchen": {
+        "count": 69,
+        "house_count": 69,
+        "area": {
+          "p25": 12.15,
+          "median": 14.04,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.05327869,
+          "median": 0.06315789,
+          "p75": 0.07368421
+        }
+      },
+      "large|*|1|1:living_room": {
+        "count": 74,
+        "house_count": 74,
+        "area": {
+          "p25": 21.7575,
+          "median": 27.945,
+          "p75": 34.9425
+        },
+        "fraction": {
+          "p25": 0.09882209,
+          "median": 0.12428657,
+          "p75": 0.15138756
+        }
+      },
+      "large|*|1|1:multi_purpose": {
+        "count": 30,
+        "house_count": 30,
+        "area": {
+          "p25": 12.1725,
+          "median": 15.615,
+          "p75": 18.225
+        },
+        "fraction": {
+          "p25": 0.05239776,
+          "median": 0.06093988,
+          "p75": 0.0821076
+        }
+      },
+      "large|*|1|1:stairs": {
+        "count": 73,
+        "house_count": 73,
+        "area": {
+          "p25": 9.72,
+          "median": 11.34,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04098361,
+          "median": 0.04924848,
+          "p75": 0.06037567
+        }
+      },
+      "large|*|1|1:utility": {
+        "count": 26,
+        "house_count": 26,
+        "area": {
+          "p25": 4.455,
+          "median": 6.48,
+          "p75": 10.7775
+        },
+        "fraction": {
+          "p25": 0.0191972,
+          "median": 0.02918841,
+          "p75": 0.04731973
+        }
+      },
+      "large|*|1|2:balcony": {
+        "count": 23,
+        "house_count": 23,
+        "area": {
+          "p25": 9.72,
+          "median": 14.4,
+          "p75": 25.92
+        },
+        "fraction": {
+          "p25": 0.04104533,
+          "median": 0.06366048,
+          "p75": 0.10495627
+        }
+      },
+      "large|*|1|2:bathroom": {
+        "count": 20,
+        "house_count": 20,
+        "area": {
+          "p25": 5.31,
+          "median": 6.48,
+          "p75": 7.7175
+        },
+        "fraction": {
+          "p25": 0.02454158,
+          "median": 0.0275322,
+          "p75": 0.0333202
+        }
+      },
+      "large|*|1|2:bedroom": {
+        "count": 2,
+        "house_count": 2,
+        "area": {
+          "p25": 25.56,
+          "median": 33.57,
+          "p75": 41.58
+        },
+        "fraction": {
+          "p25": 0.10462092,
+          "median": 0.14803657,
+          "p75": 0.19145221
+        }
+      },
+      "large|*|1|2:corridor": {
+        "count": 42,
+        "house_count": 42,
+        "area": {
+          "p25": 14.265,
+          "median": 19.98,
+          "p75": 27.9
+        },
+        "fraction": {
+          "p25": 0.07079832,
+          "median": 0.09155755,
+          "p75": 0.11697634
+        }
+      },
+      "large|*|1|2:dining_room": {
+        "count": 3,
+        "house_count": 3,
+        "area": {
+          "p25": 15.66,
+          "median": 17.28,
+          "p75": 23.49
+        },
+        "fraction": {
+          "p25": 0.06191601,
+          "median": 0.06446281,
+          "p75": 0.10013264
+        }
+      },
+      "large|*|1|2:entryway": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 9.36,
+          "median": 9.36,
+          "p75": 9.36
+        },
+        "fraction": {
+          "p25": 0.03018868,
+          "median": 0.03018868,
+          "p75": 0.03018868
+        }
+      },
+      "large|*|1|2:kitchen": {
+        "count": 5,
+        "house_count": 5,
+        "area": {
+          "p25": 10.8,
+          "median": 11.88,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04958678,
+          "median": 0.05069124,
+          "p75": 0.05296514
+        }
+      },
+      "large|*|1|2:living_room": {
+        "count": 48,
+        "house_count": 48,
+        "area": {
+          "p25": 24.435,
+          "median": 30.06,
+          "p75": 38.9925
+        },
+        "fraction": {
+          "p25": 0.11172161,
+          "median": 0.13826408,
+          "p75": 0.18043969
+        }
+      },
+      "large|*|1|2:multi_purpose": {
+        "count": 29,
+        "house_count": 29,
+        "area": {
+          "p25": 12.6,
+          "median": 16.2,
+          "p75": 20.25
+        },
+        "fraction": {
+          "p25": 0.05836753,
+          "median": 0.07215541,
+          "p75": 0.09202683
+        }
+      },
+      "large|*|1|2:stairs": {
+        "count": 73,
+        "house_count": 73,
+        "area": {
+          "p25": 9.72,
+          "median": 11.34,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04098361,
+          "median": 0.04924848,
+          "p75": 0.06037567
+        }
+      },
+      "large|*|1|2:utility": {
+        "count": 31,
+        "house_count": 31,
+        "area": {
+          "p25": 5.4,
+          "median": 7.2,
+          "p75": 12.195
+        },
+        "fraction": {
+          "p25": 0.02368028,
+          "median": 0.03109815,
+          "p75": 0.04402111
+        }
+      },
+      "large|*|2|1:balcony": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 3.375,
+          "median": 3.51,
+          "p75": 3.645
+        },
+        "fraction": {
+          "p25": 0.0154321,
+          "median": 0.01604938,
+          "p75": 0.01666667
+        }
+      },
+      "large|*|2|1:bathroom": {
+        "count": 100,
+        "house_count": 50,
+        "area": {
+          "p25": 4.86,
+          "median": 5.94,
+          "p75": 7.02
+        },
+        "fraction": {
+          "p25": 0.02213237,
+          "median": 0.02699762,
+          "p75": 0.03337321
+        }
+      },
+      "large|*|2|1:bedroom": {
+        "count": 80,
+        "house_count": 40,
+        "area": {
+          "p25": 15.12,
+          "median": 17.055,
+          "p75": 18.9
+        },
+        "fraction": {
+          "p25": 0.0624816,
+          "median": 0.07546026,
+          "p75": 0.08650182
+        }
+      },
+      "large|*|2|1:corridor": {
+        "count": 62,
+        "house_count": 31,
+        "area": {
+          "p25": 2.7,
+          "median": 5.22,
+          "p75": 10.4175
+        },
+        "fraction": {
+          "p25": 0.01355552,
+          "median": 0.02494306,
+          "p75": 0.0444332
+        }
+      },
+      "large|*|2|1:dining_room": {
+        "count": 6,
+        "house_count": 3,
+        "area": {
+          "p25": 12.6225,
+          "median": 15.885,
+          "p75": 18.2025
+        },
+        "fraction": {
+          "p25": 0.04377181,
+          "median": 0.0532176,
+          "p75": 0.0859707
+        }
+      },
+      "large|*|2|1:entryway": {
+        "count": 12,
+        "house_count": 6,
+        "area": {
+          "p25": 12.465,
+          "median": 14.85,
+          "p75": 18.7425
+        },
+        "fraction": {
+          "p25": 0.04384113,
+          "median": 0.06103475,
+          "p75": 0.07926945
+        }
+      },
+      "large|*|2|1:kitchen": {
+        "count": 8,
+        "house_count": 4,
+        "area": {
+          "p25": 8.73,
+          "median": 10.8,
+          "p75": 12.8925
+        },
+        "fraction": {
+          "p25": 0.03165016,
+          "median": 0.04617649,
+          "p75": 0.0625
+        }
+      },
+      "large|*|2|1:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 20.385,
+          "median": 22.41,
+          "p75": 24.435
+        },
+        "fraction": {
+          "p25": 0.06574746,
+          "median": 0.07227866,
+          "p75": 0.07880987
+        }
+      },
+      "large|*|2|1:multi_purpose": {
+        "count": 12,
+        "house_count": 6,
+        "area": {
+          "p25": 12.96,
+          "median": 14.445,
+          "p75": 17.7525
+        },
+        "fraction": {
+          "p25": 0.0464503,
+          "median": 0.05467328,
+          "p75": 0.06561276
+        }
+      },
+      "large|*|2|1:stairs": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 8.0325,
+          "median": 9.36,
+          "p75": 10.26
+        },
+        "fraction": {
+          "p25": 0.02612017,
+          "median": 0.03018868,
+          "p75": 0.03377323
+        }
+      },
+      "large|*|2|1:utility": {
+        "count": 24,
+        "house_count": 12,
+        "area": {
+          "p25": 4.995,
+          "median": 6.75,
+          "p75": 12.5775
+        },
+        "fraction": {
+          "p25": 0.02256635,
+          "median": 0.03164926,
+          "p75": 0.05509003
+        }
+      },
+      "large|*|2|2:balcony": {
+        "count": 46,
+        "house_count": 23,
+        "area": {
+          "p25": 6.3,
+          "median": 10.215,
+          "p75": 17.4375
+        },
+        "fraction": {
+          "p25": 0.02943698,
+          "median": 0.0457968,
+          "p75": 0.08341974
+        }
+      },
+      "large|*|2|2:bathroom": {
+        "count": 82,
+        "house_count": 41,
+        "area": {
+          "p25": 5.4,
+          "median": 6.48,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.02352398,
+          "median": 0.02852069,
+          "p75": 0.03437224
+        }
+      },
+      "large|*|2|2:bedroom": {
+        "count": 22,
+        "house_count": 11,
+        "area": {
+          "p25": 14.04,
+          "median": 15.525,
+          "p75": 20.0925
+        },
+        "fraction": {
+          "p25": 0.06449315,
+          "median": 0.07335111,
+          "p75": 0.09272116
+        }
+      },
+      "large|*|2|2:corridor": {
+        "count": 58,
+        "house_count": 29,
+        "area": {
+          "p25": 2.745,
+          "median": 4.86,
+          "p75": 9.675
+        },
+        "fraction": {
+          "p25": 0.01363815,
+          "median": 0.02214334,
+          "p75": 0.04194263
+        }
+      },
+      "large|*|2|2:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 23.04,
+          "median": 27.36,
+          "p75": 31.68
+        },
+        "fraction": {
+          "p25": 0.08035154,
+          "median": 0.09541745,
+          "p75": 0.11048336
+        }
+      },
+      "large|*|2|2:multi_purpose": {
+        "count": 38,
+        "house_count": 19,
+        "area": {
+          "p25": 12.8925,
+          "median": 16.695,
+          "p75": 24.435
+        },
+        "fraction": {
+          "p25": 0.0544763,
+          "median": 0.0701943,
+          "p75": 0.10568197
+        }
+      },
+      "large|*|2|2:stairs": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 8.0325,
+          "median": 9.36,
+          "p75": 10.26
+        },
+        "fraction": {
+          "p25": 0.02612017,
+          "median": 0.03018868,
+          "p75": 0.03377323
+        }
+      },
+      "large|*|2|2:utility": {
+        "count": 26,
+        "house_count": 13,
+        "area": {
+          "p25": 4.59,
+          "median": 7.29,
+          "p75": 11.9475
+        },
+        "fraction": {
+          "p25": 0.01849961,
+          "median": 0.02881133,
+          "p75": 0.05118336
+        }
+      },
+      "large|*|3-4|1:balcony": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 2.6775,
+          "median": 8.865,
+          "p75": 14.58
+        },
+        "fraction": {
+          "p25": 0.01203265,
+          "median": 0.04090532,
+          "p75": 0.0632277
+        }
+      },
+      "large|*|3-4|1:bathroom": {
+        "count": 21,
+        "house_count": 7,
+        "area": {
+          "p25": 5.04,
+          "median": 7.02,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.01904762,
+          "median": 0.0230608,
+          "p75": 0.03013183
+        }
+      },
+      "large|*|3-4|1:bedroom": {
+        "count": 79,
+        "house_count": 25,
+        "area": {
+          "p25": 13.86,
+          "median": 16.2,
+          "p75": 17.73
+        },
+        "fraction": {
+          "p25": 0.05947627,
+          "median": 0.07058824,
+          "p75": 0.08027678
+        }
+      },
+      "large|*|3-4|1:corridor": {
+        "count": 12,
+        "house_count": 4,
+        "area": {
+          "p25": 3.4875,
+          "median": 4.05,
+          "p75": 5.2425
+        },
+        "fraction": {
+          "p25": 0.01413104,
+          "median": 0.01645414,
+          "p75": 0.02322328
+        }
+      },
+      "large|*|3-4|1:multi_purpose": {
+        "count": 12,
+        "house_count": 3,
+        "area": {
+          "p25": 15.21,
+          "median": 20.295,
+          "p75": 24.3675
+        },
+        "fraction": {
+          "p25": 0.06106598,
+          "median": 0.07371704,
+          "p75": 0.09594298
+        }
+      },
+      "large|*|3-4|1:utility": {
+        "count": 16,
+        "house_count": 5,
+        "area": {
+          "p25": 4.995,
+          "median": 7.11,
+          "p75": 12.33
+        },
+        "fraction": {
+          "p25": 0.01689305,
+          "median": 0.02752613,
+          "p75": 0.04886796
+        }
+      },
+      "large|*|3-4|2:balcony": {
+        "count": 79,
+        "house_count": 24,
+        "area": {
+          "p25": 5.67,
+          "median": 7.92,
+          "p75": 14.58
+        },
+        "fraction": {
+          "p25": 0.02338802,
+          "median": 0.03197674,
+          "p75": 0.06561763
+        }
+      },
+      "large|*|3-4|2:bathroom": {
+        "count": 42,
+        "house_count": 13,
+        "area": {
+          "p25": 4.86,
+          "median": 5.4,
+          "p75": 6.8175
+        },
+        "fraction": {
+          "p25": 0.01956065,
+          "median": 0.0242915,
+          "p75": 0.02884985
+        }
+      },
+      "large|*|3-4|2:bedroom": {
+        "count": 175,
+        "house_count": 51,
+        "area": {
+          "p25": 14.85,
+          "median": 16.38,
+          "p75": 18.9
+        },
+        "fraction": {
+          "p25": 0.06233612,
+          "median": 0.07302534,
+          "p75": 0.08380151
+        }
+      },
+      "large|*|3-4|2:corridor": {
+        "count": 9,
+        "house_count": 3,
+        "area": {
+          "p25": 3.6,
+          "median": 5.04,
+          "p75": 7.2
+        },
+        "fraction": {
+          "p25": 0.01646091,
+          "median": 0.02304527,
+          "p75": 0.02980626
+        }
+      },
+      "large|*|3-4|2:living_room": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 34.155,
+          "median": 35.19,
+          "p75": 38.385
+        },
+        "fraction": {
+          "p25": 0.07529762,
+          "median": 0.07757937,
+          "p75": 0.08462302
+        }
+      },
+      "large|*|3-4|2:multi_purpose": {
+        "count": 16,
+        "house_count": 5,
+        "area": {
+          "p25": 13.77,
+          "median": 15.84,
+          "p75": 19.2375
+        },
+        "fraction": {
+          "p25": 0.05232018,
+          "median": 0.05992349,
+          "p75": 0.07869432
+        }
+      },
+      "large|*|3-4|2:utility": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 3.915,
+          "median": 5.67,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.01688665,
+          "median": 0.02224607,
+          "p75": 0.02745098
+        }
+      },
+      "large|*|5+|2:balcony": {
+        "count": 10,
+        "house_count": 2,
+        "area": {
+          "p25": 7.2675,
+          "median": 9.585,
+          "p75": 11.5425
+        },
+        "fraction": {
+          "p25": 0.01979167,
+          "median": 0.02918275,
+          "p75": 0.04308237
+        }
+      },
+      "large|*|5+|2:bathroom": {
+        "count": 6,
+        "house_count": 1,
+        "area": {
+          "p25": 4.9725,
+          "median": 5.67,
+          "p75": 6.84
+        },
+        "fraction": {
+          "p25": 0.01603774,
+          "median": 0.01828737,
+          "p75": 0.02206096
+        }
+      },
+      "large|*|5+|2:bedroom": {
+        "count": 60,
+        "house_count": 11,
+        "area": {
+          "p25": 12.87,
+          "median": 15.21,
+          "p75": 17.37
+        },
+        "fraction": {
+          "p25": 0.05664222,
+          "median": 0.06666667,
+          "p75": 0.07890798
+        }
+      },
+      "large|*|5+|2:multi_purpose": {
+        "count": 5,
+        "house_count": 1,
+        "area": {
+          "p25": 11.88,
+          "median": 19.44,
+          "p75": 23.94
+        },
+        "fraction": {
+          "p25": 0.04313725,
+          "median": 0.07058824,
+          "p75": 0.0869281
+        }
+      },
+      "large|compact|1|1:balcony": {
+        "count": 8,
+        "house_count": 8,
+        "area": {
+          "p25": 3.375,
+          "median": 4.725,
+          "p75": 6.4125
+        },
+        "fraction": {
+          "p25": 0.0152809,
+          "median": 0.02301502,
+          "p75": 0.02695322
+        }
+      },
+      "large|compact|1|1:bathroom": {
+        "count": 11,
+        "house_count": 11,
+        "area": {
+          "p25": 5.04,
+          "median": 5.67,
+          "p75": 8.46
+        },
+        "fraction": {
+          "p25": 0.02149095,
+          "median": 0.02916667,
+          "p75": 0.03614287
+        }
+      },
+      "large|compact|1|1:bedroom": {
+        "count": 4,
+        "house_count": 4,
+        "area": {
+          "p25": 15.255,
+          "median": 19.53,
+          "p75": 24.2775
+        },
+        "fraction": {
+          "p25": 0.07218977,
+          "median": 0.09447525,
+          "p75": 0.11623847
+        }
+      },
+      "large|compact|1|1:corridor": {
+        "count": 28,
+        "house_count": 28,
+        "area": {
+          "p25": 8.055,
+          "median": 12.51,
+          "p75": 21.6675
+        },
+        "fraction": {
+          "p25": 0.03592169,
+          "median": 0.05298063,
+          "p75": 0.10536492
+        }
+      },
+      "large|compact|1|1:dining_room": {
+        "count": 47,
+        "house_count": 47,
+        "area": {
+          "p25": 15.705,
+          "median": 18.72,
+          "p75": 23.76
+        },
+        "fraction": {
+          "p25": 0.06528562,
+          "median": 0.08077485,
+          "p75": 0.09698844
+        }
+      },
+      "large|compact|1|1:entryway": {
+        "count": 46,
+        "house_count": 46,
+        "area": {
+          "p25": 9.045,
+          "median": 13.365,
+          "p75": 19.26
+        },
+        "fraction": {
+          "p25": 0.04040044,
+          "median": 0.05473761,
+          "p75": 0.09024653
+        }
+      },
+      "large|compact|1|1:kitchen": {
+        "count": 45,
+        "house_count": 45,
+        "area": {
+          "p25": 11.88,
+          "median": 14.4,
+          "p75": 17.28
+        },
+        "fraction": {
+          "p25": 0.05069124,
+          "median": 0.06046512,
+          "p75": 0.07272727
+        }
+      },
+      "large|compact|1|1:living_room": {
+        "count": 48,
+        "house_count": 48,
+        "area": {
+          "p25": 24.435,
+          "median": 29.475,
+          "p75": 37.665
+        },
+        "fraction": {
+          "p25": 0.10071689,
+          "median": 0.1299212,
+          "p75": 0.15751607
+        }
+      },
+      "large|compact|1|1:multi_purpose": {
+        "count": 19,
+        "house_count": 19,
+        "area": {
+          "p25": 12.87,
+          "median": 15.21,
+          "p75": 17.595
+        },
+        "fraction": {
+          "p25": 0.04924956,
+          "median": 0.06055901,
+          "p75": 0.07783276
+        }
+      },
+      "large|compact|1|1:stairs": {
+        "count": 48,
+        "house_count": 48,
+        "area": {
+          "p25": 9.63,
+          "median": 11.07,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.03972768,
+          "median": 0.04871528,
+          "p75": 0.06058307
+        }
+      },
+      "large|compact|1|1:utility": {
+        "count": 15,
+        "house_count": 15,
+        "area": {
+          "p25": 4.59,
+          "median": 6.48,
+          "p75": 9.81
+        },
+        "fraction": {
+          "p25": 0.01820589,
+          "median": 0.02875817,
+          "p75": 0.03406972
+        }
+      },
+      "large|compact|1|2:balcony": {
+        "count": 18,
+        "house_count": 18,
+        "area": {
+          "p25": 10.1475,
+          "median": 15.12,
+          "p75": 28.755
+        },
+        "fraction": {
+          "p25": 0.04210518,
+          "median": 0.07590812,
+          "p75": 0.11010054
+        }
+      },
+      "large|compact|1|2:bathroom": {
+        "count": 11,
+        "house_count": 11,
+        "area": {
+          "p25": 5.67,
+          "median": 6.48,
+          "p75": 7.605
+        },
+        "fraction": {
+          "p25": 0.02466341,
+          "median": 0.02745098,
+          "p75": 0.02990248
+        }
+      },
+      "large|compact|1|2:bedroom": {
+        "count": 2,
+        "house_count": 2,
+        "area": {
+          "p25": 25.56,
+          "median": 33.57,
+          "p75": 41.58
+        },
+        "fraction": {
+          "p25": 0.10462092,
+          "median": 0.14803657,
+          "p75": 0.19145221
+        }
+      },
+      "large|compact|1|2:corridor": {
+        "count": 29,
+        "house_count": 29,
+        "area": {
+          "p25": 14.4,
+          "median": 19.8,
+          "p75": 28.44
+        },
+        "fraction": {
+          "p25": 0.07058824,
+          "median": 0.09513742,
+          "p75": 0.11924528
+        }
+      },
+      "large|compact|1|2:dining_room": {
+        "count": 2,
+        "house_count": 2,
+        "area": {
+          "p25": 17.955,
+          "median": 21.87,
+          "p75": 25.785
+        },
+        "fraction": {
+          "p25": 0.08229772,
+          "median": 0.10013264,
+          "p75": 0.11796755
+        }
+      },
+      "large|compact|1|2:entryway": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 9.36,
+          "median": 9.36,
+          "p75": 9.36
+        },
+        "fraction": {
+          "p25": 0.03018868,
+          "median": 0.03018868,
+          "p75": 0.03018868
+        }
+      },
+      "large|compact|1|2:kitchen": {
+        "count": 4,
+        "house_count": 4,
+        "area": {
+          "p25": 10.7325,
+          "median": 11.34,
+          "p75": 12.375
+        },
+        "fraction": {
+          "p25": 0.05041513,
+          "median": 0.05182819,
+          "p75": 0.0533041
+        }
+      },
+      "large|compact|1|2:living_room": {
+        "count": 31,
+        "house_count": 31,
+        "area": {
+          "p25": 24.39,
+          "median": 30.78,
+          "p75": 39.105
+        },
+        "fraction": {
+          "p25": 0.11296584,
+          "median": 0.13496678,
+          "p75": 0.17384223
+        }
+      },
+      "large|compact|1|2:multi_purpose": {
+        "count": 23,
+        "house_count": 23,
+        "area": {
+          "p25": 12.015,
+          "median": 16.2,
+          "p75": 20.835
+        },
+        "fraction": {
+          "p25": 0.05860885,
+          "median": 0.07215541,
+          "p75": 0.0947939
+        }
+      },
+      "large|compact|1|2:stairs": {
+        "count": 48,
+        "house_count": 48,
+        "area": {
+          "p25": 9.63,
+          "median": 11.07,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.03972768,
+          "median": 0.04871528,
+          "p75": 0.06058307
+        }
+      },
+      "large|compact|1|2:utility": {
+        "count": 21,
+        "house_count": 21,
+        "area": {
+          "p25": 5.94,
+          "median": 8.19,
+          "p75": 13.5
+        },
+        "fraction": {
+          "p25": 0.02459016,
+          "median": 0.03109815,
+          "p75": 0.04458364
+        }
+      },
+      "large|compact|2|1:balcony": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 3.375,
+          "median": 3.51,
+          "p75": 3.645
+        },
+        "fraction": {
+          "p25": 0.0154321,
+          "median": 0.01604938,
+          "p75": 0.01666667
+        }
+      },
+      "large|compact|2|1:bathroom": {
+        "count": 66,
+        "house_count": 33,
+        "area": {
+          "p25": 4.86,
+          "median": 5.76,
+          "p75": 6.9975
+        },
+        "fraction": {
+          "p25": 0.02037037,
+          "median": 0.02514151,
+          "p75": 0.03150183
+        }
+      },
+      "large|compact|2|1:bedroom": {
+        "count": 64,
+        "house_count": 32,
+        "area": {
+          "p25": 15.12,
+          "median": 17.055,
+          "p75": 19.1475
+        },
+        "fraction": {
+          "p25": 0.06124631,
+          "median": 0.0744856,
+          "p75": 0.08622053
+        }
+      },
+      "large|compact|2|1:corridor": {
+        "count": 32,
+        "house_count": 16,
+        "area": {
+          "p25": 2.43,
+          "median": 5.67,
+          "p75": 10.98
+        },
+        "fraction": {
+          "p25": 0.00990216,
+          "median": 0.02861305,
+          "p75": 0.04388084
+        }
+      },
+      "large|compact|2|1:dining_room": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 10.8225,
+          "median": 13.545,
+          "p75": 15.6375
+        },
+        "fraction": {
+          "p25": 0.03716804,
+          "median": 0.04679127,
+          "p75": 0.0530239
+        }
+      },
+      "large|compact|2|1:entryway": {
+        "count": 6,
+        "house_count": 3,
+        "area": {
+          "p25": 10.53,
+          "median": 15.66,
+          "p75": 19.2375
+        },
+        "fraction": {
+          "p25": 0.03710584,
+          "median": 0.05248869,
+          "p75": 0.06259285
+        }
+      },
+      "large|compact|2|1:kitchen": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 7.8975,
+          "median": 8.55,
+          "p75": 9.9
+        },
+        "fraction": {
+          "p25": 0.0254717,
+          "median": 0.03712059,
+          "p75": 0.0531401
+        }
+      },
+      "large|compact|2|1:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 20.385,
+          "median": 22.41,
+          "p75": 24.435
+        },
+        "fraction": {
+          "p25": 0.06574746,
+          "median": 0.07227866,
+          "p75": 0.07880987
+        }
+      },
+      "large|compact|2|1:multi_purpose": {
+        "count": 8,
+        "house_count": 4,
+        "area": {
+          "p25": 13.5,
+          "median": 16.065,
+          "p75": 18.5625
+        },
+        "fraction": {
+          "p25": 0.04438126,
+          "median": 0.05520583,
+          "p75": 0.06561276
+        }
+      },
+      "large|compact|2|1:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 9.36,
+          "median": 9.36,
+          "p75": 9.36
+        },
+        "fraction": {
+          "p25": 0.03018868,
+          "median": 0.03018868,
+          "p75": 0.03018868
+        }
+      },
+      "large|compact|2|1:utility": {
+        "count": 22,
+        "house_count": 11,
+        "area": {
+          "p25": 4.905,
+          "median": 6.75,
+          "p75": 10.53
+        },
+        "fraction": {
+          "p25": 0.02242969,
+          "median": 0.03003527,
+          "p75": 0.04448221
+        }
+      },
+      "large|compact|2|2:balcony": {
+        "count": 26,
+        "house_count": 13,
+        "area": {
+          "p25": 6.3,
+          "median": 9.18,
+          "p75": 15.12
+        },
+        "fraction": {
+          "p25": 0.02965456,
+          "median": 0.0414147,
+          "p75": 0.07172361
+        }
+      },
+      "large|compact|2|2:bathroom": {
+        "count": 56,
+        "house_count": 28,
+        "area": {
+          "p25": 5.0175,
+          "median": 6.39,
+          "p75": 7.29
+        },
+        "fraction": {
+          "p25": 0.02173667,
+          "median": 0.02701221,
+          "p75": 0.03448276
+        }
+      },
+      "large|compact|2|2:bedroom": {
+        "count": 14,
+        "house_count": 7,
+        "area": {
+          "p25": 14.04,
+          "median": 16.56,
+          "p75": 19.3275
+        },
+        "fraction": {
+          "p25": 0.070749,
+          "median": 0.07640345,
+          "p75": 0.08688989
+        }
+      },
+      "large|compact|2|2:corridor": {
+        "count": 32,
+        "house_count": 16,
+        "area": {
+          "p25": 2.835,
+          "median": 4.77,
+          "p75": 10.305
+        },
+        "fraction": {
+          "p25": 0.01299925,
+          "median": 0.02111063,
+          "p75": 0.03973665
+        }
+      },
+      "large|compact|2|2:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 23.04,
+          "median": 27.36,
+          "p75": 31.68
+        },
+        "fraction": {
+          "p25": 0.08035154,
+          "median": 0.09541745,
+          "p75": 0.11048336
+        }
+      },
+      "large|compact|2|2:multi_purpose": {
+        "count": 24,
+        "house_count": 12,
+        "area": {
+          "p25": 14.31,
+          "median": 17.595,
+          "p75": 24.57
+        },
+        "fraction": {
+          "p25": 0.04966855,
+          "median": 0.07122178,
+          "p75": 0.10642055
+        }
+      },
+      "large|compact|2|2:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 9.36,
+          "median": 9.36,
+          "p75": 9.36
+        },
+        "fraction": {
+          "p25": 0.03018868,
+          "median": 0.03018868,
+          "p75": 0.03018868
+        }
+      },
+      "large|compact|2|2:utility": {
+        "count": 16,
+        "house_count": 8,
+        "area": {
+          "p25": 4.77,
+          "median": 6.48,
+          "p75": 11.5425
+        },
+        "fraction": {
+          "p25": 0.01941966,
+          "median": 0.0271842,
+          "p75": 0.04970393
+        }
+      },
+      "large|compact|3-4|1:balcony": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 2.6775,
+          "median": 8.865,
+          "p75": 14.58
+        },
+        "fraction": {
+          "p25": 0.01203265,
+          "median": 0.04090532,
+          "p75": 0.0632277
+        }
+      },
+      "large|compact|3-4|1:bathroom": {
+        "count": 15,
+        "house_count": 5,
+        "area": {
+          "p25": 4.95,
+          "median": 5.4,
+          "p75": 7.29
+        },
+        "fraction": {
+          "p25": 0.0178525,
+          "median": 0.02096436,
+          "p75": 0.02459016
+        }
+      },
+      "large|compact|3-4|1:bedroom": {
+        "count": 35,
+        "house_count": 11,
+        "area": {
+          "p25": 14.04,
+          "median": 16.2,
+          "p75": 17.595
+        },
+        "fraction": {
+          "p25": 0.05028358,
+          "median": 0.0627451,
+          "p75": 0.07492593
+        }
+      },
+      "large|compact|3-4|1:corridor": {
+        "count": 12,
+        "house_count": 4,
+        "area": {
+          "p25": 3.4875,
+          "median": 4.05,
+          "p75": 5.2425
+        },
+        "fraction": {
+          "p25": 0.01413104,
+          "median": 0.01645414,
+          "p75": 0.02322328
+        }
+      },
+      "large|compact|3-4|1:multi_purpose": {
+        "count": 12,
+        "house_count": 3,
+        "area": {
+          "p25": 15.21,
+          "median": 20.295,
+          "p75": 24.3675
+        },
+        "fraction": {
+          "p25": 0.06106598,
+          "median": 0.07371704,
+          "p75": 0.09594298
+        }
+      },
+      "large|compact|3-4|1:utility": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 5.13,
+          "median": 5.4,
+          "p75": 8.775
+        },
+        "fraction": {
+          "p25": 0.01789077,
+          "median": 0.01883239,
+          "p75": 0.03060264
+        }
+      },
+      "large|compact|3-4|2:balcony": {
+        "count": 52,
+        "house_count": 15,
+        "area": {
+          "p25": 5.805,
+          "median": 7.74,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.02429094,
+          "median": 0.03144654,
+          "p75": 0.05449249
+        }
+      },
+      "large|compact|3-4|2:bathroom": {
+        "count": 29,
+        "house_count": 9,
+        "area": {
+          "p25": 4.86,
+          "median": 5.4,
+          "p75": 6.48
+        },
+        "fraction": {
+          "p25": 0.01943635,
+          "median": 0.02457218,
+          "p75": 0.02862254
+        }
+      },
+      "large|compact|3-4|2:bedroom": {
+        "count": 117,
+        "house_count": 34,
+        "area": {
+          "p25": 15.12,
+          "median": 16.83,
+          "p75": 19.89
+        },
+        "fraction": {
+          "p25": 0.06055901,
+          "median": 0.07371654,
+          "p75": 0.08426596
+        }
+      },
+      "large|compact|3-4|2:corridor": {
+        "count": 9,
+        "house_count": 3,
+        "area": {
+          "p25": 3.6,
+          "median": 5.04,
+          "p75": 7.2
+        },
+        "fraction": {
+          "p25": 0.01646091,
+          "median": 0.02304527,
+          "p75": 0.02980626
+        }
+      },
+      "large|compact|3-4|2:multi_purpose": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 15.12,
+          "median": 18.0,
+          "p75": 20.2725
+        },
+        "fraction": {
+          "p25": 0.05456558,
+          "median": 0.06277464,
+          "p75": 0.07334906
+        }
+      },
+      "large|compact|3-4|2:utility": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 3.915,
+          "median": 5.67,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.01688665,
+          "median": 0.02224607,
+          "p75": 0.02745098
+        }
+      },
+      "large|compact|5+|2:bathroom": {
+        "count": 6,
+        "house_count": 1,
+        "area": {
+          "p25": 4.9725,
+          "median": 5.67,
+          "p75": 6.84
+        },
+        "fraction": {
+          "p25": 0.01603774,
+          "median": 0.01828737,
+          "p75": 0.02206096
+        }
+      },
+      "large|compact|5+|2:bedroom": {
+        "count": 32,
+        "house_count": 6,
+        "area": {
+          "p25": 13.3425,
+          "median": 16.29,
+          "p75": 18.72
+        },
+        "fraction": {
+          "p25": 0.05283019,
+          "median": 0.05992063,
+          "p75": 0.07926829
+        }
+      },
+      "large|compact|5+|2:multi_purpose": {
+        "count": 5,
+        "house_count": 1,
+        "area": {
+          "p25": 11.88,
+          "median": 19.44,
+          "p75": 23.94
+        },
+        "fraction": {
+          "p25": 0.04313725,
+          "median": 0.07058824,
+          "p75": 0.0869281
+        }
+      },
+      "large|elongated|1|1:bathroom": {
+        "count": 7,
+        "house_count": 7,
+        "area": {
+          "p25": 4.95,
+          "median": 5.76,
+          "p75": 8.505
+        },
+        "fraction": {
+          "p25": 0.02223937,
+          "median": 0.0256167,
+          "p75": 0.03519241
+        }
+      },
+      "large|elongated|1|1:bedroom": {
+        "count": 3,
+        "house_count": 3,
+        "area": {
+          "p25": 14.58,
+          "median": 15.12,
+          "p75": 15.975
+        },
+        "fraction": {
+          "p25": 0.06583241,
+          "median": 0.08038278,
+          "p75": 0.08347842
+        }
+      },
+      "large|elongated|1|1:corridor": {
+        "count": 11,
+        "house_count": 11,
+        "area": {
+          "p25": 11.655,
+          "median": 20.16,
+          "p75": 27.225
+        },
+        "fraction": {
+          "p25": 0.05989388,
+          "median": 0.09824561,
+          "p75": 0.11090815
+        }
+      },
+      "large|elongated|1|1:dining_room": {
+        "count": 25,
+        "house_count": 25,
+        "area": {
+          "p25": 14.85,
+          "median": 17.28,
+          "p75": 20.25
+        },
+        "fraction": {
+          "p25": 0.06889952,
+          "median": 0.07722008,
+          "p75": 0.09250474
+        }
+      },
+      "large|elongated|1|1:entryway": {
+        "count": 23,
+        "house_count": 23,
+        "area": {
+          "p25": 6.39,
+          "median": 10.8,
+          "p75": 16.605
+        },
+        "fraction": {
+          "p25": 0.03080449,
+          "median": 0.04126984,
+          "p75": 0.08278371
+        }
+      },
+      "large|elongated|1|1:kitchen": {
+        "count": 24,
+        "house_count": 24,
+        "area": {
+          "p25": 12.8025,
+          "median": 13.86,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.05999676,
+          "median": 0.06565072,
+          "p75": 0.0738308
+        }
+      },
+      "large|elongated|1|1:living_room": {
+        "count": 26,
+        "house_count": 26,
+        "area": {
+          "p25": 20.475,
+          "median": 22.59,
+          "p75": 30.51
+        },
+        "fraction": {
+          "p25": 0.09810207,
+          "median": 0.10768941,
+          "p75": 0.1373698
+        }
+      },
+      "large|elongated|1|1:multi_purpose": {
+        "count": 11,
+        "house_count": 11,
+        "area": {
+          "p25": 12.195,
+          "median": 16.02,
+          "p75": 19.08
+        },
+        "fraction": {
+          "p25": 0.05468654,
+          "median": 0.06181319,
+          "p75": 0.09459064
+        }
+      },
+      "large|elongated|1|1:stairs": {
+        "count": 25,
+        "house_count": 25,
+        "area": {
+          "p25": 9.72,
+          "median": 11.7,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04633205,
+          "median": 0.05741627,
+          "p75": 0.05987526
+        }
+      },
+      "large|elongated|1|1:utility": {
+        "count": 11,
+        "house_count": 11,
+        "area": {
+          "p25": 4.86,
+          "median": 6.48,
+          "p75": 11.835
+        },
+        "fraction": {
+          "p25": 0.02192683,
+          "median": 0.03333333,
+          "p75": 0.05751135
+        }
+      },
+      "large|elongated|1|2:balcony": {
+        "count": 5,
+        "house_count": 5,
+        "area": {
+          "p25": 8.64,
+          "median": 12.96,
+          "p75": 14.4
+        },
+        "fraction": {
+          "p25": 0.04,
+          "median": 0.06075949,
+          "p75": 0.06366048
+        }
+      },
+      "large|elongated|1|2:bathroom": {
+        "count": 9,
+        "house_count": 9,
+        "area": {
+          "p25": 5.04,
+          "median": 6.93,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.0245614,
+          "median": 0.02761341,
+          "p75": 0.03588071
+        }
+      },
+      "large|elongated|1|2:corridor": {
+        "count": 13,
+        "house_count": 13,
+        "area": {
+          "p25": 13.95,
+          "median": 20.16,
+          "p75": 24.3
+        },
+        "fraction": {
+          "p25": 0.07142857,
+          "median": 0.09112903,
+          "p75": 0.1
+        }
+      },
+      "large|elongated|1|2:dining_room": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 17.28,
+          "median": 17.28,
+          "p75": 17.28
+        },
+        "fraction": {
+          "p25": 0.0593692,
+          "median": 0.0593692,
+          "p75": 0.0593692
+        }
+      },
+      "large|elongated|1|2:kitchen": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 12.96,
+          "median": 12.96,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.0445269,
+          "median": 0.0445269,
+          "p75": 0.0445269
+        }
+      },
+      "large|elongated|1|2:living_room": {
+        "count": 17,
+        "house_count": 17,
+        "area": {
+          "p25": 24.48,
+          "median": 28.8,
+          "p75": 37.8
+        },
+        "fraction": {
+          "p25": 0.11148272,
+          "median": 0.14423077,
+          "p75": 0.18708134
+        }
+      },
+      "large|elongated|1|2:multi_purpose": {
+        "count": 6,
+        "house_count": 6,
+        "area": {
+          "p25": 13.4325,
+          "median": 16.065,
+          "p75": 19.5075
+        },
+        "fraction": {
+          "p25": 0.0613439,
+          "median": 0.07627819,
+          "p75": 0.08400406
+        }
+      },
+      "large|elongated|1|2:stairs": {
+        "count": 25,
+        "house_count": 25,
+        "area": {
+          "p25": 9.72,
+          "median": 11.7,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04633205,
+          "median": 0.05741627,
+          "p75": 0.05987526
+        }
+      },
+      "large|elongated|1|2:utility": {
+        "count": 10,
+        "house_count": 10,
+        "area": {
+          "p25": 4.725,
+          "median": 6.705,
+          "p75": 7.83
+        },
+        "fraction": {
+          "p25": 0.02433586,
+          "median": 0.03156578,
+          "p75": 0.03792771
+        }
+      },
+      "large|elongated|2|1:bathroom": {
+        "count": 34,
+        "house_count": 17,
+        "area": {
+          "p25": 4.905,
+          "median": 6.3,
+          "p75": 6.9975
+        },
+        "fraction": {
+          "p25": 0.02439994,
+          "median": 0.02966764,
+          "p75": 0.03434749
+        }
+      },
+      "large|elongated|2|1:bedroom": {
+        "count": 16,
+        "house_count": 8,
+        "area": {
+          "p25": 14.04,
+          "median": 16.245,
+          "p75": 17.7525
+        },
+        "fraction": {
+          "p25": 0.06290323,
+          "median": 0.07602339,
+          "p75": 0.08823529
+        }
+      },
+      "large|elongated|2|1:corridor": {
+        "count": 30,
+        "house_count": 15,
+        "area": {
+          "p25": 3.105,
+          "median": 5.22,
+          "p75": 9.1575
+        },
+        "fraction": {
+          "p25": 0.01567132,
+          "median": 0.02440679,
+          "p75": 0.04388831
+        }
+      },
+      "large|elongated|2|1:dining_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 19.2375,
+          "median": 19.665,
+          "p75": 20.0925
+        },
+        "fraction": {
+          "p25": 0.09895833,
+          "median": 0.10115741,
+          "p75": 0.10335648
+        }
+      },
+      "large|elongated|2|1:entryway": {
+        "count": 6,
+        "house_count": 3,
+        "area": {
+          "p25": 13.8375,
+          "median": 14.85,
+          "p75": 17.4825
+        },
+        "fraction": {
+          "p25": 0.05655056,
+          "median": 0.07827324,
+          "p75": 0.08126186
+        }
+      },
+      "large|elongated|2|1:kitchen": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 11.34,
+          "median": 12.42,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.04174397,
+          "median": 0.05281901,
+          "p75": 0.0625
+        }
+      },
+      "large|elongated|2|1:multi_purpose": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 12.96,
+          "median": 13.5,
+          "p75": 15.12
+        },
+        "fraction": {
+          "p25": 0.05029586,
+          "median": 0.05467328,
+          "p75": 0.0641129
+        }
+      },
+      "large|elongated|2|1:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 6.2775,
+          "median": 8.505,
+          "p75": 10.7325
+        },
+        "fraction": {
+          "p25": 0.02156772,
+          "median": 0.02922078,
+          "p75": 0.03687384
+        }
+      },
+      "large|elongated|2|1:utility": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 9.54,
+          "median": 12.6,
+          "p75": 15.66
+        },
+        "fraction": {
+          "p25": 0.04768331,
+          "median": 0.06297796,
+          "p75": 0.0782726
+        }
+      },
+      "large|elongated|2|2:balcony": {
+        "count": 20,
+        "house_count": 10,
+        "area": {
+          "p25": 6.435,
+          "median": 13.14,
+          "p75": 22.995
+        },
+        "fraction": {
+          "p25": 0.02865632,
+          "median": 0.05918507,
+          "p75": 0.11031949
+        }
+      },
+      "large|elongated|2|2:bathroom": {
+        "count": 26,
+        "house_count": 13,
+        "area": {
+          "p25": 5.805,
+          "median": 6.48,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.0275,
+          "median": 0.03059553,
+          "p75": 0.03390371
+        }
+      },
+      "large|elongated|2|2:bedroom": {
+        "count": 8,
+        "house_count": 4,
+        "area": {
+          "p25": 13.77,
+          "median": 15.21,
+          "p75": 23.625
+        },
+        "fraction": {
+          "p25": 0.05908885,
+          "median": 0.06998559,
+          "p75": 0.10121308
+        }
+      },
+      "large|elongated|2|2:corridor": {
+        "count": 26,
+        "house_count": 13,
+        "area": {
+          "p25": 2.835,
+          "median": 5.4,
+          "p75": 8.775
+        },
+        "fraction": {
+          "p25": 0.01462655,
+          "median": 0.02562867,
+          "p75": 0.04269166
+        }
+      },
+      "large|elongated|2|2:multi_purpose": {
+        "count": 14,
+        "house_count": 7,
+        "area": {
+          "p25": 11.8125,
+          "median": 13.23,
+          "p75": 21.3975
+        },
+        "fraction": {
+          "p25": 0.0616479,
+          "median": 0.06713255,
+          "p75": 0.10259377
+        }
+      },
+      "large|elongated|2|2:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 6.2775,
+          "median": 8.505,
+          "p75": 10.7325
+        },
+        "fraction": {
+          "p25": 0.02156772,
+          "median": 0.02922078,
+          "p75": 0.03687384
+        }
+      },
+      "large|elongated|2|2:utility": {
+        "count": 10,
+        "house_count": 5,
+        "area": {
+          "p25": 4.5675,
+          "median": 8.775,
+          "p75": 12.42
+        },
+        "fraction": {
+          "p25": 0.01721956,
+          "median": 0.03449477,
+          "p75": 0.05122184
+        }
+      },
+      "large|elongated|3-4|1:bathroom": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 7.695,
+          "median": 8.37,
+          "p75": 8.64
+        },
+        "fraction": {
+          "p25": 0.02202381,
+          "median": 0.03214286,
+          "p75": 0.03511905
+        }
+      },
+      "large|elongated|3-4|1:bedroom": {
+        "count": 44,
+        "house_count": 14,
+        "area": {
+          "p25": 13.0275,
+          "median": 15.21,
+          "p75": 17.955
+        },
+        "fraction": {
+          "p25": 0.0643597,
+          "median": 0.07281725,
+          "p75": 0.08284274
+        }
+      },
+      "large|elongated|3-4|1:utility": {
+        "count": 13,
+        "house_count": 4,
+        "area": {
+          "p25": 5.04,
+          "median": 7.2,
+          "p75": 12.87
+        },
+        "fraction": {
+          "p25": 0.01672474,
+          "median": 0.02787456,
+          "p75": 0.05958333
+        }
+      },
+      "large|elongated|3-4|2:balcony": {
+        "count": 27,
+        "house_count": 9,
+        "area": {
+          "p25": 5.49,
+          "median": 8.64,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.02261498,
+          "median": 0.03957947,
+          "p75": 0.07498374
+        }
+      },
+      "large|elongated|3-4|2:bathroom": {
+        "count": 13,
+        "house_count": 4,
+        "area": {
+          "p25": 4.86,
+          "median": 6.48,
+          "p75": 6.93
+        },
+        "fraction": {
+          "p25": 0.02142857,
+          "median": 0.0242915,
+          "p75": 0.03238866
+        }
+      },
+      "large|elongated|3-4|2:bedroom": {
+        "count": 58,
+        "house_count": 17,
+        "area": {
+          "p25": 13.905,
+          "median": 15.525,
+          "p75": 18.63
+        },
+        "fraction": {
+          "p25": 0.06480399,
+          "median": 0.07218163,
+          "p75": 0.08222495
+        }
+      },
+      "large|elongated|3-4|2:living_room": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 34.155,
+          "median": 35.19,
+          "p75": 38.385
+        },
+        "fraction": {
+          "p25": 0.07529762,
+          "median": 0.07757937,
+          "p75": 0.08462302
+        }
+      },
+      "large|elongated|3-4|2:multi_purpose": {
+        "count": 10,
+        "house_count": 3,
+        "area": {
+          "p25": 13.23,
+          "median": 14.22,
+          "p75": 18.4275
+        },
+        "fraction": {
+          "p25": 0.05295429,
+          "median": 0.05952039,
+          "p75": 0.08102564
+        }
+      },
+      "large|elongated|5+|2:balcony": {
+        "count": 10,
+        "house_count": 2,
+        "area": {
+          "p25": 7.2675,
+          "median": 9.585,
+          "p75": 11.5425
+        },
+        "fraction": {
+          "p25": 0.01979167,
+          "median": 0.02918275,
+          "p75": 0.04308237
+        }
+      },
+      "large|elongated|5+|2:bedroom": {
+        "count": 28,
+        "house_count": 5,
+        "area": {
+          "p25": 12.87,
+          "median": 13.5,
+          "p75": 15.4575
+        },
+        "fraction": {
+          "p25": 0.06111111,
+          "median": 0.06725174,
+          "p75": 0.0751389
+        }
+      },
+      "medium|*|*|1:balcony": {
+        "count": 12,
+        "house_count": 10,
+        "area": {
+          "p25": 2.16,
+          "median": 5.04,
+          "p75": 6.48
+        },
+        "fraction": {
+          "p25": 0.01219512,
+          "median": 0.02936758,
+          "p75": 0.04008306
+        }
+      },
+      "medium|*|*|1:bathroom": {
+        "count": 245,
+        "house_count": 149,
+        "area": {
+          "p25": 4.41,
+          "median": 5.4,
+          "p75": 6.48
+        },
+        "fraction": {
+          "p25": 0.02755102,
+          "median": 0.03316953,
+          "p75": 0.04166667
+        }
+      },
+      "medium|*|*|1:bedroom": {
+        "count": 313,
+        "house_count": 149,
+        "area": {
+          "p25": 12.87,
+          "median": 14.85,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.08296669,
+          "median": 0.09247967,
+          "p75": 0.10597826
+        }
+      },
+      "medium|*|*|1:corridor": {
+        "count": 218,
+        "house_count": 146,
+        "area": {
+          "p25": 2.745,
+          "median": 4.5,
+          "p75": 9.0
+        },
+        "fraction": {
+          "p25": 0.01774642,
+          "median": 0.0315723,
+          "p75": 0.05891278
+        }
+      },
+      "medium|*|*|1:dining_room": {
+        "count": 150,
+        "house_count": 150,
+        "area": {
+          "p25": 12.8925,
+          "median": 15.165,
+          "p75": 18.7875
+        },
+        "fraction": {
+          "p25": 0.08204232,
+          "median": 0.09707647,
+          "p75": 0.12028349
+        }
+      },
+      "medium|*|*|1:entryway": {
+        "count": 162,
+        "house_count": 150,
+        "area": {
+          "p25": 6.57,
+          "median": 9.315,
+          "p75": 13.815
+        },
+        "fraction": {
+          "p25": 0.04337194,
+          "median": 0.05964426,
+          "p75": 0.09033429
+        }
+      },
+      "medium|*|*|1:kitchen": {
+        "count": 150,
+        "house_count": 149,
+        "area": {
+          "p25": 8.91,
+          "median": 10.8,
+          "p75": 13.86
+        },
+        "fraction": {
+          "p25": 0.05847081,
+          "median": 0.07108047,
+          "p75": 0.08584299
+        }
+      },
+      "medium|*|*|1:living_room": {
+        "count": 151,
+        "house_count": 150,
+        "area": {
+          "p25": 20.16,
+          "median": 23.04,
+          "p75": 28.89
+        },
+        "fraction": {
+          "p25": 0.12798073,
+          "median": 0.15315315,
+          "p75": 0.18370729
+        }
+      },
+      "medium|*|*|1:multi_purpose": {
+        "count": 49,
+        "house_count": 43,
+        "area": {
+          "p25": 10.8,
+          "median": 12.87,
+          "p75": 14.4
+        },
+        "fraction": {
+          "p25": 0.06879607,
+          "median": 0.07708895,
+          "p75": 0.08552632
+        }
+      },
+      "medium|*|*|1:stairs": {
+        "count": 151,
+        "house_count": 150,
+        "area": {
+          "p25": 8.64,
+          "median": 9.72,
+          "p75": 11.34
+        },
+        "fraction": {
+          "p25": 0.05448361,
+          "median": 0.06428571,
+          "p75": 0.07377392
+        }
+      },
+      "medium|*|*|1:utility": {
+        "count": 84,
+        "house_count": 71,
+        "area": {
+          "p25": 3.78,
+          "median": 5.715,
+          "p75": 10.935
+        },
+        "fraction": {
+          "p25": 0.02535014,
+          "median": 0.03337208,
+          "p75": 0.06782065
+        }
+      },
+      "medium|*|*|2:balcony": {
+        "count": 259,
+        "house_count": 138,
+        "area": {
+          "p25": 5.4,
+          "median": 9.45,
+          "p75": 17.055
+        },
+        "fraction": {
+          "p25": 0.03424489,
+          "median": 0.06060606,
+          "p75": 0.10913937
+        }
+      },
+      "medium|*|*|2:bathroom": {
+        "count": 254,
+        "house_count": 147,
+        "area": {
+          "p25": 4.41,
+          "median": 5.04,
+          "p75": 6.48
+        },
+        "fraction": {
+          "p25": 0.02824006,
+          "median": 0.03319783,
+          "p75": 0.03981396
+        }
+      },
+      "medium|*|*|2:bedroom": {
+        "count": 454,
+        "house_count": 147,
+        "area": {
+          "p25": 12.87,
+          "median": 15.12,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.08198758,
+          "median": 0.09276062,
+          "p75": 0.10708569
+        }
+      },
+      "medium|*|*|2:corridor": {
+        "count": 217,
+        "house_count": 149,
+        "area": {
+          "p25": 2.88,
+          "median": 5.85,
+          "p75": 11.97
+        },
+        "fraction": {
+          "p25": 0.02011061,
+          "median": 0.03679654,
+          "p75": 0.0737931
+        }
+      },
+      "medium|*|*|2:dining_room": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 16.38,
+          "median": 16.38,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.09191919,
+          "median": 0.09191919,
+          "p75": 0.09191919
+        }
+      },
+      "medium|*|*|2:kitchen": {
+        "count": 3,
+        "house_count": 3,
+        "area": {
+          "p25": 9.765,
+          "median": 10.53,
+          "p75": 10.53
+        },
+        "fraction": {
+          "p25": 0.06500537,
+          "median": 0.07090909,
+          "p75": 0.07492823
+        }
+      },
+      "medium|*|*|2:living_room": {
+        "count": 114,
+        "house_count": 111,
+        "area": {
+          "p25": 20.16,
+          "median": 26.235,
+          "p75": 31.6575
+        },
+        "fraction": {
+          "p25": 0.12121212,
+          "median": 0.16756944,
+          "p75": 0.20545008
+        }
+      },
+      "medium|*|*|2:multi_purpose": {
+        "count": 154,
+        "house_count": 112,
+        "area": {
+          "p25": 9.9,
+          "median": 12.6,
+          "p75": 16.335
+        },
+        "fraction": {
+          "p25": 0.06408972,
+          "median": 0.08090963,
+          "p75": 0.10038038
+        }
+      },
+      "medium|*|*|2:stairs": {
+        "count": 151,
+        "house_count": 150,
+        "area": {
+          "p25": 8.64,
+          "median": 9.72,
+          "p75": 11.34
+        },
+        "fraction": {
+          "p25": 0.05448361,
+          "median": 0.06428571,
+          "p75": 0.07377392
+        }
+      },
+      "medium|*|*|2:utility": {
+        "count": 104,
+        "house_count": 80,
+        "area": {
+          "p25": 4.41,
+          "median": 6.48,
+          "p75": 9.54
+        },
+        "fraction": {
+          "p25": 0.02754346,
+          "median": 0.04358296,
+          "p75": 0.06065211
+        }
+      },
+      "medium|*|1|1:balcony": {
+        "count": 8,
+        "house_count": 8,
+        "area": {
+          "p25": 5.22,
+          "median": 5.85,
+          "p75": 7.155
+        },
+        "fraction": {
+          "p25": 0.02998211,
+          "median": 0.03592572,
+          "p75": 0.04862756
+        }
+      },
+      "medium|*|1|1:bathroom": {
+        "count": 56,
+        "house_count": 56,
+        "area": {
+          "p25": 4.86,
+          "median": 6.39,
+          "p75": 7.065
+        },
+        "fraction": {
+          "p25": 0.03215942,
+          "median": 0.03785493,
+          "p75": 0.04845846
+        }
+      },
+      "medium|*|1|1:bedroom": {
+        "count": 23,
+        "house_count": 23,
+        "area": {
+          "p25": 14.04,
+          "median": 16.38,
+          "p75": 18.72
+        },
+        "fraction": {
+          "p25": 0.09542467,
+          "median": 0.10569106,
+          "p75": 0.12140967
+        }
+      },
+      "medium|*|1|1:corridor": {
+        "count": 78,
+        "house_count": 78,
+        "area": {
+          "p25": 5.13,
+          "median": 8.595,
+          "p75": 14.2875
+        },
+        "fraction": {
+          "p25": 0.03259514,
+          "median": 0.05679772,
+          "p75": 0.08678626
+        }
+      },
+      "medium|*|1|1:dining_room": {
+        "count": 150,
+        "house_count": 150,
+        "area": {
+          "p25": 12.8925,
+          "median": 15.165,
+          "p75": 18.7875
+        },
+        "fraction": {
+          "p25": 0.08204232,
+          "median": 0.09707647,
+          "p75": 0.12028349
+        }
+      },
+      "medium|*|1|1:entryway": {
+        "count": 138,
+        "house_count": 138,
+        "area": {
+          "p25": 6.57,
+          "median": 9.315,
+          "p75": 13.635
+        },
+        "fraction": {
+          "p25": 0.04303248,
+          "median": 0.05964426,
+          "p75": 0.08848939
+        }
+      },
+      "medium|*|1|1:kitchen": {
+        "count": 148,
+        "house_count": 148,
+        "area": {
+          "p25": 8.91,
+          "median": 10.8,
+          "p75": 13.86
+        },
+        "fraction": {
+          "p25": 0.05813035,
+          "median": 0.07108047,
+          "p75": 0.08590912
+        }
+      },
+      "medium|*|1|1:living_room": {
+        "count": 149,
+        "house_count": 149,
+        "area": {
+          "p25": 20.16,
+          "median": 23.04,
+          "p75": 28.8
+        },
+        "fraction": {
+          "p25": 0.12830189,
+          "median": 0.15315315,
+          "p75": 0.18330606
+        }
+      },
+      "medium|*|1|1:multi_purpose": {
+        "count": 37,
+        "house_count": 37,
+        "area": {
+          "p25": 11.34,
+          "median": 12.87,
+          "p75": 15.12
+        },
+        "fraction": {
+          "p25": 0.07125186,
+          "median": 0.07722008,
+          "p75": 0.08918919
+        }
+      },
+      "medium|*|1|1:stairs": {
+        "count": 149,
+        "house_count": 149,
+        "area": {
+          "p25": 8.64,
+          "median": 9.72,
+          "p75": 11.34
+        },
+        "fraction": {
+          "p25": 0.05597668,
+          "median": 0.06428571,
+          "p75": 0.07386364
+        }
+      },
+      "medium|*|1|1:utility": {
+        "count": 60,
+        "house_count": 60,
+        "area": {
+          "p25": 4.2525,
+          "median": 6.525,
+          "p75": 11.34
+        },
+        "fraction": {
+          "p25": 0.02746682,
+          "median": 0.03920282,
+          "p75": 0.06821632
+        }
+      },
+      "medium|*|1|2:balcony": {
+        "count": 51,
+        "house_count": 51,
+        "area": {
+          "p25": 9.0,
+          "median": 14.04,
+          "p75": 25.155
+        },
+        "fraction": {
+          "p25": 0.05623941,
+          "median": 0.09689922,
+          "p75": 0.15653409
+        }
+      },
+      "medium|*|1|2:bathroom": {
+        "count": 54,
+        "house_count": 54,
+        "area": {
+          "p25": 5.04,
+          "median": 6.39,
+          "p75": 7.155
+        },
+        "fraction": {
+          "p25": 0.03397727,
+          "median": 0.03893998,
+          "p75": 0.04889686
+        }
+      },
+      "medium|*|1|2:bedroom": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 16.2,
+          "median": 16.2,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.12244898,
+          "median": 0.12244898,
+          "p75": 0.12244898
+        }
+      },
+      "medium|*|1|2:corridor": {
+        "count": 91,
+        "house_count": 91,
+        "area": {
+          "p25": 7.2,
+          "median": 12.96,
+          "p75": 17.19
+        },
+        "fraction": {
+          "p25": 0.04713295,
+          "median": 0.08581894,
+          "p75": 0.10935594
+        }
+      },
+      "medium|*|1|2:dining_room": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 16.38,
+          "median": 16.38,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.09191919,
+          "median": 0.09191919,
+          "p75": 0.09191919
+        }
+      },
+      "medium|*|1|2:kitchen": {
+        "count": 3,
+        "house_count": 3,
+        "area": {
+          "p25": 9.765,
+          "median": 10.53,
+          "p75": 10.53
+        },
+        "fraction": {
+          "p25": 0.06500537,
+          "median": 0.07090909,
+          "p75": 0.07492823
+        }
+      },
+      "medium|*|1|2:living_room": {
+        "count": 108,
+        "house_count": 108,
+        "area": {
+          "p25": 20.16,
+          "median": 26.73,
+          "p75": 32.1975
+        },
+        "fraction": {
+          "p25": 0.12121212,
+          "median": 0.16895072,
+          "p75": 0.20746018
+        }
+      },
+      "medium|*|1|2:multi_purpose": {
+        "count": 74,
+        "house_count": 74,
+        "area": {
+          "p25": 9.72,
+          "median": 11.7,
+          "p75": 15.21
+        },
+        "fraction": {
+          "p25": 0.06094358,
+          "median": 0.07701182,
+          "p75": 0.09378081
+        }
+      },
+      "medium|*|1|2:stairs": {
+        "count": 149,
+        "house_count": 149,
+        "area": {
+          "p25": 8.64,
+          "median": 9.72,
+          "p75": 11.34
+        },
+        "fraction": {
+          "p25": 0.05597668,
+          "median": 0.06428571,
+          "p75": 0.07386364
+        }
+      },
+      "medium|*|1|2:utility": {
+        "count": 60,
+        "house_count": 60,
+        "area": {
+          "p25": 4.815,
+          "median": 6.39,
+          "p75": 8.4375
+        },
+        "fraction": {
+          "p25": 0.02891615,
+          "median": 0.04288673,
+          "p75": 0.05907043
+        }
+      },
+      "medium|*|2|1:balcony": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 1.62,
+          "median": 1.89,
+          "p75": 2.16
+        },
+        "fraction": {
+          "p25": 0.01187531,
+          "median": 0.01203522,
+          "p75": 0.01219512
+        }
+      },
+      "medium|*|2|1:bathroom": {
+        "count": 182,
+        "house_count": 91,
+        "area": {
+          "p25": 4.32,
+          "median": 5.04,
+          "p75": 5.94
+        },
+        "fraction": {
+          "p25": 0.02749215,
+          "median": 0.03246596,
+          "p75": 0.04037336
+        }
+      },
+      "medium|*|2|1:bedroom": {
+        "count": 178,
+        "house_count": 89,
+        "area": {
+          "p25": 12.96,
+          "median": 15.12,
+          "p75": 17.28
+        },
+        "fraction": {
+          "p25": 0.08317349,
+          "median": 0.09500247,
+          "p75": 0.10833333
+        }
+      },
+      "medium|*|2|1:corridor": {
+        "count": 128,
+        "house_count": 64,
+        "area": {
+          "p25": 2.25,
+          "median": 3.42,
+          "p75": 6.3
+        },
+        "fraction": {
+          "p25": 0.01563796,
+          "median": 0.02103052,
+          "p75": 0.03724862
+        }
+      },
+      "medium|*|2|1:entryway": {
+        "count": 24,
+        "house_count": 12,
+        "area": {
+          "p25": 6.885,
+          "median": 9.81,
+          "p75": 14.4
+        },
+        "fraction": {
+          "p25": 0.04982912,
+          "median": 0.06103896,
+          "p75": 0.09676932
+        }
+      },
+      "medium|*|2|1:kitchen": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 12.285,
+          "median": 12.87,
+          "p75": 13.455
+        },
+        "fraction": {
+          "p25": 0.06914894,
+          "median": 0.07244174,
+          "p75": 0.07573455
+        }
+      },
+      "medium|*|2|1:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 16.74,
+          "median": 26.28,
+          "p75": 35.82
+        },
+        "fraction": {
+          "p25": 0.0952381,
+          "median": 0.14951357,
+          "p75": 0.20378904
+        }
+      },
+      "medium|*|2|1:multi_purpose": {
+        "count": 12,
+        "house_count": 6,
+        "area": {
+          "p25": 9.315,
+          "median": 10.89,
+          "p75": 13.59
+        },
+        "fraction": {
+          "p25": 0.05231448,
+          "median": 0.06914286,
+          "p75": 0.07923833
+        }
+      },
+      "medium|*|2|1:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 5.2875,
+          "median": 5.625,
+          "p75": 5.9625
+        },
+        "fraction": {
+          "p25": 0.03175676,
+          "median": 0.03378378,
+          "p75": 0.03581081
+        }
+      },
+      "medium|*|2|1:utility": {
+        "count": 18,
+        "house_count": 9,
+        "area": {
+          "p25": 3.78,
+          "median": 4.41,
+          "p75": 8.1
+        },
+        "fraction": {
+          "p25": 0.02340043,
+          "median": 0.02672738,
+          "p75": 0.0510979
+        }
+      },
+      "medium|*|2|2:balcony": {
+        "count": 116,
+        "house_count": 58,
+        "area": {
+          "p25": 5.4,
+          "median": 8.64,
+          "p75": 15.93
+        },
+        "fraction": {
+          "p25": 0.03291847,
+          "median": 0.05696017,
+          "p75": 0.10832157
+        }
+      },
+      "medium|*|2|2:bathroom": {
+        "count": 166,
+        "house_count": 83,
+        "area": {
+          "p25": 4.3425,
+          "median": 5.04,
+          "p75": 5.94
+        },
+        "fraction": {
+          "p25": 0.0281606,
+          "median": 0.03237783,
+          "p75": 0.03770325
+        }
+      },
+      "medium|*|2|2:bedroom": {
+        "count": 54,
+        "house_count": 27,
+        "area": {
+          "p25": 12.87,
+          "median": 15.3,
+          "p75": 18.72
+        },
+        "fraction": {
+          "p25": 0.08337154,
+          "median": 0.09466479,
+          "p75": 0.1203139
+        }
+      },
+      "medium|*|2|2:corridor": {
+        "count": 96,
+        "house_count": 48,
+        "area": {
+          "p25": 2.52,
+          "median": 3.6,
+          "p75": 6.3
+        },
+        "fraction": {
+          "p25": 0.0159103,
+          "median": 0.02103052,
+          "p75": 0.03817204
+        }
+      },
+      "medium|*|2|2:living_room": {
+        "count": 6,
+        "house_count": 3,
+        "area": {
+          "p25": 17.9325,
+          "median": 21.42,
+          "p75": 25.65
+        },
+        "fraction": {
+          "p25": 0.1187516,
+          "median": 0.12424965,
+          "p75": 0.15159574
+        }
+      },
+      "medium|*|2|2:multi_purpose": {
+        "count": 68,
+        "house_count": 34,
+        "area": {
+          "p25": 10.8,
+          "median": 12.96,
+          "p75": 16.4925
+        },
+        "fraction": {
+          "p25": 0.07098186,
+          "median": 0.08536815,
+          "p75": 0.10188536
+        }
+      },
+      "medium|*|2|2:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 5.2875,
+          "median": 5.625,
+          "p75": 5.9625
+        },
+        "fraction": {
+          "p25": 0.03175676,
+          "median": 0.03378378,
+          "p75": 0.03581081
+        }
+      },
+      "medium|*|2|2:utility": {
+        "count": 32,
+        "house_count": 16,
+        "area": {
+          "p25": 4.455,
+          "median": 8.055,
+          "p75": 10.89
+        },
+        "fraction": {
+          "p25": 0.02756133,
+          "median": 0.04854569,
+          "p75": 0.06424925
+        }
+      },
+      "medium|*|3-4|1:bathroom": {
+        "count": 7,
+        "house_count": 2,
+        "area": {
+          "p25": 4.185,
+          "median": 4.32,
+          "p75": 4.635
+        },
+        "fraction": {
+          "p25": 0.0242915,
+          "median": 0.02467105,
+          "p75": 0.02709599
+        }
+      },
+      "medium|*|3-4|1:bedroom": {
+        "count": 112,
+        "house_count": 37,
+        "area": {
+          "p25": 12.6,
+          "median": 14.04,
+          "p75": 15.21
+        },
+        "fraction": {
+          "p25": 0.08163265,
+          "median": 0.08863636,
+          "p75": 0.09961315
+        }
+      },
+      "medium|*|3-4|1:corridor": {
+        "count": 12,
+        "house_count": 4,
+        "area": {
+          "p25": 3.15,
+          "median": 3.6,
+          "p75": 9.45
+        },
+        "fraction": {
+          "p25": 0.01751752,
+          "median": 0.02020202,
+          "p75": 0.05573811
+        }
+      },
+      "medium|*|3-4|1:utility": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 3.645,
+          "median": 3.87,
+          "p75": 4.2975
+        },
+        "fraction": {
+          "p25": 0.02066532,
+          "median": 0.02451582,
+          "p75": 0.030211
+        }
+      },
+      "medium|*|3-4|2:balcony": {
+        "count": 92,
+        "house_count": 29,
+        "area": {
+          "p25": 4.95,
+          "median": 7.605,
+          "p75": 14.13
+        },
+        "fraction": {
+          "p25": 0.03116152,
+          "median": 0.04666518,
+          "p75": 0.08893986
+        }
+      },
+      "medium|*|3-4|2:bathroom": {
+        "count": 34,
+        "house_count": 10,
+        "area": {
+          "p25": 4.05,
+          "median": 4.86,
+          "p75": 5.67
+        },
+        "fraction": {
+          "p25": 0.02493186,
+          "median": 0.03068182,
+          "p75": 0.03558785
+        }
+      },
+      "medium|*|3-4|2:bedroom": {
+        "count": 377,
+        "house_count": 115,
+        "area": {
+          "p25": 12.96,
+          "median": 15.12,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.08245243,
+          "median": 0.09302326,
+          "p75": 0.10650282
+        }
+      },
+      "medium|*|3-4|2:corridor": {
+        "count": 30,
+        "house_count": 10,
+        "area": {
+          "p25": 2.25,
+          "median": 3.42,
+          "p75": 4.2525
+        },
+        "fraction": {
+          "p25": 0.01464685,
+          "median": 0.02284682,
+          "p75": 0.02994897
+        }
+      },
+      "medium|*|3-4|2:multi_purpose": {
+        "count": 12,
+        "house_count": 4,
+        "area": {
+          "p25": 9.2475,
+          "median": 12.375,
+          "p75": 22.7475
+        },
+        "fraction": {
+          "p25": 0.0665873,
+          "median": 0.07458056,
+          "p75": 0.14542247
+        }
+      },
+      "medium|*|3-4|2:utility": {
+        "count": 12,
+        "house_count": 4,
+        "area": {
+          "p25": 3.6,
+          "median": 5.265,
+          "p75": 8.4825
+        },
+        "fraction": {
+          "p25": 0.02016129,
+          "median": 0.03100159,
+          "p75": 0.06262458
+        }
+      },
+      "medium|*|5+|2:bedroom": {
+        "count": 22,
+        "house_count": 4,
+        "area": {
+          "p25": 11.7,
+          "median": 12.51,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.07644379,
+          "median": 0.08266046,
+          "p75": 0.09537549
+        }
+      },
+      "medium|compact|1|1:balcony": {
+        "count": 5,
+        "house_count": 5,
+        "area": {
+          "p25": 5.4,
+          "median": 6.3,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.03401361,
+          "median": 0.03783784,
+          "p75": 0.05405405
+        }
+      },
+      "medium|compact|1|1:bathroom": {
+        "count": 42,
+        "house_count": 42,
+        "area": {
+          "p25": 4.86,
+          "median": 5.58,
+          "p75": 7.02
+        },
+        "fraction": {
+          "p25": 0.03179351,
+          "median": 0.03709931,
+          "p75": 0.0472973
+        }
+      },
+      "medium|compact|1|1:bedroom": {
+        "count": 14,
+        "house_count": 14,
+        "area": {
+          "p25": 14.31,
+          "median": 16.965,
+          "p75": 18.855
+        },
+        "fraction": {
+          "p25": 0.10233789,
+          "median": 0.11014262,
+          "p75": 0.13488572
+        }
+      },
+      "medium|compact|1|1:corridor": {
+        "count": 65,
+        "house_count": 65,
+        "area": {
+          "p25": 5.4,
+          "median": 8.64,
+          "p75": 14.58
+        },
+        "fraction": {
+          "p25": 0.03367003,
+          "median": 0.05909091,
+          "p75": 0.08928571
+        }
+      },
+      "medium|compact|1|1:dining_room": {
+        "count": 116,
+        "house_count": 116,
+        "area": {
+          "p25": 12.87,
+          "median": 15.21,
+          "p75": 18.9
+        },
+        "fraction": {
+          "p25": 0.08302406,
+          "median": 0.09600666,
+          "p75": 0.12208224
+        }
+      },
+      "medium|compact|1|1:entryway": {
+        "count": 104,
+        "house_count": 104,
+        "area": {
+          "p25": 5.76,
+          "median": 9.18,
+          "p75": 14.6475
+        },
+        "fraction": {
+          "p25": 0.03799946,
+          "median": 0.06008423,
+          "p75": 0.09245744
+        }
+      },
+      "medium|compact|1|1:kitchen": {
+        "count": 114,
+        "house_count": 114,
+        "area": {
+          "p25": 8.91,
+          "median": 10.845,
+          "p75": 13.995
+        },
+        "fraction": {
+          "p25": 0.05847081,
+          "median": 0.07134021,
+          "p75": 0.08809318
+        }
+      },
+      "medium|compact|1|1:living_room": {
+        "count": 116,
+        "house_count": 116,
+        "area": {
+          "p25": 20.16,
+          "median": 23.04,
+          "p75": 29.0925
+        },
+        "fraction": {
+          "p25": 0.12622909,
+          "median": 0.15465368,
+          "p75": 0.18441344
+        }
+      },
+      "medium|compact|1|1:multi_purpose": {
+        "count": 27,
+        "house_count": 27,
+        "area": {
+          "p25": 12.15,
+          "median": 12.96,
+          "p75": 15.165
+        },
+        "fraction": {
+          "p25": 0.07004395,
+          "median": 0.08245243,
+          "p75": 0.09708664
+        }
+      },
+      "medium|compact|1|1:stairs": {
+        "count": 115,
+        "house_count": 115,
+        "area": {
+          "p25": 8.775,
+          "median": 9.72,
+          "p75": 11.34
+        },
+        "fraction": {
+          "p25": 0.05639406,
+          "median": 0.06453392,
+          "p75": 0.07396886
+        }
+      },
+      "medium|compact|1|1:utility": {
+        "count": 39,
+        "house_count": 39,
+        "area": {
+          "p25": 4.365,
+          "median": 6.3,
+          "p75": 11.52
+        },
+        "fraction": {
+          "p25": 0.02899769,
+          "median": 0.03787879,
+          "p75": 0.06652987
+        }
+      },
+      "medium|compact|1|2:balcony": {
+        "count": 43,
+        "house_count": 43,
+        "area": {
+          "p25": 9.54,
+          "median": 14.04,
+          "p75": 25.155
+        },
+        "fraction": {
+          "p25": 0.05968254,
+          "median": 0.08924485,
+          "p75": 0.15596491
+        }
+      },
+      "medium|compact|1|2:bathroom": {
+        "count": 40,
+        "house_count": 40,
+        "area": {
+          "p25": 5.04,
+          "median": 6.39,
+          "p75": 7.56
+        },
+        "fraction": {
+          "p25": 0.03173764,
+          "median": 0.03927939,
+          "p75": 0.04898649
+        }
+      },
+      "medium|compact|1|2:corridor": {
+        "count": 74,
+        "house_count": 74,
+        "area": {
+          "p25": 7.7625,
+          "median": 12.87,
+          "p75": 17.01
+        },
+        "fraction": {
+          "p25": 0.04659279,
+          "median": 0.08665947,
+          "p75": 0.10751237
+        }
+      },
+      "medium|compact|1|2:dining_room": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 16.38,
+          "median": 16.38,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.09191919,
+          "median": 0.09191919,
+          "p75": 0.09191919
+        }
+      },
+      "medium|compact|1|2:kitchen": {
+        "count": 2,
+        "house_count": 2,
+        "area": {
+          "p25": 9.3825,
+          "median": 9.765,
+          "p75": 10.1475
+        },
+        "fraction": {
+          "p25": 0.06406308,
+          "median": 0.06902451,
+          "p75": 0.07398594
+        }
+      },
+      "medium|compact|1|2:living_room": {
+        "count": 87,
+        "house_count": 87,
+        "area": {
+          "p25": 20.16,
+          "median": 27.0,
+          "p75": 32.4
+        },
+        "fraction": {
+          "p25": 0.12396341,
+          "median": 0.16888889,
+          "p75": 0.2076352
+        }
+      },
+      "medium|compact|1|2:multi_purpose": {
+        "count": 58,
+        "house_count": 58,
+        "area": {
+          "p25": 9.765,
+          "median": 11.7,
+          "p75": 15.21
+        },
+        "fraction": {
+          "p25": 0.06140352,
+          "median": 0.07655762,
+          "p75": 0.09656068
+        }
+      },
+      "medium|compact|1|2:stairs": {
+        "count": 115,
+        "house_count": 115,
+        "area": {
+          "p25": 8.775,
+          "median": 9.72,
+          "p75": 11.34
+        },
+        "fraction": {
+          "p25": 0.05639406,
+          "median": 0.06453392,
+          "p75": 0.07396886
+        }
+      },
+      "medium|compact|1|2:utility": {
+        "count": 48,
+        "house_count": 48,
+        "area": {
+          "p25": 4.9275,
+          "median": 6.48,
+          "p75": 10.26
+        },
+        "fraction": {
+          "p25": 0.0294301,
+          "median": 0.04313873,
+          "p75": 0.0608788
+        }
+      },
+      "medium|compact|2|1:balcony": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 1.62,
+          "median": 1.89,
+          "p75": 2.16
+        },
+        "fraction": {
+          "p25": 0.01187531,
+          "median": 0.01203522,
+          "p75": 0.01219512
+        }
+      },
+      "medium|compact|2|1:bathroom": {
+        "count": 144,
+        "house_count": 72,
+        "area": {
+          "p25": 4.32,
+          "median": 5.04,
+          "p75": 5.94
+        },
+        "fraction": {
+          "p25": 0.02746938,
+          "median": 0.03199758,
+          "p75": 0.04031201
+        }
+      },
+      "medium|compact|2|1:bedroom": {
+        "count": 152,
+        "house_count": 76,
+        "area": {
+          "p25": 12.96,
+          "median": 15.21,
+          "p75": 17.55
+        },
+        "fraction": {
+          "p25": 0.0854862,
+          "median": 0.09664285,
+          "p75": 0.10871242
+        }
+      },
+      "medium|compact|2|1:corridor": {
+        "count": 90,
+        "house_count": 45,
+        "area": {
+          "p25": 2.25,
+          "median": 3.15,
+          "p75": 5.625
+        },
+        "fraction": {
+          "p25": 0.01484431,
+          "median": 0.02044075,
+          "p75": 0.0344663
+        }
+      },
+      "medium|compact|2|1:entryway": {
+        "count": 24,
+        "house_count": 12,
+        "area": {
+          "p25": 6.885,
+          "median": 9.81,
+          "p75": 14.4
+        },
+        "fraction": {
+          "p25": 0.04982912,
+          "median": 0.06103896,
+          "p75": 0.09676932
+        }
+      },
+      "medium|compact|2|1:kitchen": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 12.285,
+          "median": 12.87,
+          "p75": 13.455
+        },
+        "fraction": {
+          "p25": 0.06914894,
+          "median": 0.07244174,
+          "p75": 0.07573455
+        }
+      },
+      "medium|compact|2|1:multi_purpose": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 9.45,
+          "median": 10.8,
+          "p75": 12.15
+        },
+        "fraction": {
+          "p25": 0.05494505,
+          "median": 0.06279435,
+          "p75": 0.07064364
+        }
+      },
+      "medium|compact|2|1:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 5.2875,
+          "median": 5.625,
+          "p75": 5.9625
+        },
+        "fraction": {
+          "p25": 0.03175676,
+          "median": 0.03378378,
+          "p75": 0.03581081
+        }
+      },
+      "medium|compact|2|1:utility": {
+        "count": 14,
+        "house_count": 7,
+        "area": {
+          "p25": 3.78,
+          "median": 4.77,
+          "p75": 10.8
+        },
+        "fraction": {
+          "p25": 0.02352053,
+          "median": 0.02766955,
+          "p75": 0.06635135
+        }
+      },
+      "medium|compact|2|2:balcony": {
+        "count": 80,
+        "house_count": 40,
+        "area": {
+          "p25": 5.4,
+          "median": 8.64,
+          "p75": 16.245
+        },
+        "fraction": {
+          "p25": 0.03351972,
+          "median": 0.05580853,
+          "p75": 0.10957767
+        }
+      },
+      "medium|compact|2|2:bathroom": {
+        "count": 136,
+        "house_count": 68,
+        "area": {
+          "p25": 4.41,
+          "median": 5.04,
+          "p75": 5.94
+        },
+        "fraction": {
+          "p25": 0.02825217,
+          "median": 0.03237783,
+          "p75": 0.03774356
+        }
+      },
+      "medium|compact|2|2:bedroom": {
+        "count": 48,
+        "house_count": 24,
+        "area": {
+          "p25": 12.87,
+          "median": 15.3,
+          "p75": 18.72
+        },
+        "fraction": {
+          "p25": 0.08229586,
+          "median": 0.09616181,
+          "p75": 0.12191968
+        }
+      },
+      "medium|compact|2|2:corridor": {
+        "count": 70,
+        "house_count": 35,
+        "area": {
+          "p25": 2.52,
+          "median": 3.195,
+          "p75": 5.85
+        },
+        "fraction": {
+          "p25": 0.0157491,
+          "median": 0.02044075,
+          "p75": 0.03687433
+        }
+      },
+      "medium|compact|2|2:living_room": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 20.4075,
+          "median": 24.3,
+          "p75": 27.5175
+        },
+        "fraction": {
+          "p25": 0.12525857,
+          "median": 0.14361702,
+          "p75": 0.17065939
+        }
+      },
+      "medium|compact|2|2:multi_purpose": {
+        "count": 54,
+        "house_count": 27,
+        "area": {
+          "p25": 11.475,
+          "median": 14.04,
+          "p75": 16.7175
+        },
+        "fraction": {
+          "p25": 0.07116662,
+          "median": 0.08812215,
+          "p75": 0.10131152
+        }
+      },
+      "medium|compact|2|2:stairs": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 5.2875,
+          "median": 5.625,
+          "p75": 5.9625
+        },
+        "fraction": {
+          "p25": 0.03175676,
+          "median": 0.03378378,
+          "p75": 0.03581081
+        }
+      },
+      "medium|compact|2|2:utility": {
+        "count": 24,
+        "house_count": 12,
+        "area": {
+          "p25": 5.04,
+          "median": 8.055,
+          "p75": 11.745
+        },
+        "fraction": {
+          "p25": 0.02885646,
+          "median": 0.04854569,
+          "p75": 0.06609957
+        }
+      },
+      "medium|compact|3-4|1:bathroom": {
+        "count": 4,
+        "house_count": 1,
+        "area": {
+          "p25": 4.32,
+          "median": 4.59,
+          "p75": 4.905
+        },
+        "fraction": {
+          "p25": 0.0242915,
+          "median": 0.02580972,
+          "p75": 0.02758097
+        }
+      },
+      "medium|compact|3-4|1:bedroom": {
+        "count": 79,
+        "house_count": 26,
+        "area": {
+          "p25": 12.24,
+          "median": 14.04,
+          "p75": 15.21
+        },
+        "fraction": {
+          "p25": 0.081064,
+          "median": 0.08552632,
+          "p75": 0.09738706
+        }
+      },
+      "medium|compact|3-4|1:corridor": {
+        "count": 9,
+        "house_count": 3,
+        "area": {
+          "p25": 3.6,
+          "median": 5.94,
+          "p75": 10.8
+        },
+        "fraction": {
+          "p25": 0.02020202,
+          "median": 0.03567568,
+          "p75": 0.06079027
+        }
+      },
+      "medium|compact|3-4|1:utility": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 4.095,
+          "median": 4.41,
+          "p75": 12.465
+        },
+        "fraction": {
+          "p25": 0.02909207,
+          "median": 0.03132992,
+          "p75": 0.08855499
+        }
+      },
+      "medium|compact|3-4|2:balcony": {
+        "count": 72,
+        "house_count": 23,
+        "area": {
+          "p25": 5.31,
+          "median": 7.29,
+          "p75": 13.23
+        },
+        "fraction": {
+          "p25": 0.03116152,
+          "median": 0.04532313,
+          "p75": 0.08469512
+        }
+      },
+      "medium|compact|3-4|2:bathroom": {
+        "count": 20,
+        "house_count": 6,
+        "area": {
+          "p25": 4.32,
+          "median": 4.86,
+          "p75": 5.4675
+        },
+        "fraction": {
+          "p25": 0.02618957,
+          "median": 0.03144109,
+          "p75": 0.03517264
+        }
+      },
+      "medium|compact|3-4|2:bedroom": {
+        "count": 283,
+        "house_count": 88,
+        "area": {
+          "p25": 12.96,
+          "median": 15.12,
+          "p75": 16.83
+        },
+        "fraction": {
+          "p25": 0.08477873,
+          "median": 0.09459459,
+          "p75": 0.10729044
+        }
+      },
+      "medium|compact|3-4|2:corridor": {
+        "count": 18,
+        "house_count": 6,
+        "area": {
+          "p25": 2.3175,
+          "median": 3.42,
+          "p75": 4.05
+        },
+        "fraction": {
+          "p25": 0.01438492,
+          "median": 0.02284682,
+          "p75": 0.02672639
+        }
+      },
+      "medium|compact|3-4|2:multi_purpose": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 10.485,
+          "median": 18.27,
+          "p75": 24.975
+        },
+        "fraction": {
+          "p25": 0.07115031,
+          "median": 0.11178862,
+          "p75": 0.1613313
+        }
+      },
+      "medium|compact|3-4|2:utility": {
+        "count": 9,
+        "house_count": 3,
+        "area": {
+          "p25": 4.86,
+          "median": 7.56,
+          "p75": 9.36
+        },
+        "fraction": {
+          "p25": 0.02861685,
+          "median": 0.05370844,
+          "p75": 0.06910299
+        }
+      },
+      "medium|compact|5+|2:bedroom": {
+        "count": 17,
+        "house_count": 3,
+        "area": {
+          "p25": 10.53,
+          "median": 11.88,
+          "p75": 13.86
+        },
+        "fraction": {
+          "p25": 0.07267081,
+          "median": 0.08198758,
+          "p75": 0.09565217
+        }
+      },
+      "medium|elongated|1|1:balcony": {
+        "count": 3,
+        "house_count": 3,
+        "area": {
+          "p25": 4.68,
+          "median": 5.4,
+          "p75": 6.21
+        },
+        "fraction": {
+          "p25": 0.02868846,
+          "median": 0.03059663,
+          "p75": 0.03870768
+        }
+      },
+      "medium|elongated|1|1:bathroom": {
+        "count": 14,
+        "house_count": 14,
+        "area": {
+          "p25": 6.345,
+          "median": 6.48,
+          "p75": 7.155
+        },
+        "fraction": {
+          "p25": 0.03699075,
+          "median": 0.04070918,
+          "p75": 0.05026333
+        }
+      },
+      "medium|elongated|1|1:bedroom": {
+        "count": 9,
+        "house_count": 9,
+        "area": {
+          "p25": 12.96,
+          "median": 15.21,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.08653354,
+          "median": 0.09782609,
+          "p75": 0.10612245
+        }
+      },
+      "medium|elongated|1|1:corridor": {
+        "count": 13,
+        "house_count": 13,
+        "area": {
+          "p25": 5.04,
+          "median": 8.37,
+          "p75": 10.8
+        },
+        "fraction": {
+          "p25": 0.03181818,
+          "median": 0.05582233,
+          "p75": 0.06912442
+        }
+      },
+      "medium|elongated|1|1:dining_room": {
+        "count": 34,
+        "house_count": 34,
+        "area": {
+          "p25": 12.96,
+          "median": 15.12,
+          "p75": 17.775
+        },
+        "fraction": {
+          "p25": 0.08126536,
+          "median": 0.09808673,
+          "p75": 0.11614583
+        }
+      },
+      "medium|elongated|1|1:entryway": {
+        "count": 34,
+        "house_count": 34,
+        "area": {
+          "p25": 7.56,
+          "median": 9.585,
+          "p75": 12.2175
+        },
+        "fraction": {
+          "p25": 0.04484578,
+          "median": 0.05878052,
+          "p75": 0.08295455
+        }
+      },
+      "medium|elongated|1|1:kitchen": {
+        "count": 34,
+        "house_count": 34,
+        "area": {
+          "p25": 9.225,
+          "median": 10.8,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.0573177,
+          "median": 0.07090909,
+          "p75": 0.08333333
+        }
+      },
+      "medium|elongated|1|1:living_room": {
+        "count": 33,
+        "house_count": 33,
+        "area": {
+          "p25": 20.16,
+          "median": 22.95,
+          "p75": 27.36
+        },
+        "fraction": {
+          "p25": 0.12975779,
+          "median": 0.15238095,
+          "p75": 0.16806723
+        }
+      },
+      "medium|elongated|1|1:multi_purpose": {
+        "count": 10,
+        "house_count": 10,
+        "area": {
+          "p25": 10.125,
+          "median": 12.24,
+          "p75": 12.9375
+        },
+        "fraction": {
+          "p25": 0.07166353,
+          "median": 0.07417967,
+          "p75": 0.07704748
+        }
+      },
+      "medium|elongated|1|1:stairs": {
+        "count": 34,
+        "house_count": 34,
+        "area": {
+          "p25": 8.64,
+          "median": 9.72,
+          "p75": 11.205
+        },
+        "fraction": {
+          "p25": 0.05453471,
+          "median": 0.06267826,
+          "p75": 0.07320899
+        }
+      },
+      "medium|elongated|1|1:utility": {
+        "count": 21,
+        "house_count": 21,
+        "area": {
+          "p25": 4.05,
+          "median": 6.93,
+          "p75": 10.8
+        },
+        "fraction": {
+          "p25": 0.02521008,
+          "median": 0.04221491,
+          "p75": 0.06942149
+        }
+      },
+      "medium|elongated|1|2:balcony": {
+        "count": 8,
+        "house_count": 8,
+        "area": {
+          "p25": 7.4475,
+          "median": 17.55,
+          "p75": 25.0425
+        },
+        "fraction": {
+          "p25": 0.05125231,
+          "median": 0.12763158,
+          "p75": 0.15639205
+        }
+      },
+      "medium|elongated|1|2:bathroom": {
+        "count": 14,
+        "house_count": 14,
+        "area": {
+          "p25": 5.4675,
+          "median": 6.39,
+          "p75": 6.48
+        },
+        "fraction": {
+          "p25": 0.03521205,
+          "median": 0.03821791,
+          "p75": 0.04834011
+        }
+      },
+      "medium|elongated|1|2:bedroom": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 16.2,
+          "median": 16.2,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.12244898,
+          "median": 0.12244898,
+          "p75": 0.12244898
+        }
+      },
+      "medium|elongated|1|2:corridor": {
+        "count": 17,
+        "house_count": 17,
+        "area": {
+          "p25": 6.75,
+          "median": 14.4,
+          "p75": 18.9
+        },
+        "fraction": {
+          "p25": 0.04937459,
+          "median": 0.08008008,
+          "p75": 0.12110727
+        }
+      },
+      "medium|elongated|1|2:kitchen": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 10.53,
+          "median": 10.53,
+          "p75": 10.53
+        },
+        "fraction": {
+          "p25": 0.07090909,
+          "median": 0.07090909,
+          "p75": 0.07090909
+        }
+      },
+      "medium|elongated|1|2:living_room": {
+        "count": 21,
+        "house_count": 21,
+        "area": {
+          "p25": 18.9,
+          "median": 25.2,
+          "p75": 31.05
+        },
+        "fraction": {
+          "p25": 0.10510511,
+          "median": 0.17857143,
+          "p75": 0.19021739
+        }
+      },
+      "medium|elongated|1|2:multi_purpose": {
+        "count": 16,
+        "house_count": 16,
+        "area": {
+          "p25": 9.6525,
+          "median": 11.25,
+          "p75": 14.3325
+        },
+        "fraction": {
+          "p25": 0.06020357,
+          "median": 0.08242754,
+          "p75": 0.08777597
+        }
+      },
+      "medium|elongated|1|2:stairs": {
+        "count": 34,
+        "house_count": 34,
+        "area": {
+          "p25": 8.64,
+          "median": 9.72,
+          "p75": 11.205
+        },
+        "fraction": {
+          "p25": 0.05453471,
+          "median": 0.06267826,
+          "p75": 0.07320899
+        }
+      },
+      "medium|elongated|1|2:utility": {
+        "count": 12,
+        "house_count": 12,
+        "area": {
+          "p25": 4.32,
+          "median": 5.76,
+          "p75": 6.5925
+        },
+        "fraction": {
+          "p25": 0.02566201,
+          "median": 0.03804052,
+          "p75": 0.0446389
+        }
+      },
+      "medium|elongated|2|1:bathroom": {
+        "count": 38,
+        "house_count": 19,
+        "area": {
+          "p25": 4.32,
+          "median": 5.22,
+          "p75": 6.435
+        },
+        "fraction": {
+          "p25": 0.02806147,
+          "median": 0.03269017,
+          "p75": 0.04119009
+        }
+      },
+      "medium|elongated|2|1:bedroom": {
+        "count": 26,
+        "house_count": 13,
+        "area": {
+          "p25": 12.33,
+          "median": 13.86,
+          "p75": 15.84
+        },
+        "fraction": {
+          "p25": 0.07332393,
+          "median": 0.0835062,
+          "p75": 0.0899654
+        }
+      },
+      "medium|elongated|2|1:corridor": {
+        "count": 38,
+        "house_count": 19,
+        "area": {
+          "p25": 2.52,
+          "median": 3.69,
+          "p75": 7.29
+        },
+        "fraction": {
+          "p25": 0.01772982,
+          "median": 0.02468035,
+          "p75": 0.04840704
+        }
+      },
+      "medium|elongated|2|1:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 16.74,
+          "median": 26.28,
+          "p75": 35.82
+        },
+        "fraction": {
+          "p25": 0.0952381,
+          "median": 0.14951357,
+          "p75": 0.20378904
+        }
+      },
+      "medium|elongated|2|1:multi_purpose": {
+        "count": 10,
+        "house_count": 5,
+        "area": {
+          "p25": 10.0125,
+          "median": 10.89,
+          "p75": 13.635
+        },
+        "fraction": {
+          "p25": 0.05540541,
+          "median": 0.06914286,
+          "p75": 0.08046683
+        }
+      },
+      "medium|elongated|2|1:utility": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 4.14,
+          "median": 4.32,
+          "p75": 5.31
+        },
+        "fraction": {
+          "p25": 0.02411835,
+          "median": 0.02447731,
+          "p75": 0.03160683
+        }
+      },
+      "medium|elongated|2|2:balcony": {
+        "count": 36,
+        "house_count": 18,
+        "area": {
+          "p25": 5.4,
+          "median": 8.775,
+          "p75": 14.7375
+        },
+        "fraction": {
+          "p25": 0.03155695,
+          "median": 0.06257896,
+          "p75": 0.09554475
+        }
+      },
+      "medium|elongated|2|2:bathroom": {
+        "count": 30,
+        "house_count": 15,
+        "area": {
+          "p25": 4.32,
+          "median": 5.04,
+          "p75": 6.21
+        },
+        "fraction": {
+          "p25": 0.02728337,
+          "median": 0.03245198,
+          "p75": 0.03581029
+        }
+      },
+      "medium|elongated|2|2:bedroom": {
+        "count": 6,
+        "house_count": 3,
+        "area": {
+          "p25": 13.1625,
+          "median": 15.21,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.08714852,
+          "median": 0.09109109,
+          "p75": 0.09820798
+        }
+      },
+      "medium|elongated|2|2:corridor": {
+        "count": 26,
+        "house_count": 13,
+        "area": {
+          "p25": 3.15,
+          "median": 4.23,
+          "p75": 6.5025
+        },
+        "fraction": {
+          "p25": 0.02039776,
+          "median": 0.02458148,
+          "p75": 0.03869152
+        }
+      },
+      "medium|elongated|2|2:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 17.46,
+          "median": 18.72,
+          "p75": 19.98
+        },
+        "fraction": {
+          "p25": 0.09933436,
+          "median": 0.10650282,
+          "p75": 0.11367127
+        }
+      },
+      "medium|elongated|2|2:multi_purpose": {
+        "count": 14,
+        "house_count": 7,
+        "area": {
+          "p25": 10.125,
+          "median": 12.24,
+          "p75": 15.39
+        },
+        "fraction": {
+          "p25": 0.06566996,
+          "median": 0.08118542,
+          "p75": 0.09915717
+        }
+      },
+      "medium|elongated|2|2:utility": {
+        "count": 8,
+        "house_count": 4,
+        "area": {
+          "p25": 2.655,
+          "median": 6.48,
+          "p75": 9.2025
+        },
+        "fraction": {
+          "p25": 0.01748378,
+          "median": 0.0410003,
+          "p75": 0.05945946
+        }
+      },
+      "medium|elongated|3-4|1:bathroom": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 3.825,
+          "median": 4.05,
+          "p75": 4.23
+        },
+        "fraction": {
+          "p25": 0.02330044,
+          "median": 0.02467105,
+          "p75": 0.02576754
+        }
+      },
+      "medium|elongated|3-4|1:bedroom": {
+        "count": 33,
+        "house_count": 11,
+        "area": {
+          "p25": 12.96,
+          "median": 14.04,
+          "p75": 15.12
+        },
+        "fraction": {
+          "p25": 0.08467742,
+          "median": 0.09454545,
+          "p75": 0.10144058
+        }
+      },
+      "medium|elongated|3-4|1:corridor": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 2.34,
+          "median": 2.88,
+          "p75": 3.06
+        },
+        "fraction": {
+          "p25": 0.01301301,
+          "median": 0.01601602,
+          "p75": 0.01701702
+        }
+      },
+      "medium|elongated|3-4|1:utility": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 3.6,
+          "median": 3.6,
+          "p75": 3.78
+        },
+        "fraction": {
+          "p25": 0.02016129,
+          "median": 0.02016129,
+          "p75": 0.02116935
+        }
+      },
+      "medium|elongated|3-4|2:balcony": {
+        "count": 20,
+        "house_count": 6,
+        "area": {
+          "p25": 4.455,
+          "median": 9.675,
+          "p75": 15.5025
+        },
+        "fraction": {
+          "p25": 0.03040168,
+          "median": 0.05456349,
+          "p75": 0.0935941
+        }
+      },
+      "medium|elongated|3-4|2:bathroom": {
+        "count": 14,
+        "house_count": 4,
+        "area": {
+          "p25": 3.7125,
+          "median": 4.68,
+          "p75": 5.8725
+        },
+        "fraction": {
+          "p25": 0.02344887,
+          "median": 0.02850877,
+          "p75": 0.03487772
+        }
+      },
+      "medium|elongated|3-4|2:bedroom": {
+        "count": 94,
+        "house_count": 27,
+        "area": {
+          "p25": 11.9475,
+          "median": 14.04,
+          "p75": 16.11
+        },
+        "fraction": {
+          "p25": 0.07683446,
+          "median": 0.08881738,
+          "p75": 0.10544008
+        }
+      },
+      "medium|elongated|3-4|2:corridor": {
+        "count": 12,
+        "house_count": 4,
+        "area": {
+          "p25": 2.2275,
+          "median": 3.24,
+          "p75": 5.7825
+        },
+        "fraction": {
+          "p25": 0.01513869,
+          "median": 0.02204886,
+          "p75": 0.03701037
+        }
+      },
+      "medium|elongated|3-4|2:multi_purpose": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 9.315,
+          "median": 10.71,
+          "p75": 15.885
+        },
+        "fraction": {
+          "p25": 0.06228571,
+          "median": 0.07002597,
+          "p75": 0.10636364
+        }
+      },
+      "medium|elongated|3-4|2:utility": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 3.6,
+          "median": 3.6,
+          "p75": 3.78
+        },
+        "fraction": {
+          "p25": 0.02016129,
+          "median": 0.02016129,
+          "p75": 0.02116935
+        }
+      },
+      "medium|elongated|5+|2:bedroom": {
+        "count": 5,
+        "house_count": 1,
+        "area": {
+          "p25": 12.96,
+          "median": 14.04,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.08727273,
+          "median": 0.09454545,
+          "p75": 0.09454545
+        }
+      },
+      "small|*|*|1:balcony": {
+        "count": 6,
+        "house_count": 5,
+        "area": {
+          "p25": 3.42,
+          "median": 4.005,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.02919346,
+          "median": 0.03553065,
+          "p75": 0.04332386
+        }
+      },
+      "small|*|*|1:bathroom": {
+        "count": 106,
+        "house_count": 75,
+        "area": {
+          "p25": 3.78,
+          "median": 4.41,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.03429272,
+          "median": 0.04159016,
+          "p75": 0.05
+        }
+      },
+      "small|*|*|1:bedroom": {
+        "count": 120,
+        "house_count": 75,
+        "area": {
+          "p25": 10.89,
+          "median": 12.87,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.09465931,
+          "median": 0.11177335,
+          "p75": 0.13187236
+        }
+      },
+      "small|*|*|1:corridor": {
+        "count": 93,
+        "house_count": 71,
+        "area": {
+          "p25": 2.52,
+          "median": 4.05,
+          "p75": 7.92
+        },
+        "fraction": {
+          "p25": 0.02170543,
+          "median": 0.03781513,
+          "p75": 0.06666667
+        }
+      },
+      "small|*|*|1:dining_room": {
+        "count": 76,
+        "house_count": 75,
+        "area": {
+          "p25": 10.8,
+          "median": 12.735,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.09688813,
+          "median": 0.11119943,
+          "p75": 0.13065775
+        }
+      },
+      "small|*|*|1:entryway": {
+        "count": 81,
+        "house_count": 75,
+        "area": {
+          "p25": 6.3,
+          "median": 8.64,
+          "p75": 12.6
+        },
+        "fraction": {
+          "p25": 0.05453087,
+          "median": 0.07692308,
+          "p75": 0.11184211
+        }
+      },
+      "small|*|*|1:kitchen": {
+        "count": 75,
+        "house_count": 74,
+        "area": {
+          "p25": 7.92,
+          "median": 9.0,
+          "p75": 10.89
+        },
+        "fraction": {
+          "p25": 0.0707361,
+          "median": 0.08417508,
+          "p75": 0.09864367
+        }
+      },
+      "small|*|*|1:living_room": {
+        "count": 75,
+        "house_count": 75,
+        "area": {
+          "p25": 16.2,
+          "median": 18.9,
+          "p75": 21.42
+        },
+        "fraction": {
+          "p25": 0.14261966,
+          "median": 0.16956522,
+          "p75": 0.19228669
+        }
+      },
+      "small|*|*|1:multi_purpose": {
+        "count": 8,
+        "house_count": 8,
+        "area": {
+          "p25": 10.44,
+          "median": 11.79,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.08083624,
+          "median": 0.1065088,
+          "p75": 0.11721664
+        }
+      },
+      "small|*|*|1:stairs": {
+        "count": 75,
+        "house_count": 75,
+        "area": {
+          "p25": 7.92,
+          "median": 8.82,
+          "p75": 9.9
+        },
+        "fraction": {
+          "p25": 0.07227183,
+          "median": 0.07843137,
+          "p75": 0.0854982
+        }
+      },
+      "small|*|*|1:utility": {
+        "count": 29,
+        "house_count": 25,
+        "area": {
+          "p25": 3.6,
+          "median": 4.41,
+          "p75": 6.3
+        },
+        "fraction": {
+          "p25": 0.02991453,
+          "median": 0.03515065,
+          "p75": 0.05968992
+        }
+      },
+      "small|*|*|2:balcony": {
+        "count": 114,
+        "house_count": 66,
+        "area": {
+          "p25": 4.68,
+          "median": 7.02,
+          "p75": 14.31
+        },
+        "fraction": {
+          "p25": 0.04,
+          "median": 0.05958486,
+          "p75": 0.12908088
+        }
+      },
+      "small|*|*|2:bathroom": {
+        "count": 110,
+        "house_count": 75,
+        "area": {
+          "p25": 4.05,
+          "median": 4.86,
+          "p75": 5.94
+        },
+        "fraction": {
+          "p25": 0.0353804,
+          "median": 0.04313798,
+          "p75": 0.05246006
+        }
+      },
+      "small|*|*|2:bedroom": {
+        "count": 225,
+        "house_count": 75,
+        "area": {
+          "p25": 11.34,
+          "median": 12.87,
+          "p75": 14.58
+        },
+        "fraction": {
+          "p25": 0.0989011,
+          "median": 0.11253197,
+          "p75": 0.13238771
+        }
+      },
+      "small|*|*|2:corridor": {
+        "count": 96,
+        "house_count": 74,
+        "area": {
+          "p25": 3.0825,
+          "median": 5.4,
+          "p75": 11.8575
+        },
+        "fraction": {
+          "p25": 0.02831421,
+          "median": 0.04852365,
+          "p75": 0.10392218
+        }
+      },
+      "small|*|*|2:dining_room": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 11.88,
+          "median": 11.88,
+          "p75": 11.88
+        },
+        "fraction": {
+          "p25": 0.09462366,
+          "median": 0.09462366,
+          "p75": 0.09462366
+        }
+      },
+      "small|*|*|2:kitchen": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 5.4,
+          "median": 5.4,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.04301075,
+          "median": 0.04301075,
+          "p75": 0.04301075
+        }
+      },
+      "small|*|*|2:living_room": {
+        "count": 53,
+        "house_count": 52,
+        "area": {
+          "p25": 14.76,
+          "median": 18.72,
+          "p75": 21.6
+        },
+        "fraction": {
+          "p25": 0.12380952,
+          "median": 0.16666667,
+          "p75": 0.18604651
+        }
+      },
+      "small|*|*|2:multi_purpose": {
+        "count": 52,
+        "house_count": 44,
+        "area": {
+          "p25": 8.1675,
+          "median": 9.9,
+          "p75": 11.88
+        },
+        "fraction": {
+          "p25": 0.07407583,
+          "median": 0.08664514,
+          "p75": 0.10224153
+        }
+      },
+      "small|*|*|2:stairs": {
+        "count": 75,
+        "house_count": 75,
+        "area": {
+          "p25": 7.92,
+          "median": 8.82,
+          "p75": 9.9
+        },
+        "fraction": {
+          "p25": 0.07227183,
+          "median": 0.07843137,
+          "p75": 0.0854982
+        }
+      },
+      "small|*|*|2:utility": {
+        "count": 40,
+        "house_count": 38,
+        "area": {
+          "p25": 3.6,
+          "median": 4.86,
+          "p75": 6.345
+        },
+        "fraction": {
+          "p25": 0.03145316,
+          "median": 0.04041742,
+          "p75": 0.06200736
+        }
+      },
+      "small|*|1|1:balcony": {
+        "count": 4,
+        "house_count": 4,
+        "area": {
+          "p25": 4.0275,
+          "median": 4.95,
+          "p75": 5.85
+        },
+        "fraction": {
+          "p25": 0.03670472,
+          "median": 0.04150884,
+          "p75": 0.04524968
+        }
+      },
+      "small|*|1|1:bathroom": {
+        "count": 46,
+        "house_count": 46,
+        "area": {
+          "p25": 3.78,
+          "median": 4.86,
+          "p75": 5.8725
+        },
+        "fraction": {
+          "p25": 0.03848851,
+          "median": 0.04526972,
+          "p75": 0.05374106
+        }
+      },
+      "small|*|1|1:bedroom": {
+        "count": 32,
+        "house_count": 32,
+        "area": {
+          "p25": 11.88,
+          "median": 12.96,
+          "p75": 16.245
+        },
+        "fraction": {
+          "p25": 0.10903149,
+          "median": 0.12334048,
+          "p75": 0.14118304
+        }
+      },
+      "small|*|1|1:corridor": {
+        "count": 49,
+        "house_count": 49,
+        "area": {
+          "p25": 3.6,
+          "median": 7.2,
+          "p75": 10.44
+        },
+        "fraction": {
+          "p25": 0.03076923,
+          "median": 0.0628655,
+          "p75": 0.0875
+        }
+      },
+      "small|*|1|1:dining_room": {
+        "count": 74,
+        "house_count": 74,
+        "area": {
+          "p25": 10.62,
+          "median": 12.735,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.09602153,
+          "median": 0.11119943,
+          "p75": 0.13085417
+        }
+      },
+      "small|*|1|1:entryway": {
+        "count": 69,
+        "house_count": 69,
+        "area": {
+          "p25": 6.93,
+          "median": 8.91,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.059375,
+          "median": 0.07913043,
+          "p75": 0.11434511
+        }
+      },
+      "small|*|1|1:kitchen": {
+        "count": 73,
+        "house_count": 73,
+        "area": {
+          "p25": 7.92,
+          "median": 9.0,
+          "p75": 10.89
+        },
+        "fraction": {
+          "p25": 0.07154213,
+          "median": 0.08417508,
+          "p75": 0.09924812
+        }
+      },
+      "small|*|1|1:living_room": {
+        "count": 75,
+        "house_count": 75,
+        "area": {
+          "p25": 16.2,
+          "median": 18.9,
+          "p75": 21.42
+        },
+        "fraction": {
+          "p25": 0.14261966,
+          "median": 0.16956522,
+          "p75": 0.19228669
+        }
+      },
+      "small|*|1|1:multi_purpose": {
+        "count": 8,
+        "house_count": 8,
+        "area": {
+          "p25": 10.44,
+          "median": 11.79,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.08083624,
+          "median": 0.1065088,
+          "p75": 0.11721664
+        }
+      },
+      "small|*|1|1:stairs": {
+        "count": 75,
+        "house_count": 75,
+        "area": {
+          "p25": 7.92,
+          "median": 8.82,
+          "p75": 9.9
+        },
+        "fraction": {
+          "p25": 0.07227183,
+          "median": 0.07843137,
+          "p75": 0.0854982
+        }
+      },
+      "small|*|1|1:utility": {
+        "count": 21,
+        "house_count": 21,
+        "area": {
+          "p25": 3.6,
+          "median": 4.41,
+          "p75": 6.93
+        },
+        "fraction": {
+          "p25": 0.02857143,
+          "median": 0.03431373,
+          "p75": 0.05968992
+        }
+      },
+      "small|*|1|2:balcony": {
+        "count": 33,
+        "house_count": 33,
+        "area": {
+          "p25": 6.93,
+          "median": 10.26,
+          "p75": 16.38
+        },
+        "fraction": {
+          "p25": 0.05673759,
+          "median": 0.08333333,
+          "p75": 0.14720395
+        }
+      },
+      "small|*|1|2:bathroom": {
+        "count": 41,
+        "house_count": 41,
+        "area": {
+          "p25": 4.32,
+          "median": 5.4,
+          "p75": 6.48
+        },
+        "fraction": {
+          "p25": 0.0421875,
+          "median": 0.05,
+          "p75": 0.06122449
+        }
+      },
+      "small|*|1|2:corridor": {
+        "count": 54,
+        "house_count": 54,
+        "area": {
+          "p25": 6.1425,
+          "median": 10.935,
+          "p75": 13.6575
+        },
+        "fraction": {
+          "p25": 0.05558651,
+          "median": 0.08953287,
+          "p75": 0.12177548
+        }
+      },
+      "small|*|1|2:dining_room": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 11.88,
+          "median": 11.88,
+          "p75": 11.88
+        },
+        "fraction": {
+          "p25": 0.09462366,
+          "median": 0.09462366,
+          "p75": 0.09462366
+        }
+      },
+      "small|*|1|2:kitchen": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 5.4,
+          "median": 5.4,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.04301075,
+          "median": 0.04301075,
+          "p75": 0.04301075
+        }
+      },
+      "small|*|1|2:living_room": {
+        "count": 51,
+        "house_count": 51,
+        "area": {
+          "p25": 14.805,
+          "median": 18.72,
+          "p75": 21.6
+        },
+        "fraction": {
+          "p25": 0.12826977,
+          "median": 0.16666667,
+          "p75": 0.1861267
+        }
+      },
+      "small|*|1|2:multi_purpose": {
+        "count": 36,
+        "house_count": 36,
+        "area": {
+          "p25": 8.055,
+          "median": 10.08,
+          "p75": 11.88
+        },
+        "fraction": {
+          "p25": 0.07228618,
+          "median": 0.0872279,
+          "p75": 0.10421022
+        }
+      },
+      "small|*|1|2:stairs": {
+        "count": 75,
+        "house_count": 75,
+        "area": {
+          "p25": 7.92,
+          "median": 8.82,
+          "p75": 9.9
+        },
+        "fraction": {
+          "p25": 0.07227183,
+          "median": 0.07843137,
+          "p75": 0.0854982
+        }
+      },
+      "small|*|1|2:utility": {
+        "count": 36,
+        "house_count": 36,
+        "area": {
+          "p25": 3.735,
+          "median": 4.86,
+          "p75": 6.345
+        },
+        "fraction": {
+          "p25": 0.03156443,
+          "median": 0.04145529,
+          "p75": 0.06200736
+        }
+      },
+      "small|*|2|1:balcony": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 3.0375,
+          "median": 3.105,
+          "p75": 3.1725
+        },
+        "fraction": {
+          "p25": 0.02612229,
+          "median": 0.02670279,
+          "p75": 0.02728328
+        }
+      },
+      "small|*|2|1:bathroom": {
+        "count": 54,
+        "house_count": 27,
+        "area": {
+          "p25": 4.05,
+          "median": 4.41,
+          "p75": 5.31
+        },
+        "fraction": {
+          "p25": 0.03418118,
+          "median": 0.0379257,
+          "p75": 0.04379728
+        }
+      },
+      "small|*|2|1:bedroom": {
+        "count": 82,
+        "house_count": 41,
+        "area": {
+          "p25": 10.8225,
+          "median": 12.375,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.09386075,
+          "median": 0.10844298,
+          "p75": 0.12349515
+        }
+      },
+      "small|*|2|1:corridor": {
+        "count": 44,
+        "house_count": 22,
+        "area": {
+          "p25": 2.0925,
+          "median": 2.52,
+          "p75": 4.32
+        },
+        "fraction": {
+          "p25": 0.01829522,
+          "median": 0.02397963,
+          "p75": 0.0399495
+        }
+      },
+      "small|*|2|1:dining_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 12.51,
+          "median": 13.14,
+          "p75": 13.77
+        },
+        "fraction": {
+          "p25": 0.10451128,
+          "median": 0.10977444,
+          "p75": 0.11503759
+        }
+      },
+      "small|*|2|1:entryway": {
+        "count": 12,
+        "house_count": 6,
+        "area": {
+          "p25": 4.545,
+          "median": 6.615,
+          "p75": 8.595
+        },
+        "fraction": {
+          "p25": 0.04234558,
+          "median": 0.05508077,
+          "p75": 0.07884808
+        }
+      },
+      "small|*|2|1:kitchen": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 7.0875,
+          "median": 7.695,
+          "p75": 8.3025
+        },
+        "fraction": {
+          "p25": 0.06713555,
+          "median": 0.07289003,
+          "p75": 0.0786445
+        }
+      },
+      "small|*|2|1:utility": {
+        "count": 8,
+        "house_count": 4,
+        "area": {
+          "p25": 3.825,
+          "median": 4.635,
+          "p75": 5.535
+        },
+        "fraction": {
+          "p25": 0.03256574,
+          "median": 0.03958119,
+          "p75": 0.05343432
+        }
+      },
+      "small|*|2|2:balcony": {
+        "count": 42,
+        "house_count": 21,
+        "area": {
+          "p25": 4.9725,
+          "median": 6.885,
+          "p75": 15.12
+        },
+        "fraction": {
+          "p25": 0.04052955,
+          "median": 0.06274281,
+          "p75": 0.1285463
+        }
+      },
+      "small|*|2|2:bathroom": {
+        "count": 66,
+        "house_count": 33,
+        "area": {
+          "p25": 4.05,
+          "median": 4.41,
+          "p75": 5.6025
+        },
+        "fraction": {
+          "p25": 0.03448276,
+          "median": 0.04003268,
+          "p75": 0.04982805
+        }
+      },
+      "small|*|2|2:bedroom": {
+        "count": 34,
+        "house_count": 17,
+        "area": {
+          "p25": 11.745,
+          "median": 13.41,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.09786322,
+          "median": 0.11615361,
+          "p75": 0.14186508
+        }
+      },
+      "small|*|2|2:corridor": {
+        "count": 36,
+        "house_count": 18,
+        "area": {
+          "p25": 2.16,
+          "median": 3.375,
+          "p75": 4.545
+        },
+        "fraction": {
+          "p25": 0.01981648,
+          "median": 0.03038768,
+          "p75": 0.04198186
+        }
+      },
+      "small|*|2|2:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 14.67,
+          "median": 17.46,
+          "p75": 20.25
+        },
+        "fraction": {
+          "p25": 0.11414566,
+          "median": 0.13585434,
+          "p75": 0.15756303
+        }
+      },
+      "small|*|2|2:multi_purpose": {
+        "count": 16,
+        "house_count": 8,
+        "area": {
+          "p25": 8.91,
+          "median": 9.18,
+          "p75": 10.8
+        },
+        "fraction": {
+          "p25": 0.07656957,
+          "median": 0.0839701,
+          "p75": 0.09257449
+        }
+      },
+      "small|*|2|2:utility": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 2.88,
+          "median": 3.645,
+          "p75": 6.5475
+        },
+        "fraction": {
+          "p25": 0.02229965,
+          "median": 0.03011267,
+          "p75": 0.05630805
+        }
+      },
+      "small|*|3-4|1:bathroom": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 3.4425,
+          "median": 4.86,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.02747845,
+          "median": 0.0387931,
+          "p75": 0.04649015
+        }
+      },
+      "small|*|3-4|1:bedroom": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 9.0,
+          "median": 10.44,
+          "p75": 12.69
+        },
+        "fraction": {
+          "p25": 0.07168459,
+          "median": 0.0890681,
+          "p75": 0.11370968
+        }
+      },
+      "small|*|3-4|2:balcony": {
+        "count": 39,
+        "house_count": 12,
+        "area": {
+          "p25": 3.24,
+          "median": 5.4,
+          "p75": 7.965
+        },
+        "fraction": {
+          "p25": 0.02836216,
+          "median": 0.05,
+          "p75": 0.06897241
+        }
+      },
+      "small|*|3-4|2:bathroom": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 4.41,
+          "median": 4.41,
+          "p75": 5.175
+        },
+        "fraction": {
+          "p25": 0.03828125,
+          "median": 0.03828125,
+          "p75": 0.04492188
+        }
+      },
+      "small|*|3-4|2:bedroom": {
+        "count": 191,
+        "house_count": 58,
+        "area": {
+          "p25": 11.295,
+          "median": 12.87,
+          "p75": 14.22
+        },
+        "fraction": {
+          "p25": 0.09907461,
+          "median": 0.11206897,
+          "p75": 0.12949378
+        }
+      },
+      "small|*|3-4|2:corridor": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 1.9575,
+          "median": 2.16,
+          "p75": 2.43
+        },
+        "fraction": {
+          "p25": 0.01661503,
+          "median": 0.01724138,
+          "p75": 0.02071659
+        }
+      },
+      "small|compact|1|1:balcony": {
+        "count": 3,
+        "house_count": 3,
+        "area": {
+          "p25": 4.005,
+          "median": 4.05,
+          "p75": 4.95
+        },
+        "fraction": {
+          "p25": 0.03553065,
+          "median": 0.03787879,
+          "p75": 0.04150884
+        }
+      },
+      "small|compact|1|1:bathroom": {
+        "count": 29,
+        "house_count": 29,
+        "area": {
+          "p25": 3.78,
+          "median": 4.86,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.03846154,
+          "median": 0.04375,
+          "p75": 0.05
+        }
+      },
+      "small|compact|1|1:bedroom": {
+        "count": 23,
+        "house_count": 23,
+        "area": {
+          "p25": 11.88,
+          "median": 12.96,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.10474213,
+          "median": 0.11666667,
+          "p75": 0.13505527
+        }
+      },
+      "small|compact|1|1:corridor": {
+        "count": 35,
+        "house_count": 35,
+        "area": {
+          "p25": 4.185,
+          "median": 8.1,
+          "p75": 10.98
+        },
+        "fraction": {
+          "p25": 0.03712419,
+          "median": 0.06756757,
+          "p75": 0.0901051
+        }
+      },
+      "small|compact|1|1:dining_room": {
+        "count": 50,
+        "house_count": 50,
+        "area": {
+          "p25": 10.0575,
+          "median": 12.6,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.09501775,
+          "median": 0.10946412,
+          "p75": 0.12949219
+        }
+      },
+      "small|compact|1|1:entryway": {
+        "count": 46,
+        "house_count": 46,
+        "area": {
+          "p25": 8.235,
+          "median": 11.7,
+          "p75": 14.85
+        },
+        "fraction": {
+          "p25": 0.07565156,
+          "median": 0.1034056,
+          "p75": 0.12933195
+        }
+      },
+      "small|compact|1|1:kitchen": {
+        "count": 50,
+        "house_count": 50,
+        "area": {
+          "p25": 8.64,
+          "median": 9.18,
+          "p75": 11.745
+        },
+        "fraction": {
+          "p25": 0.07240818,
+          "median": 0.08524682,
+          "p75": 0.10125991
+        }
+      },
+      "small|compact|1|1:living_room": {
+        "count": 51,
+        "house_count": 51,
+        "area": {
+          "p25": 16.2,
+          "median": 19.89,
+          "p75": 22.14
+        },
+        "fraction": {
+          "p25": 0.14445625,
+          "median": 0.17414861,
+          "p75": 0.19427119
+        }
+      },
+      "small|compact|1|1:multi_purpose": {
+        "count": 7,
+        "house_count": 7,
+        "area": {
+          "p25": 11.25,
+          "median": 11.88,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.0925931,
+          "median": 0.11145511,
+          "p75": 0.11736011
+        }
+      },
+      "small|compact|1|1:stairs": {
+        "count": 51,
+        "house_count": 51,
+        "area": {
+          "p25": 8.415,
+          "median": 8.91,
+          "p75": 9.9
+        },
+        "fraction": {
+          "p25": 0.07348388,
+          "median": 0.07804878,
+          "p75": 0.08524682
+        }
+      },
+      "small|compact|1|1:utility": {
+        "count": 13,
+        "house_count": 13,
+        "area": {
+          "p25": 3.6,
+          "median": 4.41,
+          "p75": 8.1
+        },
+        "fraction": {
+          "p25": 0.02857143,
+          "median": 0.03431373,
+          "p75": 0.07466063
+        }
+      },
+      "small|compact|1|2:balcony": {
+        "count": 26,
+        "house_count": 26,
+        "area": {
+          "p25": 6.1875,
+          "median": 9.585,
+          "p75": 16.335
+        },
+        "fraction": {
+          "p25": 0.05511555,
+          "median": 0.09322917,
+          "p75": 0.14292696
+        }
+      },
+      "small|compact|1|2:bathroom": {
+        "count": 25,
+        "house_count": 25,
+        "area": {
+          "p25": 3.78,
+          "median": 5.04,
+          "p75": 5.94
+        },
+        "fraction": {
+          "p25": 0.04201681,
+          "median": 0.04537815,
+          "p75": 0.055
+        }
+      },
+      "small|compact|1|2:corridor": {
+        "count": 36,
+        "house_count": 36,
+        "area": {
+          "p25": 7.8525,
+          "median": 11.34,
+          "p75": 14.0625
+        },
+        "fraction": {
+          "p25": 0.06634699,
+          "median": 0.08953287,
+          "p75": 0.12663101
+        }
+      },
+      "small|compact|1|2:living_room": {
+        "count": 33,
+        "house_count": 33,
+        "area": {
+          "p25": 15.84,
+          "median": 18.72,
+          "p75": 22.77
+        },
+        "fraction": {
+          "p25": 0.1375,
+          "median": 0.16666667,
+          "p75": 0.1862069
+        }
+      },
+      "small|compact|1|2:multi_purpose": {
+        "count": 24,
+        "house_count": 24,
+        "area": {
+          "p25": 8.64,
+          "median": 10.845,
+          "p75": 11.97
+        },
+        "fraction": {
+          "p25": 0.0747664,
+          "median": 0.08788741,
+          "p75": 0.10813008
+        }
+      },
+      "small|compact|1|2:stairs": {
+        "count": 51,
+        "house_count": 51,
+        "area": {
+          "p25": 8.415,
+          "median": 8.91,
+          "p75": 9.9
+        },
+        "fraction": {
+          "p25": 0.07348388,
+          "median": 0.07804878,
+          "p75": 0.08524682
+        }
+      },
+      "small|compact|1|2:utility": {
+        "count": 24,
+        "house_count": 24,
+        "area": {
+          "p25": 3.735,
+          "median": 4.86,
+          "p75": 7.65
+        },
+        "fraction": {
+          "p25": 0.03149671,
+          "median": 0.04244732,
+          "p75": 0.06200736
+        }
+      },
+      "small|compact|2|1:balcony": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 3.0375,
+          "median": 3.105,
+          "p75": 3.1725
+        },
+        "fraction": {
+          "p25": 0.02612229,
+          "median": 0.02670279,
+          "p75": 0.02728328
+        }
+      },
+      "small|compact|2|1:bathroom": {
+        "count": 44,
+        "house_count": 22,
+        "area": {
+          "p25": 3.78,
+          "median": 4.41,
+          "p75": 4.8825
+        },
+        "fraction": {
+          "p25": 0.03378378,
+          "median": 0.03722662,
+          "p75": 0.04174422
+        }
+      },
+      "small|compact|2|1:bedroom": {
+        "count": 54,
+        "house_count": 27,
+        "area": {
+          "p25": 10.89,
+          "median": 12.87,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.0941857,
+          "median": 0.10976891,
+          "p75": 0.12306793
+        }
+      },
+      "small|compact|2|1:corridor": {
+        "count": 28,
+        "house_count": 14,
+        "area": {
+          "p25": 2.16,
+          "median": 2.7,
+          "p75": 4.905
+        },
+        "fraction": {
+          "p25": 0.01829522,
+          "median": 0.02397963,
+          "p75": 0.04152963
+        }
+      },
+      "small|compact|2|1:dining_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 12.51,
+          "median": 13.14,
+          "p75": 13.77
+        },
+        "fraction": {
+          "p25": 0.10451128,
+          "median": 0.10977444,
+          "p75": 0.11503759
+        }
+      },
+      "small|compact|2|1:entryway": {
+        "count": 10,
+        "house_count": 5,
+        "area": {
+          "p25": 4.9275,
+          "median": 6.975,
+          "p75": 9.585
+        },
+        "fraction": {
+          "p25": 0.04580836,
+          "median": 0.06032828,
+          "p75": 0.08502909
+        }
+      },
+      "small|compact|2|1:utility": {
+        "count": 6,
+        "house_count": 3,
+        "area": {
+          "p25": 4.1175,
+          "median": 4.635,
+          "p75": 5.2875
+        },
+        "fraction": {
+          "p25": 0.03466899,
+          "median": 0.03958119,
+          "p75": 0.04867025
+        }
+      },
+      "small|compact|2|2:balcony": {
+        "count": 30,
+        "house_count": 15,
+        "area": {
+          "p25": 5.4,
+          "median": 6.615,
+          "p75": 17.01
+        },
+        "fraction": {
+          "p25": 0.04506851,
+          "median": 0.0559208,
+          "p75": 0.13512818
+        }
+      },
+      "small|compact|2|2:bathroom": {
+        "count": 50,
+        "house_count": 25,
+        "area": {
+          "p25": 3.8475,
+          "median": 4.41,
+          "p75": 5.31
+        },
+        "fraction": {
+          "p25": 0.03428571,
+          "median": 0.03843172,
+          "p75": 0.04787946
+        }
+      },
+      "small|compact|2|2:bedroom": {
+        "count": 24,
+        "house_count": 12,
+        "area": {
+          "p25": 11.61,
+          "median": 13.95,
+          "p75": 16.2
+        },
+        "fraction": {
+          "p25": 0.09642857,
+          "median": 0.12160948,
+          "p75": 0.16498667
+        }
+      },
+      "small|compact|2|2:corridor": {
+        "count": 28,
+        "house_count": 14,
+        "area": {
+          "p25": 2.43,
+          "median": 3.42,
+          "p75": 4.365
+        },
+        "fraction": {
+          "p25": 0.02093914,
+          "median": 0.03038768,
+          "p75": 0.03957972
+        }
+      },
+      "small|compact|2|2:living_room": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 14.67,
+          "median": 17.46,
+          "p75": 20.25
+        },
+        "fraction": {
+          "p25": 0.11414566,
+          "median": 0.13585434,
+          "p75": 0.15756303
+        }
+      },
+      "small|compact|2|2:multi_purpose": {
+        "count": 12,
+        "house_count": 6,
+        "area": {
+          "p25": 8.7075,
+          "median": 9.18,
+          "p75": 11.25
+        },
+        "fraction": {
+          "p25": 0.07332049,
+          "median": 0.08310482,
+          "p75": 0.09602361
+        }
+      },
+      "small|compact|2|2:utility": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 2.88,
+          "median": 3.645,
+          "p75": 6.5475
+        },
+        "fraction": {
+          "p25": 0.02229965,
+          "median": 0.03011267,
+          "p75": 0.05630805
+        }
+      },
+      "small|compact|3-4|1:bedroom": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 12.42,
+          "median": 12.96,
+          "p75": 12.96
+        },
+        "fraction": {
+          "p25": 0.11129032,
+          "median": 0.11612903,
+          "p75": 0.11612903
+        }
+      },
+      "small|compact|3-4|2:balcony": {
+        "count": 16,
+        "house_count": 5,
+        "area": {
+          "p25": 4.86,
+          "median": 6.885,
+          "p75": 10.53
+        },
+        "fraction": {
+          "p25": 0.04553571,
+          "median": 0.0575962,
+          "p75": 0.08732862
+        }
+      },
+      "small|compact|3-4|2:bathroom": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 4.41,
+          "median": 4.41,
+          "p75": 5.175
+        },
+        "fraction": {
+          "p25": 0.03828125,
+          "median": 0.03828125,
+          "p75": 0.04492188
+        }
+      },
+      "small|compact|3-4|2:bedroom": {
+        "count": 130,
+        "house_count": 39,
+        "area": {
+          "p25": 11.7,
+          "median": 12.87,
+          "p75": 14.31
+        },
+        "fraction": {
+          "p25": 0.09936604,
+          "median": 0.11253197,
+          "p75": 0.12684169
+        }
+      },
+      "small|compact|3-4|2:corridor": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 2.205,
+          "median": 2.52,
+          "p75": 3.645
+        },
+        "fraction": {
+          "p25": 0.01914062,
+          "median": 0.021875,
+          "p75": 0.03164062
+        }
+      },
+      "small|elongated|1|1:balcony": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 5.85,
+          "median": 5.85,
+          "p75": 5.85
+        },
+        "fraction": {
+          "p25": 0.04558205,
+          "median": 0.04558205,
+          "p75": 0.04558205
+        }
+      },
+      "small|elongated|1|1:bathroom": {
+        "count": 17,
+        "house_count": 17,
+        "area": {
+          "p25": 3.78,
+          "median": 5.4,
+          "p75": 7.02
+        },
+        "fraction": {
+          "p25": 0.03856942,
+          "median": 0.05200946,
+          "p75": 0.06319444
+        }
+      },
+      "small|elongated|1|1:bedroom": {
+        "count": 9,
+        "house_count": 9,
+        "area": {
+          "p25": 11.88,
+          "median": 12.96,
+          "p75": 18.36
+        },
+        "fraction": {
+          "p25": 0.11538462,
+          "median": 0.15111111,
+          "p75": 0.1754386
+        }
+      },
+      "small|elongated|1|1:corridor": {
+        "count": 14,
+        "house_count": 14,
+        "area": {
+          "p25": 3.33,
+          "median": 4.59,
+          "p75": 7.02
+        },
+        "fraction": {
+          "p25": 0.0289689,
+          "median": 0.04258065,
+          "p75": 0.06182162
+        }
+      },
+      "small|elongated|1|1:dining_room": {
+        "count": 24,
+        "house_count": 24,
+        "area": {
+          "p25": 11.6325,
+          "median": 12.87,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.10157057,
+          "median": 0.11260956,
+          "p75": 0.14728113
+        }
+      },
+      "small|elongated|1|1:entryway": {
+        "count": 23,
+        "house_count": 23,
+        "area": {
+          "p25": 4.86,
+          "median": 6.48,
+          "p75": 8.01
+        },
+        "fraction": {
+          "p25": 0.04465812,
+          "median": 0.05453087,
+          "p75": 0.07590835
+        }
+      },
+      "small|elongated|1|1:kitchen": {
+        "count": 23,
+        "house_count": 23,
+        "area": {
+          "p25": 7.92,
+          "median": 8.64,
+          "p75": 10.665
+        },
+        "fraction": {
+          "p25": 0.06958042,
+          "median": 0.08125,
+          "p75": 0.09451827
+        }
+      },
+      "small|elongated|1|1:living_room": {
+        "count": 24,
+        "house_count": 24,
+        "area": {
+          "p25": 15.9975,
+          "median": 16.965,
+          "p75": 19.1475
+        },
+        "fraction": {
+          "p25": 0.1390818,
+          "median": 0.16469661,
+          "p75": 0.18585349
+        }
+      },
+      "small|elongated|1|1:multi_purpose": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 2.52,
+          "median": 2.52,
+          "p75": 2.52
+        },
+        "fraction": {
+          "p25": 0.02245389,
+          "median": 0.02245389,
+          "p75": 0.02245389
+        }
+      },
+      "small|elongated|1|1:stairs": {
+        "count": 24,
+        "house_count": 24,
+        "area": {
+          "p25": 7.2,
+          "median": 8.64,
+          "p75": 9.765
+        },
+        "fraction": {
+          "p25": 0.07119096,
+          "median": 0.08,
+          "p75": 0.08577317
+        }
+      },
+      "small|elongated|1|1:utility": {
+        "count": 8,
+        "house_count": 8,
+        "area": {
+          "p25": 3.51,
+          "median": 4.59,
+          "p75": 5.985
+        },
+        "fraction": {
+          "p25": 0.02952509,
+          "median": 0.04184397,
+          "p75": 0.05745556
+        }
+      },
+      "small|elongated|1|2:balcony": {
+        "count": 7,
+        "house_count": 7,
+        "area": {
+          "p25": 8.91,
+          "median": 10.26,
+          "p75": 21.96
+        },
+        "fraction": {
+          "p25": 0.07204301,
+          "median": 0.07916667,
+          "p75": 0.19088224
+        }
+      },
+      "small|elongated|1|2:bathroom": {
+        "count": 16,
+        "house_count": 16,
+        "area": {
+          "p25": 4.4775,
+          "median": 5.895,
+          "p75": 7.155
+        },
+        "fraction": {
+          "p25": 0.04638419,
+          "median": 0.05740864,
+          "p75": 0.0638432
+        }
+      },
+      "small|elongated|1|2:corridor": {
+        "count": 18,
+        "house_count": 18,
+        "area": {
+          "p25": 5.13,
+          "median": 8.325,
+          "p75": 13.4325
+        },
+        "fraction": {
+          "p25": 0.05011512,
+          "median": 0.09206371,
+          "p75": 0.11863418
+        }
+      },
+      "small|elongated|1|2:dining_room": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 11.88,
+          "median": 11.88,
+          "p75": 11.88
+        },
+        "fraction": {
+          "p25": 0.09462366,
+          "median": 0.09462366,
+          "p75": 0.09462366
+        }
+      },
+      "small|elongated|1|2:kitchen": {
+        "count": 1,
+        "house_count": 1,
+        "area": {
+          "p25": 5.4,
+          "median": 5.4,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.04301075,
+          "median": 0.04301075,
+          "p75": 0.04301075
+        }
+      },
+      "small|elongated|1|2:living_room": {
+        "count": 18,
+        "house_count": 18,
+        "area": {
+          "p25": 14.085,
+          "median": 18.72,
+          "p75": 20.9925
+        },
+        "fraction": {
+          "p25": 0.11539152,
+          "median": 0.16181078,
+          "p75": 0.18542359
+        }
+      },
+      "small|elongated|1|2:multi_purpose": {
+        "count": 12,
+        "house_count": 12,
+        "area": {
+          "p25": 7.74,
+          "median": 8.955,
+          "p75": 10.7775
+        },
+        "fraction": {
+          "p25": 0.06921028,
+          "median": 0.08392893,
+          "p75": 0.09912698
+        }
+      },
+      "small|elongated|1|2:stairs": {
+        "count": 24,
+        "house_count": 24,
+        "area": {
+          "p25": 7.2,
+          "median": 8.64,
+          "p75": 9.765
+        },
+        "fraction": {
+          "p25": 0.07119096,
+          "median": 0.08,
+          "p75": 0.08577317
+        }
+      },
+      "small|elongated|1|2:utility": {
+        "count": 12,
+        "house_count": 12,
+        "area": {
+          "p25": 3.735,
+          "median": 4.95,
+          "p75": 5.8275
+        },
+        "fraction": {
+          "p25": 0.03341214,
+          "median": 0.04103787,
+          "p75": 0.05365055
+        }
+      },
+      "small|elongated|2|1:bathroom": {
+        "count": 10,
+        "house_count": 5,
+        "area": {
+          "p25": 4.59,
+          "median": 5.22,
+          "p75": 5.6025
+        },
+        "fraction": {
+          "p25": 0.04174941,
+          "median": 0.04677009,
+          "p75": 0.05241706
+        }
+      },
+      "small|elongated|2|1:bedroom": {
+        "count": 28,
+        "house_count": 14,
+        "area": {
+          "p25": 10.575,
+          "median": 11.79,
+          "p75": 14.2425
+        },
+        "fraction": {
+          "p25": 0.09365396,
+          "median": 0.10420757,
+          "p75": 0.12568676
+        }
+      },
+      "small|elongated|2|1:corridor": {
+        "count": 16,
+        "house_count": 8,
+        "area": {
+          "p25": 1.8,
+          "median": 2.52,
+          "p75": 3.645
+        },
+        "fraction": {
+          "p25": 0.01838164,
+          "median": 0.02580998,
+          "p75": 0.0398293
+        }
+      },
+      "small|elongated|2|1:entryway": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 4.8825,
+          "median": 5.355,
+          "p75": 5.8275
+        },
+        "fraction": {
+          "p25": 0.0427502,
+          "median": 0.04688731,
+          "p75": 0.05102443
+        }
+      },
+      "small|elongated|2|1:kitchen": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 7.0875,
+          "median": 7.695,
+          "p75": 8.3025
+        },
+        "fraction": {
+          "p25": 0.06713555,
+          "median": 0.07289003,
+          "p75": 0.0786445
+        }
+      },
+      "small|elongated|2|1:utility": {
+        "count": 2,
+        "house_count": 1,
+        "area": {
+          "p25": 5.625,
+          "median": 8.55,
+          "p75": 11.475
+        },
+        "fraction": {
+          "p25": 0.04480287,
+          "median": 0.06810036,
+          "p75": 0.09139785
+        }
+      },
+      "small|elongated|2|2:balcony": {
+        "count": 12,
+        "house_count": 6,
+        "area": {
+          "p25": 2.115,
+          "median": 7.605,
+          "p75": 12.915
+        },
+        "fraction": {
+          "p25": 0.02181051,
+          "median": 0.06776263,
+          "p75": 0.10286738
+        }
+      },
+      "small|elongated|2|2:bathroom": {
+        "count": 16,
+        "house_count": 8,
+        "area": {
+          "p25": 4.32,
+          "median": 4.95,
+          "p75": 5.94
+        },
+        "fraction": {
+          "p25": 0.03521643,
+          "median": 0.04443379,
+          "p75": 0.05211898
+        }
+      },
+      "small|elongated|2|2:bedroom": {
+        "count": 10,
+        "house_count": 5,
+        "area": {
+          "p25": 11.9925,
+          "median": 12.96,
+          "p75": 13.77
+        },
+        "fraction": {
+          "p25": 0.11288416,
+          "median": 0.11547715,
+          "p75": 0.13483606
+        }
+      },
+      "small|elongated|2|2:corridor": {
+        "count": 8,
+        "house_count": 4,
+        "area": {
+          "p25": 1.8,
+          "median": 2.88,
+          "p75": 6.1425
+        },
+        "fraction": {
+          "p25": 0.01736111,
+          "median": 0.02557688,
+          "p75": 0.05290871
+        }
+      },
+      "small|elongated|2|2:multi_purpose": {
+        "count": 4,
+        "house_count": 2,
+        "area": {
+          "p25": 8.91,
+          "median": 9.405,
+          "p75": 10.125
+        },
+        "fraction": {
+          "p25": 0.08222591,
+          "median": 0.08445417,
+          "p75": 0.08865248
+        }
+      },
+      "small|elongated|3-4|1:bathroom": {
+        "count": 6,
+        "house_count": 2,
+        "area": {
+          "p25": 3.4425,
+          "median": 4.86,
+          "p75": 5.4
+        },
+        "fraction": {
+          "p25": 0.02747845,
+          "median": 0.0387931,
+          "p75": 0.04649015
+        }
+      },
+      "small|elongated|3-4|1:bedroom": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 9.0,
+          "median": 9.0,
+          "p75": 9.0
+        },
+        "fraction": {
+          "p25": 0.07168459,
+          "median": 0.07168459,
+          "p75": 0.07168459
+        }
+      },
+      "small|elongated|3-4|2:balcony": {
+        "count": 23,
+        "house_count": 7,
+        "area": {
+          "p25": 2.25,
+          "median": 4.68,
+          "p75": 6.75
+        },
+        "fraction": {
+          "p25": 0.01993355,
+          "median": 0.04,
+          "p75": 0.05637263
+        }
+      },
+      "small|elongated|3-4|2:bedroom": {
+        "count": 61,
+        "house_count": 19,
+        "area": {
+          "p25": 10.8,
+          "median": 11.88,
+          "p75": 14.04
+        },
+        "fraction": {
+          "p25": 0.09379845,
+          "median": 0.11182796,
+          "p75": 0.14
+        }
+      },
+      "small|elongated|3-4|2:corridor": {
+        "count": 3,
+        "house_count": 1,
+        "area": {
+          "p25": 1.62,
+          "median": 2.16,
+          "p75": 2.16
+        },
+        "fraction": {
+          "p25": 0.01293103,
+          "median": 0.01724138,
+          "p75": 0.01724138
+        }
+      }
+    }
+  },
+  "balcony_statistics": {
+    "relation_basis": "Same-floor shared 300 mm cell edge; geometric adjacency, not verified doors.",
+    "annotation_completeness": "Not established. Counts are annotated functional instances, not verified absence/presence.",
+    "by_floor": {
+      "1": {
+        "house_count": 300,
+        "instance_count": 34,
+        "count_histogram": {
+          "0": 274,
+          "1": 20,
+          "2": 4,
+          "3": 2
+        },
+        "median_count": 0.0,
+        "contact_counts": {
+          "bedroom": 29,
+          "corridor": 2,
+          "dining_room": 4,
+          "entryway": 6,
+          "kitchen": 4,
+          "living_room": 3,
+          "multi_purpose": 1,
+          "stairs": 3,
+          "utility": 1
+        }
+      },
+      "2": {
+        "house_count": 300,
+        "instance_count": 531,
+        "count_histogram": {
+          "0": 24,
+          "1": 107,
+          "2": 102,
+          "3": 50,
+          "4": 15,
+          "5": 2
+        },
+        "median_count": 2.0,
+        "contact_counts": {
+          "bathroom": 54,
+          "bedroom": 362,
+          "corridor": 129,
+          "entryway": 1,
+          "kitchen": 1,
+          "living_room": 191,
+          "multi_purpose": 113,
+          "stairs": 38,
+          "utility": 39
+        }
+      }
+    }
+  }
+}

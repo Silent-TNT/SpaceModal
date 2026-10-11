@@ -1,15 +1,17 @@
 (function(root){
   'use strict';
-  const DEFAULTS={length:10800,width:10800,bedrooms:3,bathrooms:2,seed:123,budget:2400};
+  const DEFAULTS={length:10800,width:10800,bedrooms:3,bathrooms:2,balconies0:-1,balconies1:-1,seed:123,budget:2400};
   const keys=Object.keys(DEFAULTS);
   const num=s=>/^\d+(?:\.\d+)?$/.test(s)?Number(s):({'零':0,'一':1,'两':2,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10}[s]);
   function validate(patch) {
     if(!patch||typeof patch!=='object'||Array.isArray(patch))throw Error('需求解析没有返回有效字段');
     for(const [k,v] of Object.entries(patch)) {
+      if(k==='anchorMode'){if(!['near','hall','public'].includes(v))throw Error('入口—楼梯模式无效');continue;}
       if(!keys.includes(k))throw Error('解析返回了未支持的条件：'+k);
       if(typeof v!=='number'||!Number.isFinite(v)||!Number.isInteger(v))throw Error(k+' 必须为整数');
       if(['length','width'].includes(k)&&(v<6000||v>18000||v%300))throw Error('长宽须在 6–18 米内，并符合 0.3 米模数；请修改尺寸。');
       if(['bedrooms','bathrooms'].includes(k)&&(v<1||v>8))throw Error('当前 demo 支持 1–8 间卧室、1–8 间卫生间。');
+      if(['balconies0','balconies1'].includes(k)&&(v< -1||v>4))throw Error('每层阳台支持0–4个；-1表示采用训练集统计默认值');
       if(k==='seed'&&(v<0||v>4294967295))throw Error('种子须为 0–4294967295 的整数');
       if(k==='budget'&&(v<1||v>4800))throw Error('搜索预算须为 1–4800 的整数');
     }
@@ -33,23 +35,37 @@
       if(new RegExp('(?:减少|减|少)\\s*(?:一|1)\\s*(?:间|个)?\\s*(?:'+term+')').test(text))patch[key]=current[key]-1;
     }
     const seed=text.match(/(?:种子|seed)\s*(?:改为|为|=|：|:)?\s*(\d+)/i);if(seed)patch.seed=Number(seed[1]);
+    let remaining=text;
+    remaining=remaining.replace(/(一层|一楼|首层|1层|二层|二楼|2层)\s*(?:不要|不需要|取消|去掉)\s*阳台/g,(match,floor)=>{
+      patch[/^(一|首|1)/.test(floor)?'balconies0':'balconies1']=0;return '';
+    });
+    const floorBalcony=new RegExp('(一层|一楼|首层|1层|二层|二楼|2层)\\s*(?:阳台\\s*(?:数量)?\\s*(?:改为|改成|为|是|=|：|:)?\\s*'+n+'\\s*(?:个|间)?|'+n+'\\s*(?:个|间)?\\s*阳台)','g');
+    remaining=remaining.replace(floorBalcony,(match,floor,a,b)=>{patch[/^(一|首|1)/.test(floor)?'balconies0':'balconies1']=num(a||b);return '';});
+    if(/(?:不要|不需要|取消|去掉)\s*(?:所有|全部)?阳台|无阳台/.test(remaining)){
+      patch.balconies0=0;patch.balconies1=0;remaining=remaining.replace(/(?:不要|不需要|取消|去掉)\s*(?:所有|全部)?阳台|无阳台/g,'');
+    }
+    if(/阳台(?:数量)?(?:恢复|采用|使用)?(?:统计|默认)/.test(remaining)){patch.balconies0=-1;patch.balconies1=-1;}
     if(/换(?:一|个|一套|一个)|再来|另一个|新方案/.test(text)&&!seed)patch.seed=(current.seed+1)>>>0;
-    const floors=text.match(/([零一二两三四五六七八九十0-9]+)\s*层/);
+    const floors=remaining.match(/([零一二两三四五六七八九十0-9]+)\s*层/);
     if(floors&&num(floors[1])!==2)unsupported.push('固定为两层，当前不能生成其他层数');
     if(/一楼|二楼|一层.*卧室|二层.*卧室|楼上|楼下/.test(text))unsupported.push('当前 demo 的房间楼层由原生成器安排，不能指定');
-    if(/朝|向南|向北|邻|靠|相接|挑空|层高|高度|墙|窗|门|车库|不要|不需要|取消|去掉|面积|平方米|㎡|客厅.*大|厨房.*大/.test(text))unsupported.push('位置、朝向、挑空、面积及其他功能增减尚未接入本 demo');
+    if(/朝|向南|向北|邻|靠|相接|挑空|层高|高度|墙|窗|门|车库|不要|不需要|取消|去掉|面积|平方米|㎡|客厅.*大|厨房.*大/.test(remaining))unsupported.push('位置、朝向、挑空、面积及其他功能增减尚未接入本 demo');
     if(!Object.keys(patch).length&&!unsupported.length)unsupported.push('本地解析未识别到尺寸、卧室数、卫生间数或换方案；复杂表述请连接大模型');
     return {patch:validate(patch),unsupported:[...new Set(unsupported)]};
   }
   const SYSTEM=`你是二层住宅需求解析器，只输出 JSON，不生成几何。格式：{"patch":{},"unsupported":[]}。
-patch 只包含用户本轮明确修改的字段：length,width（毫米，6000–18000 且300整除）、bedrooms,bathrooms（1–8整数）、seed（0–4294967295整数）、budget（1–4800整数）。不得补写未修改字段，不得将不合模数尺寸擅自四舍五入。允许参考当前条件理解增加/减少。换方案时 seed 加1。
-生成边界是矩形范围，固定二层，每层3000mm。当前demo只支持长宽、卧室总数、卫生间总数、种子、预算；房间楼层、位置、朝向、面积、挑空以及厨房/客厅/阳台等其他功能的增减均不支持。把所有这些要求原样列入unsupported，不能承诺实现。非住宅生成或无法理解的请求也写入unsupported。中文数字转整数。`;
+patch 只包含用户本轮明确修改的字段：length,width（毫米，6000–18000 且300整除）、bedrooms,bathrooms（1–8整数）、seed（0–4294967295整数）、budget（1–4800整数）。balconies0,balconies1（一、二层阳台数量，0–4整数，-1采用统计默认值）。不要阳台时均设0，未指定楼层的阳台数量写入unsupported要求按层指定。不得补写未修改字段，不得将不合模数尺寸擅自四舍五入。允许参考当前条件理解增加/减少。换方案时 seed 加1。
+生成边界是矩形范围，固定二层，每层3000mm。当前demo支持长宽、卧室总数、卫生间总数、每层阳台数量、种子、预算；房间楼层、位置、朝向、面积、挑空以及厨房/客厅等其他功能的增减均不支持。把所有这些要求原样列入unsupported，不能承诺实现。非住宅生成或无法理解的请求也写入unsupported。中文数字转整数。`;
   async function remote(text,current,config,signal) {
     const url=new URL(config.endpoint);
-    if(url.protocol!=='https:')throw Error('大模型接口需要 HTTPS 地址');
+    const localEndpoint=typeof location!=='undefined'&&location.origin==='http://127.0.0.1:8080'&&url.href===location.origin+'/api/generator/parse';
+    if(url.protocol!=='https:'&&!localEndpoint)throw Error('大模型接口需要 HTTPS 地址或本机同源解析服务');
     let response;
-    try{response=await fetch(url,{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({current,text})});}
-    catch(e){if(e.name==='AbortError')throw e;throw Error('当前网络无法连接大模型代理，可能被网络或托管平台拦截。可点击“使用本地规则继续”，或稍后重试。');}
+    const {anchorMode,...numericCurrent}=current;
+    try{response=await fetch(url,{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({current:numericCurrent,text})});}
+    catch(e){if(e.name==='AbortError')throw e;
+      if(typeof location!=='undefined'&&location.hostname==='127.0.0.1'&&location.port!=='8080')throw Error('当前本地预览地址不在大模型代理允许的来源内。请打开本机大模型工作台（8080 端口），或使用本地规则继续。');
+      throw Error('当前网络无法连接大模型代理，可能被网络或托管平台拦截。可点击“使用本地规则继续”，或稍后重试。');}
     let data;try{data=await response.json();}catch{throw Error('大模型代理返回了非预期页面，可能被托管平台拦截。可使用本地规则继续。');}
     if(!response.ok)throw Error(data.error||('需求解析接口返回 '+response.status));
     const parsed=data;
@@ -57,8 +73,8 @@ patch 只包含用户本轮明确修改的字段：length,width（毫米，6000�
     const patch=validate(parsed.patch);
     // Some models echo current values despite being asked for a patch. Do not
     // attribute an unmentioned, unchanged default to an explicit user request.
-    const mentions={length:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|length/i,width:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|width/i,bedrooms:/卧|bedroom/i,bathrooms:/卫|浴|bathroom/i,seed:/种子|seed|换|另一|再来|新方案/i,budget:/预算|搜索|候选|budget/i};
-    for(const k of Object.keys(patch))if(patch[k]===current[k]&&!mentions[k].test(text))delete patch[k];
+    const mentions={balconies0:/阳台|balcon/i,balconies1:/阳台|balcon/i,length:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|length/i,width:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|width/i,bedrooms:/卧|bedroom/i,bathrooms:/卫|浴|bathroom/i,seed:/种子|seed|换|另一|再来|新方案/i,budget:/预算|搜索|候选|budget/i};
+    for(const k of Object.keys(patch))if(patch[k]===current[k]&&mentions[k]&&!mentions[k].test(text))delete patch[k];
     return {patch,unsupported:parsed.unsupported};
   }
   const api={DEFAULTS,validate,local,remote};

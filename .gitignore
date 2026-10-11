@@ -5,3 +5,7 @@ node_modules/
 .preview*.log
 *.tar.gz
 qa-artifacts/
+
+.qa/
+scripts/generator-qa.png
+scripts/generator-showcase.html
