@@ -49,8 +49,8 @@ patch 只包含用户本轮明确修改的字段：length,width（毫米，6000�
     if(url.protocol!=='https:')throw Error('大模型接口需要 HTTPS 地址');
     let response;
     try{response=await fetch(url,{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({current,text})});}
-    catch(e){if(e.name==='AbortError')throw e;throw Error('大模型连接失败。请检查网络和接口是否允许网页跨域访问；也可改用本地解析。');}
-    const data=await response.json();
+    catch(e){if(e.name==='AbortError')throw e;throw Error('当前网络无法连接大模型代理，可能被网络或托管平台拦截。可点击“使用本地规则继续”，或稍后重试。');}
+    let data;try{data=await response.json();}catch{throw Error('大模型代理返回了非预期页面，可能被托管平台拦截。可使用本地规则继续。');}
     if(!response.ok)throw Error(data.error||('需求解析接口返回 '+response.status));
     const parsed=data;
     if(!Array.isArray(parsed.unsupported)||parsed.unsupported.some(s=>typeof s!=='string'))throw Error('大模型返回的限制说明格式无效');

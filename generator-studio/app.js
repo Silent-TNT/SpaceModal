@@ -1,12 +1,25 @@
 'use strict';
 const $=id=>document.getElementById(id),esc=SpatialRender.escape;
-const DEFAULT_ENDPOINT='https://spacemodal-parser.silent-tnt.chatgpt.site/parse';
+const DEFAULT_ENDPOINT=(window.SpaceModalParser?.endpoint||'https://spacemodal-parser.silent-tnt.chatgpt.site/parse');
 const state=window.GeneratorState={conditions:{...Conditions.DEFAULTS},sources:Object.fromEntries(Object.keys(Conditions.DEFAULTS).map(k=>[k,'demo_default'])),result:null,models:[],busy:false,worker:null,abort:null,volume:null,view:'plans',mode:'remote',endpoint:DEFAULT_ENDPOINT};
 try{const preferences=JSON.parse(localStorage.getItem('spacemodal-generator-preferences')||'null');if(preferences){state.mode=preferences.mode==='local'?'local':'remote';state.endpoint=preferences.endpoint||DEFAULT_ENDPOINT;state.conditions.budget=Conditions.validate({budget:preferences.budget}).budget;}}catch{}
+const parserRevision=window.SpaceModalParser?.revision||'defense-1';
+try{
+  const previous=JSON.parse(localStorage.getItem('spacemodal-generator-preferences')||'null');
+  if(previous?.parserRevision!==parserRevision&&(!previous?.endpoint||previous.endpoint==='https://spacemodal-parser.silent-tnt.chatgpt.site/parse'))state.endpoint=DEFAULT_ENDPOINT;
+}catch{}
+if(new URLSearchParams(location.search).get('parser')==='local')state.mode='local';
+function useLocalParser(text){
+  if(state.busy)return;
+  state.mode='local';modeLabel();
+  try{localStorage.setItem('spacemodal-generator-preferences',JSON.stringify({endpoint:state.endpoint,mode:state.mode,budget:state.conditions.budget,parserRevision}));}catch{}
+  if(text)send(text);else message('已切换为本地规则解析，未调用大模型。请输入尺寸、卧室数和卫生间数；生成仍使用浏览器中的训练模型。');
+}
+$('local-parser').onclick=()=>useLocalParser();
 function modeLabel(){$('mode-label').textContent=state.mode==='remote'?'大模型需求解析':'本地规则解析 · 无大模型调用';}
 function message(text,kind='assistant'){const el=document.createElement('article');el.className='message '+kind;const label=document.createElement('span');label.className='speaker';label.textContent=kind==='user'?'YOU':'SPACEMODAL';const p=document.createElement('p');p.textContent=text;el.append(label,p);$('messages').append(el);el.scrollIntoView({block:'nearest'});return el;}
 function status(text){$('result-status').textContent=text;}
-function setBusy(value){state.busy=value;$('send').disabled=value;$('prompt').disabled=value;$('reset').disabled=value;$('settings-open').disabled=value;$('cancel').hidden=!value;document.querySelectorAll('.generate-button,.examples button').forEach(b=>b.disabled=value);}
+function setBusy(value){state.busy=value;$('send').disabled=value;$('prompt').disabled=value;$('reset').disabled=value;$('settings-open').disabled=value;$('local-parser').disabled=value;$('cancel').hidden=!value;document.querySelectorAll('.generate-button,.examples button').forEach(b=>b.disabled=value);}
 function showCard(parsed,mode){
   const next={...state.conditions,...parsed.patch};const source={...state.sources};Object.keys(parsed.patch).forEach(k=>source[k]='user_explicit');
   const el=message(mode==='remote'?'大模型已整理需求。确认下面的条件后，开始生成。':'本地规则已整理需求（未调用大模型）。确认条件后，开始生成。');
@@ -29,7 +42,13 @@ async function send(text){
     const mode=state.mode;
     const parsed=mode==='remote'?await Conditions.remote(text,state.conditions,{endpoint:state.endpoint},controller.signal):Conditions.local(text,state.conditions);
     showCard(parsed,mode);status('等待确认条件');
-  }catch(e){message(e.name==='AbortError'?'需求解析已停止或超时，可以重新发送。':e.message,'error');status('需求解析未完成');}
+  }catch(e){
+    const el=message(e.name==='AbortError'?'需求解析已停止或超时，可以重新发送。':e.message,'error');status('需求解析未完成');$('prompt').value=text;
+    if(state.mode==='remote'){
+      const button=document.createElement('button');button.type='button';button.className='quiet';button.textContent='使用本地规则继续（不调用大模型）';button.dataset.localRetry='true';
+      button.onclick=()=>{if(state.busy)return;button.disabled=true;useLocalParser(text);};el.append(button);
+    }
+  }
   finally{clearTimeout(timer);state.abort=null;setBusy(false);}
 }
 function generate(conditions,sources){
@@ -78,7 +97,7 @@ document.querySelectorAll('[data-example]').forEach(b=>b.onclick=()=>send(b.data
 $('alternatives').onchange=()=>present(Number($('alternatives').value));$('visible-floors').onchange=e=>state.volume?.setFloors(Number(e.target.value));
 $('cancel').onclick=()=>{if(state.worker){state.worker.terminate();state.worker=null;setBusy(false);message('本次生成已停止，可调整条件后重试。');status('已停止');}else state.abort?.abort();};
 $('settings-open').onclick=()=>{$('parser-mode').value=state.mode;$('proxy-endpoint').value=state.endpoint;$('budget').value=state.conditions.budget;$('settings').showModal();};$('settings-close').onclick=()=>$('settings').close();
-$('settings-form').onsubmit=e=>{e.preventDefault();try{const budget=Conditions.validate({budget:Number($('budget').value)}).budget;const url=new URL($('proxy-endpoint').value);if(url.protocol!=='https:')throw Error('代理地址需要 HTTPS');state.endpoint=url.href;state.mode=$('parser-mode').value;state.conditions.budget=budget;localStorage.setItem('spacemodal-generator-preferences',JSON.stringify({endpoint:state.endpoint,mode:state.mode,budget}));modeLabel();$('settings').close();}catch(e){message(e.message,'error');}};
+$('settings-form').onsubmit=e=>{e.preventDefault();try{const budget=Conditions.validate({budget:Number($('budget').value)}).budget;const url=new URL($('proxy-endpoint').value);if(url.protocol!=='https:')throw Error('代理地址需要 HTTPS');state.endpoint=url.href;state.mode=$('parser-mode').value;state.conditions.budget=budget;localStorage.setItem('spacemodal-generator-preferences',JSON.stringify({endpoint:state.endpoint,mode:state.mode,budget,parserRevision}));modeLabel();$('settings').close();}catch(e){message(e.message,'error');}};
 $('reset').onclick=()=>{if(state.busy)return;state.volume?.dispose();state.volume=null;state.result=null;state.models=[];state.conditions={...Conditions.DEFAULTS,budget:state.conditions.budget};state.sources=Object.fromEntries(Object.keys(state.conditions).map(k=>[k,'demo_default']));localStorage.removeItem('spacemodal-generator-last');$('messages').replaceChildren();message('新的设计对话已开始。请输入生成范围、卧室和卫生间数量。');$('empty').hidden=false;$('metrics').hidden=true;$('legend').hidden=true;$('alternatives').hidden=true;$('result-title').textContent='空间预览';$('download-json').disabled=true;$('download-showcase').disabled=true;showView('plans');status('等待需求');};
 modeLabel();
 try{const saved=JSON.parse(localStorage.getItem('spacemodal-generator-last')||'null');if(saved){Conditions.validate(saved.conditions);state.result=saved;state.conditions={...saved.conditions};state.sources=saved.sources;state.models=[saved.model,...saved.alternatives];present(0);message('已恢复当前浏览器上次生成的结果。继续描述需求即可调整。');}}catch{}
