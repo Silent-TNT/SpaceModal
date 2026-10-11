@@ -35,6 +35,9 @@ try{
   assert.deepEqual(await response.json(),{patch:{bedrooms:4},unsupported:[],source:'llm'});
   globalThis.fetch=async()=>new Response('unavailable',{status:401});
   assert.equal((await parser.fetch(req())).status,502);
+  globalThis.fetch=async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({patch:{length:12},unsupported:[]})}}]}));
+  response=await parser.fetch(req());assert.equal(response.status,502);
+  assert.match((await response.json()).error,/未正确整理需求/);
   console.log('PASS Vercel handlers: health, CORS, key isolation, invalid input, legacy/current fields and upstream failure');
 }finally{
   globalThis.fetch=originalFetch;
