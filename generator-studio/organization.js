@@ -2,7 +2,7 @@
   'use strict';
   // Adjustable demo activity envelopes, not building-code limits or furniture plans.
   const ACTIVITY_RULES=Object.freeze({1:{w:10,h:8,name:'客厅活动区'},2:{w:7,h:7,name:'用餐活动区'},10:{w:8,h:8,name:'多功能活动区'}});
-  const transit=label=>[0,1,2,6,7,10].includes(label);
+  const transit=label=>[0,1,2,6,10].includes(label);
   function adjacent(i,nx,ny){const x=i%nx,y=Math.floor(i/nx);return [x?i-1:-1,x+1<nx?i+1:-1,y?i-nx:-1,y+1<ny?i+nx:-1].filter(j=>j>=0);}
   function integral(nx,ny,valid){
     const a=new Int32Array((nx+1)*(ny+1));
@@ -28,8 +28,10 @@
   }
   function endpoint(map,spaces,nx,net,sid){
     let result=null;const faces=new Map();
+    const preferred=end=>spaces[sid].label===3&&spaces[map[end.outside]]?.label===2?0:1;
+    const better=end=>!result||preferred(end)<preferred(result)||preferred(end)===preferred(result)&&end.cost<result.cost;
     for(let i=0;i<map.length;i++)if(map[i]===sid){
-      if(transit(spaces[sid].label)&&net.cover[i]>=0){const square=net.cover[i],cost=net.distance[square];if(!result||cost<result.cost)result={square,cost,inside:i,outside:i};}
+      if(transit(spaces[sid].label)&&net.cover[i]>=0){const square=net.cover[i],cost=net.distance[square];const end={square,cost,inside:i,outside:i};if(better(end))result=end;}
       for(const j of adjacent(i,nx,map.length/nx).filter(j=>map[j]!==sid&&net.cover[j]>=0&&!(spaces[sid].label===4&&spaces[map[j]].label===7))){
         const vertical=Math.abs(i-j)===1,key=`${vertical?'x':'y'}:${vertical?Math.max(i%nx,j%nx):Math.max(Math.floor(i/nx),Math.floor(j/nx))}:${map[j]}`;
         if(!faces.has(key))faces.set(key,[]);faces.get(key).push({inside:i,outside:j,position:vertical?Math.floor(i/nx):i%nx});
@@ -39,7 +41,7 @@
     for(const group of faces.values()){
       group.sort((a,b)=>a.position-b.position);
       for(let k=1;k<group.length-1;k++)if(group[k-1].position+1===group[k].position&&group[k].position+1===group[k+1].position){
-        const face=group[k],square=net.cover[face.outside],cost=net.distance[square];if(!result||cost<result.cost)result={square,cost,...face};
+        const face=group[k],square=net.cover[face.outside],cost=net.distance[square];const end={square,cost,...face};if(better(end))result=end;
       }
     }
     return result;
@@ -65,8 +67,10 @@
     const keys=new Set();
     const addDoor=door=>{const key=`${door.floor}:${Math.min(door.a,door.b)}:${Math.max(door.a,door.b)}`;if(!keys.has(key)){keys.add(key);connections.push(door);}};
     for(let floor=0;floor<2;floor++){
-      const map=maps[floor],ny=map.length/nx,rootId=spaces.find(s=>s.key===(floor===0?'entry':'stairs'))?.id;
+      const map=maps[floor],ny=map.length/nx,rootId=spaces.find(s=>s.key===(floor===0?'entry':'1:stair-landing'))?.id;
       const present=spaces.filter(s=>map.includes(s.id)),targets=present.filter(s=>s.label!==9);
+      if(!present.some(s=>s.label!==7))continue;
+      if(rootId===undefined||!map.includes(rootId)){issues.push(`${floor+1}层缺少独立公共通行起点`);continue;}
       const cores=present.filter(s=>ACTIVITY_RULES[s.label]).map(s=>({sid:s.id,key:s.key,options:rectangles(map,nx,s.id,ACTIVITY_RULES[s.label])}));
       for(const core of cores)if(!core.options.length)issues.push(`${floor+1}层 ${core.key} 无法容纳完整活动区`);
       const chosen=new Map();
@@ -86,6 +90,13 @@
       for(const core of cores)if(chosen.has(core.sid))activities.push({floor,spaceId:core.sid,key:core.key,...chosen.get(core.sid),area:chosen.get(core.sid).w*chosen.get(core.sid).h*.09});
       for(const room of targets){
         const end=endpoint(map,spaces,nx,net,room.id);
+        if(floor===1&&room.label===7){
+          const landingNet={...net,cover:Int32Array.from(net.cover,(at,i)=>map[i]===rootId?at:-1)};
+          const landingEnd=endpoint(map,spaces,nx,landingNet,room.id);
+          if(landingEnd)addDoor(portal(room.id,rootId,floor,landingEnd.inside,landingEnd.outside,nx,'stair-access'));
+          else unreachable.push({floor,key:room.key,spaceId:room.id});
+          continue;
+        }
         if(!end){if(room.label!==8)unreachable.push({floor,key:room.key,spaceId:room.id});continue;}
         const squares=[];
         for(let at=end.square;at>=0;at=net.previous[at]){
@@ -94,7 +105,7 @@
         }
         squares.reverse();
         if(room.id!==rootId)routes.push({floor,target:room.key,spaceId:room.id,length:end.cost*.3,squares,reason:'protected-public-network'});
-        if(end.inside!==end.outside)addDoor(portal(room.id,map[end.outside],floor,end.inside,end.outside,nx,transit(room.label)?'open':'door'));
+        if(end.inside!==end.outside)addDoor(portal(room.id,map[end.outside],floor,end.inside,end.outside,nx,room.label===7?'stair-access':transit(room.label)?'open':'door'));
       }
       const sharedFaces=new Map();
       for(let i=0;i<map.length;i++)if(used[i])for(const j of [i%nx+1<nx?i+1:-1,i+nx<map.length?i+nx:-1]){
@@ -129,7 +140,7 @@
       floorReports.push({floor,publicTrafficArea:publicCells*.09,corridorArea:corridorCells*.09,activityArea:activities.filter(a=>a.floor===floor).reduce((sum,a)=>sum+a.area,0)});
     }
     for(const room of unreachable)issues.push(`${room.floor+1}层 ${room.key} 无法避开活动区接入公共网络`);
-    return {revision:'activity-routing-v1',accepted:!issues.length,issues,unreachable,activities,routes,connections,floors:floorReports,
+    return {revision:'stair-terminal-routing-v2',accepted:!issues.length,issues,unreachable,activities,routes,connections,floors:floorReports,
       publicTrafficArea:floorReports.reduce((s,f)=>s+f.publicTrafficArea,0),corridorArea:floorReports.reduce((s,f)=>s+f.corridorArea,0),
       meanRouteLength:routes.reduce((s,r)=>s+r.length,0)/Math.max(1,routes.length),maxRouteLength:Math.max(0,...routes.map(r=>r.length)),
       activityRules:ACTIVITY_RULES,evaluation:'adjustable-activity-envelope-and-grid-route-proxy; not verified furniture, doors or stair flights'};

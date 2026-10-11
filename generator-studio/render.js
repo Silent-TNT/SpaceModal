@@ -13,13 +13,25 @@
       result.push({x,y,w,h});
     }return result;
   }
+  function boundarySegments(model,floor,sid){
+    const {nx,ny}=model,map=model.floorSpaces[floor],segments=[];
+    const same=(x,y)=>x>=0&&y>=0&&x<nx&&y<ny&&map[y*nx+x]===sid;
+    for(let y=0;y<ny;y++)for(let x=0;x<nx;x++)if(same(x,y)){
+      if(!same(x,y-1))segments.push([[x,y],[x+1,y]]);
+      if(!same(x+1,y))segments.push([[x+1,y],[x+1,y+1]]);
+      if(!same(x,y+1))segments.push([[x+1,y+1],[x,y+1]]);
+      if(!same(x-1,y))segments.push([[x,y+1],[x,y]]);
+    }
+    return segments;
+  }
   function plan(model,floor,showOrganization=false){
     const scale=480/Math.max(model.nx,model.ny),w=model.nx*scale,h=model.ny*scale;
     let markup=`<svg class="plan-svg" viewBox="-45 -45 ${w+90} ${h+100}" role="img" aria-label="${floor+1}层平面"><defs><pattern id="grid-${floor}" width="${scale}" height="${scale}" patternUnits="userSpaceOnUse"><path d="M ${scale} 0 L 0 0 0 ${scale}" fill="none" stroke="#fff" stroke-opacity=".17" stroke-width=".6"/></pattern></defs><rect width="${w}" height="${h}" fill="#eeeae2"/>`;
     for(const s of model.spaces){
       const pieces=rects(model,floor,s.id);if(!pieces.length)continue;
       const color=LABELS[s.label][1];
-      for(const r of pieces)markup+=`<rect x="${r.x*scale}" y="${h-(r.y+r.h)*scale}" width="${r.w*scale}" height="${r.h*scale}" data-space-id="${s.id}" data-floor="${floor}" fill="${color}" stroke="white" stroke-width=".6"><title>${escape(LABELS[s.label][0])} · ${escape(s.key)}</title></rect>`;
+      for(const r of pieces)markup+=`<rect x="${r.x*scale}" y="${h-(r.y+r.h)*scale}" width="${r.w*scale}" height="${r.h*scale}" data-space-id="${s.id}" data-floor="${floor}" fill="${color}" stroke="none"><title>${escape(LABELS[s.label][0])} · ${escape(s.key)}</title></rect>`;
+      markup+=`<path class="space-outline" d="${boundarySegments(model,floor,s.id).map(([a,b])=>`M ${a[0]*scale} ${h-a[1]*scale} L ${b[0]*scale} ${h-b[1]*scale}`).join(' ')}" fill="none" stroke="white" stroke-width=".6" pointer-events="none"/>`;
       const cells=[];model.floorSpaces[floor].forEach((id,i)=>{if(id===s.id)cells.push(i)});
       const cx=cells.reduce((a,i)=>a+i%model.nx+.5,0)/cells.length,cy=cells.reduce((a,i)=>a+Math.floor(i/model.nx)+.5,0)/cells.length;
       const anchor=cells.reduce((best,i)=>{const d=(i%model.nx+.5-cx)**2+(Math.floor(i/model.nx)+.5-cy)**2;return d<best.d?{i,d}:best},{i:cells[0],d:Infinity}).i;
@@ -30,7 +42,7 @@
       for(const a of model.organization.activities.filter(a=>a.floor===floor))markup+=`<rect class="activity-envelope" x="${a.x*scale}" y="${h-(a.y+a.h)*scale}" width="${a.w*scale}" height="${a.h*scale}" fill="#ffffff55" stroke="#28543c" stroke-width="1.5" stroke-dasharray="3 2"><title>受保护活动区 ${a.area.toFixed(1)}㎡；简化活动范围，不是真实家具</title></rect>`;
       for(const r of model.organization.routes.filter(r=>r.floor===floor))markup+=`<polyline class="circulation-route" points="${r.squares.map(p=>`${(p.x+p.w/2)*scale},${h-(p.y+p.h/2)*scale}`).join(' ')}" fill="none" stroke="#163e70" stroke-opacity=".6" stroke-width="2"><title>至 ${escape(r.target)} 的网格通路，${r.length.toFixed(1)}米；非真实门或人体模拟</title></polyline>`;
     }
-    if(floor===0&&model.anchorValidation?.mode){const g=model.generation.geometry,x=(g.entryX+(g.entryW||g.stairW)/2)*scale,sx=(g.stairX+g.stairW/2)*scale,end=h-(g.stairY+g.stairH/2)*scale;markup+=`<path d="M ${x} ${h+14} V ${h}" fill="none" stroke="#243b30" stroke-width="2"/><circle cx="${sx}" cy="${end}" r="4" fill="#243b30"/><text x="${x+7}" y="${h+17}" font-size="11">入口 ↑</text>`;}
+    if(floor===0&&model.anchorValidation?.mode){const g=model.generation.geometry,x=(g.entryX+(g.entryW||g.stairW)/2)*scale,sx=(g.stairX+g.stairW/2)*scale,end=h-(g.stairY+g.stairH/2)*scale,entryY=h-(g.entryY||0)*scale;markup+=`<path d="M ${x} ${entryY+14} V ${entryY}" fill="none" stroke="#243b30" stroke-width="2"/><circle cx="${sx}" cy="${end}" r="4" fill="#243b30"/><text x="${x+7}" y="${entryY+17}" font-size="11">${g.entryY?'玄关':'入口'} ↑</text>`;}
     markup+=`<rect width="${w}" height="${h}" fill="url(#grid-${floor})" pointer-events="none"/><rect width="${w}" height="${h}" fill="none" stroke="#263a35" stroke-width="1.4"/><path d="M 0 -8 H ${w}" stroke="#888"/><text x="${w/2}" y="-16" text-anchor="middle" font-size="26">${(model.nx*.3).toFixed(1)} m</text><text x="-20" y="${h/2}" text-anchor="middle" font-size="26" transform="rotate(-90 -20 ${h/2})">${(model.ny*.3).toFixed(1)} m</text><text x="0" y="${h+30}" font-size="12" fill="#586760">${floor+1}F · 300 mm 网格</text></svg>`;
     return markup;
   }
@@ -112,7 +124,36 @@
   function geometry(model){
     const rooms=[];
     for(let f=0;f<2;f++)for(const s of model.spaces)for(const r of rects(model,f,s.id))rooms.push({id:`${f}_${s.id}_${r.x}_${r.y}`,functional_group_id:s.key,type:TYPES[s.label],floor:f+1,floors:[f+1],box_min:[r.x*300,r.y*300,f*3000],box_max:[(r.x+r.w)*300,(r.y+r.h)*300,(f+1)*3000]});
-    return {schema_version:'geometry_v1',condition_inputs:{user_provided:{length_mm:model.nx*300,width_mm:model.ny*300}},rooms,review:{mode:'browser_generation_demo',project_accepted:null,demo_accepted:model.validation.accepted&&model.circulation.accepted&&model.programValidation.accepted},seed:model.seed};
+    return {schema_version:'geometry_v1',condition_inputs:{user_provided:{length_mm:model.nx*300,width_mm:model.ny*300}},rooms,review:{mode:'browser_generation_demo',project_accepted:null,demo_accepted:model.validation.accepted&&model.circulation.accepted&&model.programValidation.accepted&&model.daylight?.accepted!==false,daylight_potential_accepted:model.daylight?.accepted??null,actual_daylight_verified:false},daylight:model.daylight,entry_limits:{revision:model.generation?.entryRevision,report:model.programValidation?.reports?.find(r=>r.key==='entry')},seed:model.seed};
+  }
+  function reviewBundle(result,selectedIndex=0){
+    const models=[result.model,...(result.alternatives||[])];
+    if(!Number.isInteger(selectedIndex)||selectedIndex<0||selectedIndex>=models.length)throw Error('请选择有效方案后导出');
+    const candidates=models.map((model,index)=>{
+      const shapeReports=[];
+      for(let floor=0;floor<2;floor++)for(const space of model.spaces){
+        const map=model.floorSpaces[floor],cells=[];
+        for(let i=0;i<map.length;i++)if(map[i]===space.id)cells.push(i);
+        if(!cells.length)continue;
+        const remaining=new Set(cells),componentAreas=[];
+        while(remaining.size){const first=remaining.values().next().value,queue=[first];remaining.delete(first);
+          for(let head=0;head<queue.length;head++){
+            const at=queue[head],x=at%model.nx,y=Math.floor(at/model.nx);
+            for(const next of [x>0?at-1:-1,x+1<model.nx?at+1:-1,y>0?at-model.nx:-1,y+1<model.ny?at+model.nx:-1])if(remaining.delete(next))queue.push(next);
+          }
+          componentAreas.push(queue.length*.09);
+        }
+        const xs=cells.map(i=>i%model.nx),ys=cells.map(i=>Math.floor(i/model.nx));
+        const boundingArea=(Math.max(...xs)-Math.min(...xs)+1)*(Math.max(...ys)-Math.min(...ys)+1)*.09;
+        const validation=model.programValidation?.reports?.find(r=>r.key===space.key&&r.floor===floor);
+        shapeReports.push({floor:floor+1,spaceId:space.id,key:space.key,label:LABELS[space.label][0],area:cells.length*.09,rectangleCount:rects(model,floor,space.id).length,componentCount:componentAreas.length,componentAreas,boundingBoxFill:cells.length*.09/boundingArea,shape:validation?.shape,shapeMetrics:validation?.shapeMetrics,minimumWidth:validation?.width,maxArea:validation?.maxArea});
+      }
+      const g=model.generation?.geometry;
+      const staircase=g?{revision:model.generation.stairRevision,dimensionsMm:[g.stairW*300,g.stairH*300],area:g.stairW*g.stairH*.09,positionMm:[g.stairX*300,g.stairY*300],positionClass:g.stairPlacement,entryAnchorMm:[g.entryX*300,(g.entryY||0)*300],actualRelation:model.anchorValidation?.relation,evidence:g.stairEvidence}:undefined;
+      const meal=model.mealGeometry?{...model.mealGeometry,evidence:g?.mealEvidence,plannedRoutes:model.kitchenDining,areaChanges:model.mealGeometry.reports.map(r=>({floor:r.floor+1,kitchenInitial:g?.mealEvidence?.initialKitchen?.area,kitchenFinal:r.kitchen.area,diningInitial:g?.mealEvidence?.initialDining?.area,diningFinal:r.dining.area})),integrityAdjustments:g?.integrityAdjustments}:undefined;
+      return {index:index+1,name:`方案 ${String(index+1).padStart(2,'0')}`,selected:index===selectedIndex,ruleRevision:model.generation?.ruleRevision,shapeRevision:model.generation?.shapeRevision,staircase,meal,daylight:model.daylight,geometry:geometry(model),shapeReports,model:{...model,floorSpaces:model.floorSpaces.map(g=>Array.from(g)),floors:model.floors?.map(g=>Array.from(g))}};
+    });
+    return {schema_version:'spacemodal_review_v1',exported_at:new Date().toISOString(),selected_scheme:selectedIndex+1,candidate_count:candidates.length,units:{geometry:'mm',cell_mm:300,area:'m2',floor_numbering:'one-based; raw model arrays are zero-based'},notes:['rectangleCount 是显示与导出的矩形分块数；componentCount 才是不连通区域数。','包含全部展示候选及原始校验结果；通过现有检查不代表空间形状已经合理。','采光检查仅代表体块外墙与阳台相邻的潜力，不代表真实窗洞、日照或照度已验证。'],generation:{conditions:result.conditions,condition_sources:result.sources,search_summary:result.searchSummary,area_prior:result.areaPrior,meta:result.meta,elapsed_seconds:result.elapsedSeconds},candidates};
   }
   function volume(canvas,model){
     const THREE=root.THREE;
@@ -132,12 +173,24 @@
     const meshes=[],pointers=new Map();
     let angle=-.65,tilt=.62,zoom=1,showFloors=2,selected=null,disposed=false;
     const shade=(hex,alpha)=>{const color=parseInt(hex.slice(1),16),rgb=[color>>16,(color>>8)&255,color&255];return '#'+rgb.map((v,i)=>Math.round(v*(1-alpha)+[20,35,30][i]*alpha).toString(16).padStart(2,'0')).join('');};
-    for(let floor=0;floor<2;floor++)for(const space of model.spaces)for(const r of rects(model,floor,space.id)){
+    for(let floor=0;floor<2;floor++)for(const space of model.spaces){
+      const pieces=rects(model,floor,space.id);if(!pieces.length)continue;
       const color=LABELS[space.label][1],sideX=shade(color,.25),sideZ=shade(color,.17);
-      const materials=[sideX,sideX,color,color,sideZ,sideZ].map(color=>new THREE.MeshBasicMaterial({color,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1}));
-      const mesh=new THREE.Mesh(new THREE.BoxGeometry(r.w,10,r.h),materials);
-      mesh.position.set(r.x+r.w/2,floor*10+5,r.y+r.h/2);mesh.userData={id:space.id,floor};
-      mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.6,depthWrite:false})));
+      const materials=[sideX,color,sideZ].map(color=>new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1}));
+      const positions=[],linePositions=[],geometry=new THREE.BufferGeometry(),bottom=floor*10,top=bottom+10;
+      const quad=(a,b,c,d,material)=>{const start=positions.length/3;positions.push(...a,...b,...c,...a,...c,...d);geometry.addGroup(start,6,material);};
+      for(const r of pieces)for(const z of [bottom,top])quad([r.x,z,r.y],[r.x+r.w,z,r.y],[r.x+r.w,z,r.y+r.h],[r.x,z,r.y+r.h],1);
+      const boundary=boundarySegments(model,floor,space.id),vertices=new Map();
+      for(const [a,b] of boundary){
+        quad([a[0],bottom,a[1]],[b[0],bottom,b[1]],[b[0],top,b[1]],[a[0],top,a[1]],a[0]===b[0]?0:2);
+        for(const z of [bottom,top])linePositions.push(a[0],z,a[1],b[0],z,b[1]);
+        for(const p of [a,b]){const key=p.join(',');if(!vertices.has(key))vertices.set(key,[]);vertices.get(key).push([b[0]-a[0],b[1]-a[1]]);}
+      }
+      for(const [key,directions] of vertices)if(directions.length!==2||directions[0][0]*directions[1][1]!==directions[0][1]*directions[1][0]){const [x,y]=key.split(',').map(Number);linePositions.push(x,bottom,y,x,top,y);}
+      geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.computeVertexNormals();
+      const mesh=new THREE.Mesh(geometry,materials);mesh.userData={id:space.id,floor};
+      const lines=new THREE.BufferGeometry();lines.setAttribute('position',new THREE.Float32BufferAttribute(linePositions,3));
+      mesh.add(new THREE.LineSegments(lines,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.6,depthWrite:false})));
       scene.add(mesh);meshes.push(mesh);
     }
     function draw(){
@@ -204,6 +257,6 @@
       scene.clear();renderer.dispose();
     }};
   }
-  const api={LABELS,TYPES,escape,rects,plan,topology,geometry,volume};
+  const api={LABELS,TYPES,escape,rects,boundarySegments,plan,topology,geometry,reviewBundle,volume};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.SpatialRender=api;
 })(globalThis);

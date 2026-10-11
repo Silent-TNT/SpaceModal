@@ -70,27 +70,55 @@ async function send(text){
 }
 function generate(conditions,sources){
   if(state.busy)return;state.conditions={...conditions};state.sources={...sources};setBusy(true);status('正在启动浏览器生成');
-  const worker=new Worker('worker.js?v=spatial-topology-1');state.worker=worker;
-  message('开始计算：自动搜索三种玄关—楼梯组织方式，再统一提供可比较的布局方案。');
-  const timeout=setTimeout(()=>{if(state.worker===worker){worker.terminate();state.worker=null;setBusy(false);message('本次计算超过三分钟，已停止。可以减少搜索预算或调整需求。','error');status('计算超时');}},180000);
+  state.generationPhase='正在启动浏览器生成';state.receivedPreview=false;
+  const worker=new Worker('worker.js?v=progressive-layout-v1');state.worker=worker;
+  message('开始生成：首个合格方案会立即显示，随后继续优化并补充可比较的方案。');
+  let timeout;
+  const watchProgress=()=>{clearTimeout(timeout);timeout=setTimeout(()=>{if(state.worker===worker){worker.terminate();state.worker=null;setBusy(false);retainPreview('计算超时');message(state.receivedPreview?'后续计算连续三分钟没有报告进度，已停止；已生成方案已保留。':'计算连续三分钟没有报告进度，已停止。可以减少搜索预算或调整需求。','error');}},180000);};
+  watchProgress();
   worker.onmessage=({data})=>{
     if(state.worker!==worker)return;
-    if(data.phase){status(data.phase);return;}
+    if(data.phase){watchProgress();state.generationPhase=data.phase;showGenerationProgress();return;}
+    if(data.partial){
+      watchProgress();const first=!state.receivedPreview;state.receivedPreview=true;
+      acceptGeneratedResult(data,conditions,sources,first);showGenerationProgress();
+      if(first)message('首个方案已通过检查，可以查看、切换视图或下载。正在继续优化，点击停止可保留当前结果。');
+      return;
+    }
     clearTimeout(timeout);worker.terminate();state.worker=null;setBusy(false);
-    if(data.error){message(data.error,'error');status('本次搜索未成功');if(data.searchSummary)presentSearchSummary(data.searchSummary);return;}
-    state.result={...data,conditions:{...conditions},sources:{...sources}};state.models=[data.model,...data.alternatives];
-    try{localStorage.setItem('spacemodal-generator-last',JSON.stringify(state.result));}catch{message('结果已生成，但浏览器存储空间不足。请下载保存。');}
-    $('visible-floors').value='2';present(0);const missing=data.searchSummary.searches.filter(s=>s.status!=='found');if(missing.length)message('本次未找到以下模式的合格方案：'+missing.map(s=>ANCHOR_MODES[s.mode]).join('、')+'。仍可比较其余方案，也可增加预算或换种子。');message(`已生成 ${state.models.length} 个候选方案，用时 ${data.elapsedSeconds.toFixed(1)} 秒。两层功能体块通过原 demo 的几何、连通与房间清单检查。你可以继续输入“卧室改为四间”或“换一个方案”。`);
+    if(data.error){message(data.error+(state.receivedPreview?' 已保留先前通过检查的方案。':''),'error');retainPreview('本次生成未成功');if(data.searchSummary&&!state.receivedPreview)presentSearchSummary(data.searchSummary);return;}
+    acceptGeneratedResult(data,conditions,sources,!state.receivedPreview);const missing=data.searchSummary.searches.filter(s=>s.status!=='found');if(missing.length)message('本次未找到以下模式的合格方案：'+missing.map(s=>ANCHOR_MODES[s.mode]).join('、')+'。仍可比较其余方案，也可增加预算或换种子。');message(`已生成 ${state.models.length} 个候选方案，用时 ${data.elapsedSeconds.toFixed(1)} 秒。两层功能体块通过原 demo 的几何、连通与房间清单检查。你可以继续输入“卧室改为四间”或“换一个方案”。`);
   };
-  worker.onerror=()=>{clearTimeout(timeout);worker.terminate();state.worker=null;setBusy(false);message('浏览器生成程序运行失败，请刷新重试。','error');status('生成失败');};
+  worker.onerror=()=>{if(state.worker!==worker)return;clearTimeout(timeout);worker.terminate();state.worker=null;setBusy(false);message(state.receivedPreview?'后续生成失败，已保留通过检查的方案。':'浏览器生成程序运行失败，请刷新重试。','error');retainPreview('生成失败');};
   worker.postMessage(conditions);
+}
+function saveGeneratedResult(){try{localStorage.setItem('spacemodal-generator-last',JSON.stringify(state.result));}catch{message('结果已生成，但浏览器存储空间不足。请下载保存。');}}
+function modelKey(model){return model?`${model.seed}:${model.anchorValidation.mode}:${model.generation.selectedCandidate}`:null;}
+function acceptGeneratedResult(data,conditions,sources,first){
+  const previous=first?null:modelKey(activeModel());
+  state.result={...data,conditions:{...conditions},sources:{...sources}};state.models=[data.model,...data.alternatives];
+  saveGeneratedResult();if(first)$('visible-floors').value='2';
+  const index=Math.max(0,state.models.findIndex(m=>modelKey(m)===previous));
+  if(!first&&modelKey(state.models[index])===previous){
+    // Preserve the camera, drawing zoom and room selection while the same layout remains available.
+    $('alternatives').innerHTML=state.models.map((m,i)=>`<option value="${i}">方案 ${String(i+1).padStart(2,'0')} · ${anchorLabel(m)}</option>`).join('');$('alternatives').value=index;
+    $('metrics').firstElementChild.querySelector('strong').textContent=data.elapsedSeconds.toFixed(1)+' s';
+    $('metrics').children[1].querySelector('strong').textContent=data.searchSummary.validCandidateCount;
+    presentOrganization(state.models[index]);
+    status(data.partial?'已找到合格方案，继续优化':'浏览器生成完成');
+  }else present(index);
+}
+function showGenerationProgress(){status(state.receivedPreview?`已提供 ${state.models.length} 个合格方案 · 继续优化 · ${state.generationPhase}`:state.generationPhase);}
+function retainPreview(reason){
+  if(state.receivedPreview&&state.result?.partial){state.result.stopped=true;saveGeneratedResult();status(`${reason} · 已保留 ${state.models.length} 个合格方案`);}
+  else status(reason);
 }
 function activeModel(){return state.models[Number($('alternatives').value)||0];}
 function present(index){
   const model=state.models[index];if(!model)return;
-  $('empty').hidden=true;$('metrics').hidden=false;$('legend').hidden=false;$('download-json').disabled=false;$('download-showcase').disabled=false;$('area-info-open').disabled=!state.result.areaPrior;
+  $('empty').hidden=true;$('metrics').hidden=false;$('legend').hidden=false;$('download-json').disabled=false;$('download-review').disabled=false;$('download-showcase').disabled=false;$('area-info-open').disabled=!state.result.areaPrior;
   const c=state.result.conditions;$('result-title').textContent=`${(c.length/1000).toFixed(1)} × ${(c.width/1000).toFixed(1)} m · ${c.bedrooms} 卧 ${c.bathrooms} 卫`;
-  status(model.generation.ruleRevision==='global-organization-v5'?'浏览器生成完成':'上次结果 · 重新生成应用新版布局规则');
+  status(model.daylightPolicy!=='tiered-facade-v2'?'上次结果 · 重新生成应用玄关面积上限与分级采光规则':model.mealPolicy!=='meal-joint-v1'?'上次结果 · 重新生成应用餐厨尺度与位置规则':model.generation.stairRevision!=='stair-joint-v1'?'上次结果 · 重新生成应用楼梯尺寸与位置规则':model.generation.shapeRevision!=='public-shape-v1'?'上次结果 · 重新生成应用空间完整性规则':model.generation.ruleRevision!=='stair-terminal-v6'?'上次结果 · 重新生成应用楼梯通行规则':model.kitchenDining?.revision==='meal-public-route-v1'?'浏览器生成完成':'上次结果 · 重新生成应用餐厨联系规则');
   $('plans').innerHTML=[1,0].map(f=>`<div class="plan-panel"><h3>${f+1}F</h3>${SpatialRender.plan(model,f,$('show-circulation').checked)}</div>`).join('');
   $('topology').innerHTML=SpatialRender.topology(model);
   $('metrics').innerHTML=[[(state.result.elapsedSeconds).toFixed(1)+' s','本次计算'],[state.result.searchSummary?.validCandidateCount??model.generation.validCandidateCount,'通过检查的候选'],[model.generation.score.toFixed(1),'综合评分 / 越低越好'],['300 mm','体块网格']].map(([v,k])=>`<div class="metric"><strong>${esc(v)}</strong>${k}</div>`).join('');
@@ -100,6 +128,8 @@ function present(index){
   const forecast=state.result.forecast;
   $('forecast').innerHTML=forecast.assignments.map((rows,f)=>{let svg='<svg viewBox="0 0 240 240" role="img" aria-label="模型占位预测">';rows.forEach((row,y)=>row.forEach((id,x)=>{const r=forecast.query[id-1];svg+=`<rect x="${x*10}" y="${(23-y)*10}" width="10" height="10" fill="${r?SpatialRender.LABELS[r.label][1]:'#e7e8df'}"/>`;}));return `<div class="forecast-panel">${svg}</svg><p>${f+1}F / 模型原始占位预测</p><p>尚未经过网格布局和几何检查</p></div>`;}).join('');
   state.selected=null;$('selection-info').hidden=true;$('selection-info').textContent='';$('topology').classList.remove('has-selection');installDrawingNavigation();state.volume?.dispose();state.volume=SpatialRender.volume($('volume-canvas'),model);state.volume.setFloors(Number($('visible-floors').value));showView(state.view);
+  if(state.worker&&state.receivedPreview)showGenerationProgress();
+  else if(state.result.partial)status(`已保留 ${state.models.length} 个合格方案 · 后续优化未完成`);
 }
 function showView(view){
   state.view=view;$('drawing-board').hidden=!state.result;$('drawing-board').classList.toggle('focus',view!=='all');
@@ -141,7 +171,8 @@ document.addEventListener('click',e=>{const button=e.target.closest('[data-focus
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){openConversation(false);document.querySelector('.tools-menu').open=false;}});
 $('prompt').oninput=()=>{$('prompt').style.height='auto';$('prompt').style.height=Math.min($('prompt').scrollHeight,110)+'px';};
 function download(name,content,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
-$('download-json').onclick=()=>{const geometry={...SpatialRender.geometry(activeModel()),anchor_validation:activeModel().anchorValidation,bedroom_rules:activeModel().generation.bedroomRules,rule_revision:activeModel().generation.ruleRevision,organization:activeModel().organization,routing_evidence:activeModel().generation.routingEvidence,corridor_budgets:activeModel().programValidation.corridorBudgets,area_prior:state.result.areaPrior,generation:{...state.result.meta,search_summary:state.result.searchSummary,conditions:state.result.conditions,anchor_geometry:activeModel().generation.geometry,condition_sources:state.result.sources,elapsed_seconds:state.result.elapsedSeconds,selected_candidate:activeModel().generation.selectedCandidate}};download(`spacemodal-seed${activeModel().seed}.json`,JSON.stringify(geometry,null,2),'application/json');};
+$('download-json').onclick=()=>{const geometry={...SpatialRender.geometry(activeModel()),anchor_validation:activeModel().anchorValidation,bedroom_rules:activeModel().generation.bedroomRules,rule_revision:activeModel().generation.ruleRevision,shape_revision:activeModel().generation.shapeRevision,stair_revision:activeModel().generation.stairRevision,organization:activeModel().organization,kitchen_dining:activeModel().kitchenDining,routing_evidence:activeModel().generation.routingEvidence,corridor_budgets:activeModel().programValidation.corridorBudgets,area_prior:state.result.areaPrior,generation:{...state.result.meta,search_summary:state.result.searchSummary,conditions:state.result.conditions,anchor_geometry:activeModel().generation.geometry,condition_sources:state.result.sources,elapsed_seconds:state.result.elapsedSeconds,selected_candidate:activeModel().generation.selectedCandidate}};download(`spacemodal-seed${activeModel().seed}.json`,JSON.stringify(geometry,null,2),'application/json');};
+$('download-review').onclick=()=>{try{const bundle=SpatialRender.reviewBundle(state.result,Number($('alternatives').value));download(`spacemodal-review-seed${activeModel().seed}.json`,JSON.stringify(bundle,null,2),'application/json');document.querySelector('.tools-menu').open=false;}catch(e){message(e.message,'error');}};
 $('download-showcase').onclick=async()=>{
   try{const [vendor,source]=await Promise.all(['vendor/three-0.172.0.min.js','render.js'].map(url=>fetch(url).then(r=>{if(!r.ok)throw Error('展示文件加载失败');return r.text();})));const model=activeModel(),data=JSON.stringify({...model,floorSpaces:model.floorSpaces.map(g=>Array.from(g)),floors:model.floors.map(g=>Array.from(g))}).replace(/</g,'\\u003c');const endScript='</script>';
     const html=`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SpaceModal · 两层体块展示</title><style>body{font-family:"Microsoft YaHei",sans-serif;background:#f4f3ee;color:#243b30;margin:4vw}.plans{display:flex;gap:20px}.plans>div{width:50%}svg{width:100%;max-height:620px}canvas{width:100%;height:600px;touch-action:none}.graph{max-width:800px;margin:auto}h1{font-size:24px;font-weight:500}p{font-size:12px}.topology-svg{aspect-ratio:210/297}.view-expand{display:none}.topology-svg:not(.access-hidden) [data-overlap-access]{display:none}@media print{section{break-after:page}canvas{height:400px}.graph{width:190mm}}</style><h1>SpaceModal · ${(model.nx*.3).toFixed(1)} × ${(model.ny*.3).toFixed(1)} m · Seed ${model.seed}</h1><p>HGNN + CVA 浏览器推理；通过原 demo 检查，尚未经过项目完整验收。功能体块贴邻不等于真实门或通行路径。</p><section><h2>两层平面</h2><div id="plans" class="plans"></div></section><section><h2>交互三维</h2><label>显示楼层 <select id="floors"><option value="2">两层</option><option value="1">一层</option></select></label><canvas id="volume"></canvas></section><section class="graph"><h2>几何贴邻拓扑 / A4</h2><div id="topology"></div></section><script>${vendor.replace(/<\/script/gi,'<\\/script')}${endScript}<script>${source.replace(/<\/script/gi,'<\\/script')}${endScript}<script>const model=${data};document.getElementById('plans').innerHTML=[0,1].map(f=>'<div>'+SpatialRender.plan(model,f)+'</div>').join('');document.getElementById('topology').innerHTML=SpatialRender.topology(model);const view=SpatialRender.volume(document.getElementById('volume'),model);document.getElementById('floors').onchange=e=>view.setFloors(Number(e.target.value));document.querySelectorAll('[data-edge-toggle]').forEach(input=>input.onchange=()=>{document.querySelectorAll('[data-edge-type=\"'+input.dataset.edgeToggle+'\"]').forEach(edge=>edge.style.display=input.checked?'':'none');if(input.dataset.edgeToggle==='access')document.querySelector('.topology-svg').classList.toggle('access-hidden',!input.checked);});${endScript}</html>`;
@@ -151,12 +182,12 @@ $('download-showcase').onclick=async()=>{
 $('chat-form').onsubmit=e=>{e.preventDefault();send($('prompt').value);};$('prompt').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send($('prompt').value);}};
 document.querySelectorAll('[data-example]').forEach(b=>b.onclick=()=>send(b.dataset.example));document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
 $('show-circulation').onchange=()=>present(Number($('alternatives').value));$('alternatives').onchange=()=>present(Number($('alternatives').value));$('visible-floors').onchange=e=>state.volume?.setFloors(Number(e.target.value));
-$('cancel').onclick=()=>{if(state.worker){state.worker.terminate();state.worker=null;setBusy(false);message('本次生成已停止，可调整条件后重试。');status('已停止');}else state.abort?.abort();};
+$('cancel').onclick=()=>{if(state.worker){state.worker.terminate();state.worker=null;setBusy(false);message(state.receivedPreview?'已停止后续优化，已生成的合格方案已保留，可以继续查看和下载。':'本次生成已停止，可调整条件后重试。');retainPreview('已停止');}else state.abort?.abort();};
 $('settings-open').onclick=()=>{$('parser-mode').value=state.mode;$('proxy-endpoint').value=state.endpoint;$('budget').value=state.conditions.budget;$('settings').showModal();};$('settings-close').onclick=()=>$('settings').close();
 $('settings-form').onsubmit=e=>{e.preventDefault();try{const budget=Conditions.validate({budget:Number($('budget').value)}).budget;const url=new URL($('proxy-endpoint').value);if(url.protocol!=='https:'&&url.href!==LOCAL_ENDPOINT)throw Error('代理地址需要 HTTPS；本机可使用同源解析服务');state.endpoint=url.href;state.mode=$('parser-mode').value;state.conditions.budget=budget;localStorage.setItem('spacemodal-generator-preferences',JSON.stringify({endpoint:state.endpoint,mode:state.mode,budget,parserRevision}));modeLabel();$('settings').close();}catch(e){message(e.message,'error');}};
-$('reset').onclick=()=>{if(state.busy)return;document.querySelector('.tools-menu').open=false;state.volume?.dispose();state.volume=null;state.result=null;state.models=[];state.conditions={...Conditions.DEFAULTS,budget:state.conditions.budget};state.sources=Object.fromEntries(Object.keys(state.conditions).map(k=>[k,'demo_default']));localStorage.removeItem('spacemodal-generator-last');$('messages').replaceChildren();message('新的设计对话已开始。请输入生成范围、卧室和卫生间数量。');$('empty').hidden=false;$('metrics').hidden=true;$('legend').hidden=true;$('alternatives').hidden=true;$('result-title').textContent='空间预览';$('download-json').disabled=true;$('download-showcase').disabled=true;$('area-info-open').disabled=true;$('organization-summary').hidden=true;$('search-info').hidden=true;state.selected=null;$('visible-floors').value='2';showView('all');$('selection-info').textContent='';$('selection-info').hidden=true;status('等待需求');openConversation(false);};
+$('reset').onclick=()=>{if(state.busy)return;document.querySelector('.tools-menu').open=false;state.volume?.dispose();state.volume=null;state.result=null;state.models=[];state.conditions={...Conditions.DEFAULTS,budget:state.conditions.budget};state.sources=Object.fromEntries(Object.keys(state.conditions).map(k=>[k,'demo_default']));localStorage.removeItem('spacemodal-generator-last');$('messages').replaceChildren();message('新的设计对话已开始。请输入生成范围、卧室和卫生间数量。');$('empty').hidden=false;$('metrics').hidden=true;$('legend').hidden=true;$('alternatives').hidden=true;$('result-title').textContent='空间预览';$('download-json').disabled=true;$('download-review').disabled=true;$('download-showcase').disabled=true;$('area-info-open').disabled=true;$('organization-summary').hidden=true;$('search-info').hidden=true;state.selected=null;$('visible-floors').value='2';showView('all');$('selection-info').textContent='';$('selection-info').hidden=true;status('等待需求');openConversation(false);};
 modeLabel();
-try{const saved=JSON.parse(localStorage.getItem('spacemodal-generator-last')||'null');if(saved){Conditions.validate(saved.conditions);state.result=saved;state.conditions={...Conditions.DEFAULTS,...saved.conditions};delete state.conditions.anchorMode;state.sources={...saved.sources};delete state.sources.anchorMode;state.models=[saved.model,...saved.alternatives];present(0);message(saved.model.generation.ruleRevision==='global-organization-v5'?'已恢复上次生成的方案，优先通过公共区域组织通行。':'已恢复上次结果；重新生成后应用公共空间组织比较及阳台数量、连接的新规则。');}}catch{}
+try{const saved=JSON.parse(localStorage.getItem('spacemodal-generator-last')||'null');if(saved){Conditions.validate(saved.conditions);state.result=saved;state.conditions={...Conditions.DEFAULTS,...saved.conditions};delete state.conditions.anchorMode;state.sources={...saved.sources};delete state.sources.anchorMode;state.models=[saved.model,...saved.alternatives];present(0);message(saved.model.daylightPolicy!=='tiered-facade-v2'?'已恢复上次结果；重新生成后应用玄关面积上限与分级采光规则。':saved.model.mealPolicy!=='meal-joint-v1'?'已恢复上次结果；重新生成后应用餐厨成组安排、尺寸和面积控制。':saved.model.generation.stairRevision!=='stair-joint-v1'?'已恢复上次结果；重新生成后应用数据集楼梯尺寸、位置和玄关关系。':saved.model.generation.shapeRevision!=='public-shape-v1'?'已恢复上次结果；重新生成后应用公共空间凹角限制、玄关宽度和完整性评分。':saved.model.generation.ruleRevision==='stair-terminal-v6'?'已恢复上次生成的方案，优先通过公共区域组织通行。':'已恢复上次结果；重新生成后应用楼梯不作同层通路、二层独立到达走道的新规则。');}}catch{}
 
 $('area-info-open').onclick=()=>{
  const prior=state.result.areaPrior,model=activeModel();if(!prior)return;
