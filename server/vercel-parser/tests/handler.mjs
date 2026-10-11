@@ -30,6 +30,9 @@ try{
   response=await health.fetch(new Request('https://deployment.test/api/health'));
   const raw=await response.text();assert.equal(JSON.parse(raw).configured,true);assert.ok(!raw.includes('test-secret'));
   assert.equal(calls,2);
+  globalThis.fetch=async()=>new Response(JSON.stringify({choices:[{message:{content:JSON.stringify({patch:{...current,bedrooms:4,seed:124,balconies0:-1,balconies1:-1},unsupported:[]})}}]}));
+  response=await parser.fetch(req());assert.equal(response.status,200);
+  assert.deepEqual(await response.json(),{patch:{bedrooms:4},unsupported:[],source:'llm'});
   globalThis.fetch=async()=>new Response('unavailable',{status:401});
   assert.equal((await parser.fetch(req())).status,502);
   console.log('PASS Vercel handlers: health, CORS, key isolation, invalid input, legacy/current fields and upstream failure');

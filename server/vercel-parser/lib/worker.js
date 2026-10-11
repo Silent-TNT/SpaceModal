@@ -26,8 +26,8 @@ export default {async fetch(request,env){
   if(request.method!=='POST')return reply(origin,{error:'Method not allowed'},405);
   if(!request.headers.get('Content-Type')?.startsWith('application/json'))return reply(origin,{error:'请发送 JSON'},415);
   if(!env.PARSER_API_KEY)return reply(origin,{error:'大模型代理尚未配置，请暂时使用本地规则解析。'},503);
-  let body;
-  try{const raw=await request.text();if(raw.length>5000)return reply(origin,{error:'请求过长'},413);body=JSON.parse(raw);if(typeof body.text!=='string'||!body.text.trim()||body.text.length>1500)throw Error('请输入 1–1500 字需求');validate(body.current);if(['length','width','bedrooms','bathrooms','seed','budget'].some(k=>!Object.hasOwn(body.current,k)))throw Error('当前条件不完整');body.current={...DEFAULTS,...body.current};}catch(e){return reply(origin,{error:e instanceof SyntaxError?'需求格式无效':e.message},400);}
+  let body,clientFields;
+  try{const raw=await request.text();if(raw.length>5000)return reply(origin,{error:'请求过长'},413);body=JSON.parse(raw);if(typeof body.text!=='string'||!body.text.trim()||body.text.length>1500)throw Error('请输入 1–1500 字需求');validate(body.current);if(['length','width','bedrooms','bathrooms','seed','budget'].some(k=>!Object.hasOwn(body.current,k)))throw Error('当前条件不完整');clientFields=new Set(Object.keys(body.current));body.current={...DEFAULTS,...body.current};}catch(e){return reply(origin,{error:e instanceof SyntaxError?'需求格式无效':e.message},400);}
   const now=Date.now(),day=new Date(now).toISOString().slice(0,10),ip=request.headers.get('CF-Connecting-IP')||'unknown';
   if(daily.day!==day){daily={day,count:0};clients.clear();}
   const recent=(clients.get(ip)||[]).filter(t=>now-t<60000);
@@ -42,6 +42,16 @@ export default {async fetch(request,env){
     const parsed=JSON.parse(content.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,''));
     const patch=validate(parsed.patch);
     if(!Array.isArray(parsed.unsupported)||parsed.unsupported.length>12||parsed.unsupported.some(s=>typeof s!=='string'||s.length>300))throw Error('大模型返回格式无效');
+    // Models sometimes echo defaults or change the seed without being asked.
+    // Preserve the caller's schema and only return fields mentioned this turn.
+    const mentions={length:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|length/i,width:/长|宽|尺寸|边界|范围|尺度|×|[xX*]|米|mm|width/i,bedrooms:/卧|房|居|bedroom/i,bathrooms:/卫|浴|bathroom/i,balconies0:/阳台|balcon/i,balconies1:/阳台|balcon/i,seed:/种子|seed|换(?:一|个|一套|一个)|再来|另一个|新方案/i,budget:/预算|搜索|候选|budget/i};
+    for(const key of Object.keys(patch)){
+      if(!clientFields.has(key)){
+        if(mentions[key]?.test(body.text))parsed.unsupported.push('当前页面版本尚未接入阳台数量，请使用支持阳台条件的新版页面');
+        delete patch[key];
+      }else if(mentions[key]&&!mentions[key].test(body.text))delete patch[key];
+    }
+    parsed.unsupported=[...new Set(parsed.unsupported)];
     return reply(origin,{patch,unsupported:parsed.unsupported,source:'llm'});
   }catch(e){return reply(origin,{error:e instanceof SyntaxError?'大模型返回格式无效，请重新发送。':e.name==='TimeoutError'?'大模型响应超时，请稍后重试。':e.message},502);}
   finally{inFlight--;}
