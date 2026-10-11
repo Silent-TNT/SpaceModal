@@ -1,2 +1,2 @@
 // Public endpoint only. Never put API credentials here.
-window.SpaceModalParser={endpoint:'https://spacemodal-parser.silent-tnt.chatgpt.site/parse',revision:'defense-1'};
+window.SpaceModalParser={endpoint:'https://spacemodal-parser-silent-tnts-projects.vercel.app/parse',revision:'vercel-20261011-1'};

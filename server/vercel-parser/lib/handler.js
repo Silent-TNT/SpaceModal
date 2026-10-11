@@ -1,4 +1,5 @@
 import worker from './worker.js';
+import {upstreamFetch} from './upstream.js';
 
 export function handle(request,pathname){
   const url=new URL(request.url);url.pathname=pathname;url.search='';
@@ -7,6 +8,7 @@ export function handle(request,pathname){
   forwarded.headers.set('CF-Connecting-IP',request.headers.get('x-real-ip')||'unknown');
   return worker.fetch(forwarded,{
     PARSER_API_KEY:process.env.PARSER_API_KEY,
+    UPSTREAM_FETCH:upstreamFetch,
     PARSER_MODEL:process.env.PARSER_MODEL||'qwen-plus'
   });
 }

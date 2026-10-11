@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": {"node": "22.x"},
-  "scripts": {"test": "node tests/handler.mjs"}
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "test": "node tests/upstream.mjs && node tests/handler.mjs"
+  }
 }

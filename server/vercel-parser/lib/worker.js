@@ -35,7 +35,7 @@ export default {async fetch(request,env){
   clients.set(ip,[...recent,now]);daily.count++;inFlight++;
   if(clients.size>2000)clients.delete(clients.keys().next().value);
   try{
-    const upstream=await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',{method:'POST',signal:AbortSignal.timeout(35000),headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.PARSER_API_KEY},body:JSON.stringify({model:env.PARSER_MODEL||'qwen-plus',messages:[{role:'system',content:SYSTEM},{role:'user',content:JSON.stringify(body)}],response_format:{type:'json_object'},enable_thinking:false,max_tokens:700,stream:false})});
+    const upstream=await (env.UPSTREAM_FETCH||fetch)('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',{method:'POST',signal:AbortSignal.timeout(35000),headers:{'Content-Type':'application/json','Authorization':'Bearer '+env.PARSER_API_KEY},body:JSON.stringify({model:env.PARSER_MODEL||'qwen-plus',messages:[{role:'system',content:SYSTEM},{role:'user',content:JSON.stringify(body)}],response_format:{type:'json_object'},enable_thinking:false,max_tokens:700,stream:false})});
     if(!upstream.ok)return reply(origin,{error:'大模型暂时不可用，请稍后重试或使用本地规则解析。'},502);
     const data=await upstream.json(),content=data.choices?.[0]?.message?.content;
     if(typeof content!=='string')throw Error('大模型返回格式无效');
@@ -53,6 +53,6 @@ export default {async fetch(request,env){
     }
     parsed.unsupported=[...new Set(parsed.unsupported)];
     return reply(origin,{patch,unsupported:parsed.unsupported,source:'llm'});
-  }catch(e){return reply(origin,{error:e instanceof SyntaxError?'大模型返回格式无效，请重新发送。':e.name==='TimeoutError'?'大模型响应超时，请稍后重试。':e.message},502);}
+  }catch(e){console.error('parser_failure',JSON.stringify({name:e.name,code:e.cause?.code,causes:e.cause?.errors?.map(item=>({code:item.code,address:item.address}))}));return reply(origin,{error:e instanceof SyntaxError?'大模型返回格式无效，请重新发送。':e.name==='TimeoutError'?'大模型响应超时，请稍后重试。':'大模型连接暂时不可用，请稍后重试或使用本地规则解析。'},502);}
   finally{inFlight--;}
 }};
