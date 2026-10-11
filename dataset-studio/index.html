@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>数据集制作演示 · SpaceModal</title>
-  <link rel="stylesheet" href="./assets/style.css?v=1">
+  <link rel="stylesheet" href="./assets/style.css?v=5">
 </head>
 <body>
   <header class="topbar">
@@ -43,7 +43,7 @@
       <div class="workspace-toolbar">
         <div class="mode-group" role="toolbar" aria-label="编辑工具">
           <button data-mode="select" class="tool active" title="选择体块或移动轴线">选择</button>
-          <button data-mode="calibrate" class="tool" title="依次点击建筑图像的左上角和右下角">校准图纸</button>
+          <button data-mode="calibrate" class="tool" title="依次选取两个图纸点及其对应的数据点，只调整底图">让图纸对齐数据</button>
           <button data-mode="axis_x" class="tool" title="点击增加一条竖向轴线">竖向轴线</button>
           <button data-mode="axis_y" class="tool" title="点击增加一条横向轴线">横向轴线</button>
           <button data-mode="room" class="tool" title="拖出一个矩形体块">画体块</button>
@@ -52,7 +52,7 @@
           <button id="undo-btn" class="tool" title="撤回上一步" disabled>↶ 撤回</button>
           <button id="redo-btn" class="tool" title="重做刚撤回的步骤" disabled>↷ 重做</button>
         </div>
-        <div class="toolbar-right">
+        <div class="toolbar-right"><select id="pilot-view" class="provider-select" hidden aria-label="历史测试结果"><option value="astra">Astra 原始候选</option><option value="human">人工数据对照</option></select>
           <label class="inline-field"><input id="demo-show-rooms" type="checkbox" checked>体块标注</label><label class="inline-field"><input id="show-grid" type="checkbox" checked>300 mm 虚线网格</label>
           <label class="inline-field"><input id="show-guides" type="checkbox" checked>分割参考线</label>
           <button id="clear-guides-btn" class="tool" title="清除当前案例未锁定的参考线">清除未锁定参考线</button>
@@ -72,11 +72,11 @@
         <span id="floor-2-name" class="floor-name" hidden></span>
         <span id="floor-1-name" class="floor-name" hidden></span>
       </div>
-      <div class="bottom-status"><span id="message">10 套内置示例 · 本地上传与修改保存在此浏览器 · 预置标注不代表在线识别</span><span id="position">—</span></div>
+      <div class="bottom-status"><span id="message">10 套人工示例 + Astra / 千问各 1 套历史测试 · 本地上传与修改保存在此浏览器</span><span id="position">—</span></div>
     </main>
 
     <aside id="inspector" class="inspector">
-      <section class="section preview-section">
+      <section id="pilot-info" class="section" hidden><div class="section-title"><h2 id="pilot-heading">模型历史识别测试</h2></div><p id="pilot-summary" class="muted"></p><p id="pilot-metrics" class="muted"></p><p id="pilot-issues" class="muted"></p><p class="muted">指标来自当时保存的单案例评估；当前编辑不重新计算指标。切换上方结果类型后点“载入”查看对照，撤回可恢复切换前的编辑。</p></section><section class="section preview-section">
         <div class="section-title"><h2>实时三维</h2><span>拖动旋转</span><button id="inspector-pin" class="pin-drawer-btn" type="button" aria-pressed="false">固定</button></div>
         <canvas id="preview-3d"></canvas>
         <div class="legend"><span class="legend-dot wall"></span>墙轴<span class="legend-dot virtual"></span>虚拟线<span class="legend-dot room"></span>功能体块</div>
@@ -84,8 +84,13 @@
       <section class="section">
         <div class="section-title"><h2>项目参数</h2></div>
         <div class="size-grid"><label>宽度 X<input id="size-x" type="number" step="300" min="300"></label><label>进深 Y<input id="size-y" type="number" step="300" min="300"></label></div>
-        <div class="unit-hint">单位 mm · 自动吸附 300 mm 模数</div>
+        <div id="size-hint" class="unit-hint">单位 mm · 自动吸附 300 mm 模数</div>
+        <p id="registration-status" class="unit-hint" role="status"></p>
         <button id="apply-size-btn" class="button full ghost">应用尺寸与轴线缩放</button>
+        <p class="muted">图纸配准：图纸点 A → 数据点 A → 图纸点 B → 数据点 B。数据点可点击体块角点；默认保持原图比例并自动修正旋转。</p>
+        <label class="check-row"><input id="registration-stretch" type="checkbox">允许横纵分别校正（仅用于变形图纸）</label>
+        <label>底图透明度<input id="image-opacity" type="range" min="0" max="100" value="100" aria-label="底图透明度"></label>
+        <button id="reset-registration-btn" class="button full ghost">撤销当前层底图配准</button>
         <button id="grid-btn" class="button full ghost">从当前轴线生成未分类矩形</button>
         <button id="merge-btn" class="button full ghost">合并相邻同类矩形</button>
       </section>
@@ -143,8 +148,8 @@
       <p class="muted">调整只改变选中矩形体块的对应边；不能缩至小于 300 mm 或超出建筑尺寸。</p>
     </section>
   </div>
-  <script src="./assets/demo.js?v=1"></script>
-  <script src="./assets/app.js?v=1" defer></script>
+  <script src="./assets/demo.js?v=5"></script>
+  <script src="./assets/app.js?v=5" defer></script>
 <dialog id="upload-dialog" class="upload-dialog">
       <form id="upload-form"><h2>上传两层图纸</h2>
       <p>图片仅保存在当前浏览器。选择楼层并填写尺寸后，开始手动划分体块。</p>
@@ -153,7 +158,8 @@
       <label>二层图片<input name="floor2" type="file" accept="image/png,image/jpeg,image/webp" required></label>
       <div class="upload-sizes"><label>建筑宽度（mm）<input name="width" type="number" min="300" max="60000" step="300" value="18000" required></label>
       <label>建筑进深（mm）<input name="depth" type="number" min="300" max="60000" step="300" value="12000" required></label></div>
-      <p>尺寸是标注尺度，请按图纸填写；上传后用“校准图纸”框选建筑范围。</p>
+      <p>尺寸是标注尺度，请按图纸填写；可用“让图纸对齐数据”选择对应点配准底图。</p>
       <p id="upload-error" role="alert"></p><div class="button-row"><button type="button" id="upload-cancel" class="button ghost">取消</button><button type="submit" class="button primary">开始标注</button></div>
       </form></dialog></body>
 </html>
+

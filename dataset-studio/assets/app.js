@@ -8,7 +8,7 @@ const colors = {
 };
 const state = {
   cases:[], draft:null, images:{}, types:[], mode:'select', selectedRoomId:null, selectedAxisId:null,
-  batchRoomIds:new Set(), alignmentPick:null,
+  batchRoomIds:new Set(), alignmentPick:null, calibration:null, imageOpacity:1,
   activeRoomType:'living_room',visibleRoomTypes:new Set(),
   selectedFloor:1, drag:null, drawing:null, zoom:1, pan:{x:0,y:0},
   yaw:0.7, pitch:0.55, previewDrag:null, qc:null, showAxes:false, showGrid:true,
@@ -102,10 +102,14 @@ async function restoreWorkspace(snapshot){
   const oldUrls=state.draft?.floors?.map((floor)=>floor.image_url).join('|');
   const revision=state.draft?.revision,status=state.draft?.status;
   state.draft=structuredClone(snapshot.draft);if(state.draft){state.draft.revision=revision;state.draft.status=status;}state.guides=structuredClone(snapshot.guides);
-  state.selectedRoomId=snapshot.selectedRoomId;state.selectedAxisId=snapshot.selectedAxisId;state.selectedFloor=snapshot.selectedFloor;state.alignmentPick=null;
+  state.selectedRoomId=snapshot.selectedRoomId;state.selectedAxisId=snapshot.selectedAxisId;state.selectedFloor=snapshot.selectedFloor;state.alignmentPick=null;state.calibration=null;
   if(oldUrls!==state.draft?.floors?.map((floor)=>floor.image_url).join('|'))await loadImages();
   if(state.draft){$('size-x').value=state.draft.building_size.x;$('size-y').value=state.draft.building_size.y;saveGuides();updateFloorNames()}
-  updateSelection();renderRoomList();render();
+  updateSizeControls();updateSelection();renderRoomList();render();
+  if(state.draft){
+    if(isDirty())cacheDraft();
+    else try{localStorage.removeItem(recoveryKey(state.draft.case_id));}catch{}
+  }
 }
 async function undoHistory(){
   const action=history.undo.pop();if(!action)return;
@@ -232,6 +236,7 @@ async function openCase(id) {
         }
       }
     }
+    if(window.REVIEW_DEMO?.upgradeRegistration)await window.REVIEW_DEMO.upgradeRegistration(draft);
     state.draft = draft;
     document.querySelector('.workspace').inert=persistence.blocked;document.querySelector('.inspector').inert=persistence.blocked;
     $('save-state').textContent=persistence.blocked?'版本冲突 · 本地草稿已保留':isDirty()?'待同步':'已保存';
@@ -239,7 +244,7 @@ async function openCase(id) {
     $('wall-review-btn').disabled = false;
     state.selectedRoomId = null;
     state.selectedAxisId = null;
-    state.batchRoomIds.clear();state.alignmentPick=null;
+    state.batchRoomIds.clear();state.alignmentPick=null;state.calibration=null;
     state.zoom = 1;
     state.pan = {x:0,y:0};
     state.guides = loadGuides(id);
@@ -251,6 +256,7 @@ async function openCase(id) {
       : (draft.source === 'manual_v14' ? '人工原始数据' : statusName(draft.status));
     $('size-x').value = draft.building_size.x;
     $('size-y').value = draft.building_size.y;
+    updateSizeControls();
     updateFloorNames();
     updateSelection();
     renderRoomList();
@@ -312,6 +318,11 @@ function sharedPixelsPerMm(rect,slotHeight){
   let scale=Infinity;
   for(const floor of [1,2]){
     const image=state.images[floor],data=floorData(floor);if(!image||!data)continue;
+    if(data.image_viewport==='building'){
+      const q=state.draft.north_rotation_quadrants%4;
+      scale=Math.min(scale,(rect.width-48)/((q%2?size.y:size.x)+1200),(slotHeight-28)/((q%2?size.x:size.y)+1200));
+      continue;
+    }
     const [left,top,right,bottom]=data.bounds_px;
     const totalX=image.width/Math.max(1,right-left)*size.x;
     const totalY=image.height/Math.max(1,bottom-top)*size.y;
@@ -339,23 +350,28 @@ function floorAt(point) {
   let closest=null,score=Infinity;
   for (const floor of [2,1]) {
     const s=scene(floor);if(!s)continue;
-    const halfW=(s.q%2?s.image.height*s.sourceScaleY:s.image.width*s.sourceScaleX)/2;
-    const halfH=(s.q%2?s.image.width*s.sourceScaleX:s.image.height*s.sourceScaleY)/2;
-    if(Math.abs(point.x-s.cx)>halfW+14||Math.abs(point.y-s.cy)>halfH+14)continue;
-    const distance=Math.abs(point.y-s.cy)/Math.max(1,halfH);
+    const size=state.draft.building_size;
+    const corners=floorData(floor).image_viewport==='building'
+      ?[[-600,-600],[size.x+600,-600],[size.x+600,size.y+600],[-600,size.y+600]].map(([x,y])=>worldToScreen(floor,x,y))
+      :[[0,0],[s.image.width,0],[s.image.width,s.image.height],[0,s.image.height]].map(([x,y])=>imageToScreen(floor,x,y));
+    corners.push(...floorData(floor).boundary.map(([x,y])=>worldToScreen(floor,x,y)));
+    const xs=corners.map(p=>p.x),ys=corners.map(p=>p.y);
+    const left=Math.min(...xs),right=Math.max(...xs),top=Math.min(...ys),bottom=Math.max(...ys);
+    if(point.x<left-14||point.x>right+14||point.y<top-14||point.y>bottom+14)continue;
+    const distance=Math.abs(point.y-(top+bottom)/2)/Math.max(1,(bottom-top)/2);
     if(distance<score){closest=floor;score=distance;}
   }
   return closest;
 }
 
-function imageToScreen(floor,ix,iy) {
+function baseImageToScreen(floor,ix,iy) {
   const s=scene(floor); if(!s)return {x:0,y:0};
   const dx=ix-s.image.width/2,dy=iy-s.image.height/2;
   const pairs=[[dx,dy],[-dy,dx],[-dx,-dy],[dy,-dx]];
   return {x:s.cx+pairs[s.q][0]*s.scaleX,y:s.cy+pairs[s.q][1]*s.scaleY};
 }
 
-function screenToImage(floor,x,y) {
+function screenToBaseImage(floor,x,y) {
   const s=scene(floor); if(!s)return {x:0,y:0};
   const dx=(x-s.cx)/s.scaleX,dy=(y-s.cy)/s.scaleY;
   const pairs=[[dx,dy],[dy,-dx],[-dx,-dy],[-dy,dx]];
@@ -364,31 +380,119 @@ function screenToImage(floor,x,y) {
 
 function worldToScreen(floor,x,y) {
   const f=floorData(floor),size=state.draft.building_size;
+  if(f.image_viewport==='building'){
+    const s=scene(floor),dx=(x-size.x/2)*s.scale,dy=(size.y/2-y)*s.scale;
+    const pairs=[[dx,dy],[-dy,dx],[-dx,-dy],[dy,-dx]];
+    return {x:s.cx+pairs[s.q][0],y:s.cy+pairs[s.q][1]};
+  }
   const [left,top,right,bottom]=f.bounds_px;
-  return imageToScreen(floor,left+x/size.x*(right-left),bottom-y/size.y*(bottom-top));
+  return baseImageToScreen(floor,left+x/size.x*(right-left),bottom-y/size.y*(bottom-top));
 }
 
-function screenToWorld(floor,x,y) {
+function screenToWorld(floor,x,y,bounded=true) {
   const f=floorData(floor),size=state.draft.building_size;
+  if(f.image_viewport==='building'){
+    const s=scene(floor),dx=(x-s.cx)/s.scale,dy=(y-s.cy)/s.scale;
+    const pairs=[[dx,dy],[dy,-dx],[-dx,-dy],[-dy,dx]];
+    const world={x:pairs[s.q][0]+size.x/2,y:size.y/2-pairs[s.q][1]};
+    return bounded?{x:clamp(world.x,0,size.x),y:clamp(world.y,0,size.y)}:world;
+  }
   const [left,top,right,bottom]=f.bounds_px;
-  const p=screenToImage(floor,x,y);
-  return {x:clamp((p.x-left)/Math.max(1,right-left)*size.x,0,size.x),y:clamp((bottom-p.y)/Math.max(1,bottom-top)*size.y,0,size.y)};
+  const p=screenToBaseImage(floor,x,y);
+  const world={x:(p.x-left)/Math.max(1,right-left)*size.x,y:(bottom-p.y)/Math.max(1,bottom-top)*size.y};
+  return bounded?{x:clamp(world.x,0,size.x),y:clamp(world.y,0,size.y)}:world;
+}
+
+// Registration maps source image pixels to the fixed dataset coordinate system.
+// bounds_px remains the legacy viewport reference so calibration never moves geometry.
+function imageRegistration(floor){
+  const data=floorData(floor),size=state.draft.building_size;
+  if(data.image_registration)return data.image_registration.matrix;
+  const [left,top,right,bottom]=data.bounds_px;
+  const sx=size.x/(right-left),sy=size.y/(bottom-top);
+  return [sx,0,0,-sy,-left*sx,bottom*sy];
+}
+function imageToWorld(floor,x,y){
+  const [a,b,c,d,e,f]=imageRegistration(floor);
+  return {x:a*x+c*y+e,y:b*x+d*y+f};
+}
+function worldToImage(floor,x,y){
+  const [a,b,c,d,e,f]=imageRegistration(floor),det=a*d-b*c;
+  return {x:(d*(x-e)-c*(y-f))/det,y:(a*(y-f)-b*(x-e))/det};
+}
+function imageToScreen(floor,x,y){const p=imageToWorld(floor,x,y);return worldToScreen(floor,p.x,p.y)}
+function screenToImage(floor,x,y){const p=screenToWorld(floor,x,y,false);return worldToImage(floor,p.x,p.y)}
+
+function registrationFromPairs(points,stretch=false){
+  const [p,u,q,v]=points,dx=q.x-p.x,dy=q.y-p.y,wx=v.x-u.x,wy=v.y-u.y;
+  if(Math.hypot(dx,dy)<10||Math.hypot(wx,wy)<1)throw Error('两组对应点距离太近，请选择相距更远的角点。');
+  let a,b,c,d;
+  if(stretch){
+    if(Math.abs(dx)<10||Math.abs(dy)<10)throw Error('横纵校正需要两个在横向和纵向均有间距的点。');
+    a=wx/dx;b=0;c=0;d=wy/dy;
+    if(a<=0||d>=0)throw Error('横纵校正不支持旋转或镜像，请核对对应点，或关闭横纵分别校正。');
+  }else{
+    const n=dx*dx+dy*dy;a=(wx*dx-wy*dy)/n;b=(wy*dx+wx*dy)/n;c=b;d=-a;
+  }
+  return [a,b,c,d,u.x-a*p.x-c*p.y,u.y-b*p.x-d*p.y];
+}
+function registrationTarget(floor,p){
+  let target=screenToWorld(floor,p.x,p.y),distance=14;
+  target={x:snap(target.x),y:snap(target.y)};
+  const points=[...floorData(floor).boundary];
+  for(const room of state.draft.rooms.filter(r=>r.floor===floor||(floor===2&&r.box_min[2]===0&&r.box_max[2]===6000))){
+    const [x0,y0]=room.box_min,[x1,y1]=room.box_max;
+    points.push([x0,y0],[x1,y0],[x1,y1],[x0,y1]);
+  }
+  for(const [x,y] of points){const s=worldToScreen(floor,x,y),d=Math.hypot(s.x-p.x,s.y-p.y);if(d<distance){distance=d;target={x,y}}}
+  return target;
+}
+function calibrateAtPoint(floor,p){
+  if(state.calibration&&state.calibration.floor!==floor){msg('请在同一层完成四次点击；按 Esc 可取消重新开始。');return;}
+  if(!state.calibration)state.calibration={floor,points:[],stretch:$('registration-stretch').checked};
+  const pick=state.calibration,stage=pick.points.length;
+  pick.points.push(stage%2?registrationTarget(floor,p):screenToImage(floor,p.x,p.y));
+  if(pick.points.length<4){msg(`${floor} 层：${['','请点击对应的数据点 A（体块角点）。','请点击图纸点 B，尽量远离 A。','请点击对应的数据点 B（体块角点）。'][pick.points.length]}`);render();return;}
+  try{
+    const matrix=registrationFromPairs(pick.points,pick.stretch);
+    recordHistory('让图纸对齐数据');
+    floorData(floor).image_registration={matrix,method:pick.stretch?'axis_scale':'similarity',anchors:structuredClone(pick.points)};
+    delete floorData(floor).registration_check;
+    msg(`${floor} 层底图已对齐。数据尺寸和体块坐标保持不变，可调低底图透明度检查，或撤回重做。`);
+  }catch(error){msg(error.message)}
+  state.calibration=null;render();
+}
+function existingDimensionsLocked(){
+  return !!state.draft&&(state.draft.source==='manual_v14'||state.draft.source==='demo_prepared'||state.cases.some(c=>c.id===state.draft.case_id&&c.has_manual_json));
+}
+function updateSizeControls(){
+  const locked=existingDimensionsLocked();
+  if(state.draft){$('size-x').value=state.draft.building_size.x;$('size-y').value=state.draft.building_size.y;}
+  for(const id of ['size-x','size-y'])$(id).readOnly=locked;
+  $('apply-size-btn').disabled=locked;
+  $('apply-size-btn').textContent=locked?'已有数据尺寸已锁定':'应用尺寸与轴线缩放';
+  $('size-hint').textContent=locked?'单位 mm · 以已有真实数据为准；配准只调整底图':'单位 mm · 自动吸附 300 mm 模数';
+  if(state.draft?.pilot&&state.draft.pilot.view!=='human'){
+    $('size-hint').textContent='单位 mm · 历史候选估算尺度（原样保留）；真实尺寸见历史测试说明';
+    $('apply-size-btn').textContent='历史识别结果尺度已锁定';
+  }
+  window.REVIEW_DEMO?.updatePilotUI?.();
 }
 
 function alignFloorAtBasePoint(floor,point){
   const pick=state.alignmentPick;
   if(!pick){
-    const world=screenToWorld(floor,point.x,point.y);
-    state.alignmentPick={floor,world:{x:snap(world.x),y:snap(world.y)}};
+    const imagePoint=screenToImage(floor,point.x,point.y),world=imageToWorld(floor,imagePoint.x,imagePoint.y);
+    state.alignmentPick={floor,world};
     msg(`已记录${floor}层基准点（X${state.alignmentPick.world.x}，Y${state.alignmentPick.world.y}）。请在另一层点击同一个位置。`);return;
   }
   if(pick.floor===floor){msg('请切换到另一层，点击同一个墙角或柱网交点。');return;}
-  const target=pick.world,imagePoint=screenToImage(floor,point.x,point.y),data=floorData(floor),size=state.draft.building_size;
-  const [left,top,right,bottom]=data.bounds_px;
-  const targetPx={x:left+target.x/size.x*(right-left),y:bottom-target.y/size.y*(bottom-top)};
-  const dx=targetPx.x-imagePoint.x,dy=targetPx.y-imagePoint.y;
+  const target=pick.world,imagePoint=screenToImage(floor,point.x,point.y),data=floorData(floor);
+  const current=imageToWorld(floor,imagePoint.x,imagePoint.y),matrix=[...imageRegistration(floor)];
   recordHistory('对齐楼层图纸');
-  data.bounds_px=[left+dx,top+dy,right+dx,bottom+dy].map((n)=>Math.round(n*100)/100);
+  matrix[4]+=target.x-current.x;matrix[5]+=target.y-current.y;
+  data.image_registration={matrix,method:'floor_alignment'};
+  delete data.registration_check;
   state.alignmentPick=null;render();
   msg(`两层图纸已按基准点对齐到 X${target.x}、Y${target.y} mm。保存草稿以保留调整。`);
 }
@@ -494,11 +598,15 @@ function drawRulers(ctx,w,h){
 function drawPlan(ctx,floor) {
   if(!state.images[floor])return;
   const s=scene(floor);
-  const displayW=(s.q%2?s.image.height*s.sourceScaleY:s.image.width*s.sourceScaleX);
-  const displayH=(s.q%2?s.image.width*s.sourceScaleX:s.image.height*s.sourceScaleY);
+  const cropped=floorData(floor).image_viewport==='building',size=state.draft.building_size;
+  const displayW=cropped?((s.q%2?size.y:size.x)+1200)*s.scale:(s.q%2?s.image.height*s.sourceScaleY:s.image.width*s.sourceScaleX);
+  const displayH=cropped?((s.q%2?size.x:size.y)+1200)*s.scale:(s.q%2?s.image.width*s.sourceScaleX:s.image.height*s.sourceScaleY);
   ctx.fillStyle='#fff';ctx.fillRect(s.cx-displayW/2-3,s.cy-displayH/2-3,displayW+6,displayH+6);
-  ctx.save();ctx.translate(s.cx,s.cy);ctx.rotate(s.q*Math.PI/2);ctx.scale(s.sourceScaleX,s.sourceScaleY);
-  ctx.drawImage(s.image,-s.image.width/2,-s.image.height/2);ctx.restore();
+  const origin=imageToScreen(floor,0,0),px=imageToScreen(floor,1,0),py=imageToScreen(floor,0,1);
+  ctx.save();ctx.globalAlpha=state.imageOpacity;
+  if(cropped){ctx.beginPath();ctx.rect(s.cx-displayW/2,s.cy-displayH/2,displayW,displayH);ctx.clip();}
+  ctx.transform(px.x-origin.x,px.y-origin.y,py.x-origin.x,py.y-origin.y,origin.x,origin.y);
+  ctx.drawImage(s.image,0,0);ctx.restore();
   drawGrid(ctx,floor);
   const data=floorData(floor);
   const boundary=data.boundary.map(([x,y])=>worldToScreen(floor,x,y));
@@ -529,6 +637,13 @@ function drawPlan(ctx,floor) {
     const a=worldToScreen(floor,state.drawing.start.x,state.drawing.start.y);
     const b=worldToScreen(floor,state.drawing.current.x,state.drawing.current.y);
     ctx.strokeStyle='#ef4b75';ctx.lineWidth=2;ctx.strokeRect(Math.min(a.x,b.x),Math.min(a.y,b.y),Math.abs(a.x-b.x),Math.abs(a.y-b.y));
+  }
+  if(state.calibration?.floor===floor){
+    state.calibration.points.forEach((point,i)=>{
+      const p=i%2?worldToScreen(floor,point.x,point.y):imageToScreen(floor,point.x,point.y);
+      ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fillStyle=i%2?'#1688cb':'#ef4b75';ctx.fill();
+      ctx.font='bold 12px sans-serif';ctx.textAlign='left';ctx.fillText(`${i<2?'A':'B'} ${i%2?'数据':'图纸'}`,p.x+9,p.y-9);
+    });
   }
   const labelY=Math.max(RULER+2,s.cy-displayH/2);
   ctx.fillStyle='#173c39';ctx.fillRect(s.cx-displayW/2,labelY,112,27);
@@ -566,6 +681,7 @@ function render(){
   else{ctx.fillStyle='#a5b9ba';ctx.font='15px "Microsoft YaHei UI",sans-serif';ctx.textAlign='center';ctx.fillText('选择一套图纸，开始在共享画布中编辑两层平面',w/2,h/2)}
   drawRulers(ctx,w,h);
   $('zoom-level').textContent=`${Math.round(state.zoom*100)}%`;
+  $('registration-status').textContent=state.draft?state.draft.floors.map(f=>`${f.floor} 层：${f.registration_check?.applied?(f.registration_check.status==='auto_aligned'?'已自动配准 · 待人工核对':'配准候选 · 局部边界需复核'):f.image_registration?'手动配准':'尚未配准'}`).join('；'):'';
   draw3D();
 }
 
@@ -673,17 +789,7 @@ function pointerDown(event,floor){
   event.currentTarget.setPointerCapture(event.pointerId);
   const w=screenToWorld(floor,p.x,p.y);state.selectedFloor=floor;
   if(state.mode==='calibrate'){
-    const imagePoint=screenToImage(floor,p.x,p.y);
-    if(!state.calibration){state.calibration={floor,first:imagePoint};msg(`${floor} 层校准：请点击建筑图像的另一角。`)}
-    else if(state.calibration.floor===floor){
-      const a=state.calibration.first,b=imagePoint;
-      if(Math.abs(a.x-b.x)>50&&Math.abs(a.y-b.y)>50){
-        recordHistory('校准图纸边框');
-        floorData(floor).bounds_px=[Math.min(a.x,b.x),Math.min(a.y,b.y),Math.max(a.x,b.x),Math.max(a.y,b.y)].map((n)=>Math.round(n*100)/100);
-        msg(`${floor} 层图纸边框已重新校准，请核对体块叠加。`);render();
-      }
-      state.calibration=null;
-    }return;
+    calibrateAtPoint(floor,p);return;
   }
   if(state.mode==='align'){alignFloorAtBasePoint(floor,p);return;}
   if(state.mode==='axis_x'||state.mode==='axis_y'){
@@ -914,7 +1020,7 @@ function renderFunctionLayers(){
 }
 
 function selectFunctionLayer(typeId){
-  state.activeRoomType=typeId;state.mode='assign';state.alignmentPick=null;
+  state.activeRoomType=typeId;state.mode='assign';state.alignmentPick=null;state.calibration=null;
   if(!drawerPinned('inspector'))document.body.classList.remove('inspector-open');$('inspector-toggle').setAttribute('aria-pressed',String(drawerPinned('inspector')));
   document.querySelectorAll('[data-mode]').forEach((button)=>button.classList.toggle('active',button.dataset.mode==='assign'));
   renderFunctionLayers();
@@ -924,6 +1030,7 @@ function selectFunctionLayer(typeId){
 
 function applySize(){
   if(!state.draft)return;
+  if(existingDimensionsLocked()){updateSizeControls();$('size-x').value=state.draft.building_size.x;$('size-y').value=state.draft.building_size.y;msg('已有数据使用真实尺寸。请用“让图纸对齐数据”调整底图。');return;}
   const old=state.draft.building_size;
   const width=snap(Number($('size-x').value)),depth=snap(Number($('size-y').value));
   if(width<300||depth<300){msg('尺寸无效');return;}
@@ -933,6 +1040,12 @@ function applySize(){
   for(const room of state.draft.rooms){for(const key of ['box_min','box_max']){room[key][0]=snap(room[key][0]*fx);room[key][1]=snap(room[key][1]*fy)}}
   for(const axis of state.draft.axes)axis.position=snap(axis.position*(axis.axis==='x'?fx:fy));
   for(const floor of state.draft.floors)for(const point of floor.boundary){point[0]=snap(point[0]*fx);point[1]=snap(point[1]*fy)}
+  for(const floor of state.draft.floors){
+    if(floor.image_registration){
+      const m=floor.image_registration.matrix;
+      floor.image_registration={matrix:[m[0]*fx,m[1]*fy,m[2]*fx,m[3]*fy,m[4]*fx,m[5]*fy],method:'resized_local_draft'};
+    }
+  }
   old.x=width;old.y=depth;state.draft.scale_source='reviewer';updateSelection();render();msg('尺寸和所有几何坐标已按比例缩放到 300 mm 模数。');
 }
 
@@ -1069,7 +1182,7 @@ async function visionCase(){if(!state.draft||persistence.blocked||persistence.ap
   try{const result=await api(`/api/cases/${requested.case_id}/vision?provider=${encodeURIComponent($('vision-provider').value)}`,{method:'POST',body:JSON.stringify(requested)});
     if(state.draft?.case_id!==requested.case_id||draftContent()!==before){msg('识别期间案例或体块已改变，未覆盖当前编辑。请在保存后重新识别。');return;}
     recordHistory('视觉识别候选');result.revision=state.draft.revision;state.draft=result;cacheDraft();
-    state.selectedRoomId=null;state.selectedAxisId=null;state.qc=null;state.batchRoomIds.clear();await loadImages();updateFloorNames();updateSelection();renderRoomList();renderQc();render();msg(`预置标注已载入：${state.draft.rooms.length} 个体块。请检查图纸层序、尺寸、建筑边界与开放空间。`);
+    state.selectedRoomId=null;state.selectedAxisId=null;state.qc=null;state.batchRoomIds.clear();state.calibration=null;await loadImages();updateFloorNames();updateSizeControls();updateSelection();renderRoomList();renderQc();render();msg(`预置标注已载入：${state.draft.rooms.length} 个体块。请检查图纸层序、尺寸、建筑边界与开放空间。`);
   }catch(error){msg(`视觉识别失败：${error.message}`)}finally{button.disabled=false}
 }
 
@@ -1106,8 +1219,17 @@ function installEvents(){
     state.mode=button.dataset.mode;document.querySelectorAll('[data-mode]').forEach((b)=>b.classList.toggle('active',b===button));
     if(state.mode==='axis_x'||state.mode==='axis_y'){state.showAxes=true;$('show-axes').checked=true}
     if(state.mode!=='align')state.alignmentPick=null;
-    msg({select:'选择体块或移动轴线。',calibrate:'依次点击建筑图像边框的两角。',axis_x:'点击图纸增加竖向轴线。',axis_y:'点击图纸增加横向轴线。',room:'拖动绘制矩形体块；靠近参考线时优先吸附。',assign:`点击待分类体块，附着${state.types.find((t)=>t.id===state.activeRoomType)?.label||'当前'}功能图层。`,align:'先点击一层或二层的墙角／柱网交点，再到另一层点击同一点。'}[state.mode]);
+    state.calibration=null;
+    msg({select:'选择体块或移动轴线。',calibrate:'请点击图纸点 A，再点击对应的数据体块角点 A；随后重复选择 B。按 Esc 取消。',axis_x:'点击图纸增加竖向轴线。',axis_y:'点击图纸增加横向轴线。',room:'拖动绘制矩形体块；靠近参考线时优先吸附。',assign:`点击待分类体块，附着${state.types.find((t)=>t.id===state.activeRoomType)?.label||'当前'}功能图层。`,align:'先点击一层或二层的墙角／柱网交点，再到另一层点击同一点。'}[state.mode]);
+    render();
   });
+  $('image-opacity').oninput=(event)=>{state.imageOpacity=Number(event.target.value)/100;render()};
+  $('reset-registration-btn').onclick=()=>{
+    if(!state.draft)return;
+    const data=floorData(state.selectedFloor);
+    if(!data.image_registration){msg('当前层没有额外的底图配准。');return;}
+    recordHistory('撤销当前层底图配准');delete data.image_registration;delete data.image_viewport;delete data.registration_check;data.registration_auto_disabled=true;state.calibration=null;render();msg(`${state.selectedFloor} 层已恢复初始底图配准，数据保持不变。`);
+  };
   const canvas=$('plan-canvas');
   canvas.addEventListener('pointerdown',(e)=>pointerDown(e,floorAt(canvasPoint(e))));
   canvas.addEventListener('pointermove',(e)=>pointerMove(e,floorAt(canvasPoint(e))));
@@ -1139,12 +1261,12 @@ function installEvents(){
   $('apply-size-btn').onclick=applySize;$('grid-btn').onclick=gridFromAxes;$('merge-btn').onclick=mergeSameType;
   $('save-btn').onclick=()=>saveCase();$('export-draft-btn').onclick=()=>exportDraft();$('reload-latest-btn').onclick=reloadLatest;$('validate-btn').onclick=validateCase;$('approve-btn').onclick=approveCase;$('vision-btn').onclick=visionCase;
   $('wall-review-btn').onclick=()=>{if(state.draft)window.open(`/wall-review/${state.draft.case_id}`,'_blank')};
-  $('swap-btn').onclick=async()=>{if(!state.draft)return;recordHistory('交换楼层图纸');const [a,b]=state.draft.floors;state.draft.floors=[b,a];state.draft.floors[0].floor=1;state.draft.floors[1].floor=2;
+  $('swap-btn').onclick=async()=>{if(!state.draft)return;recordHistory('交换楼层图纸');state.calibration=null;state.alignmentPick=null;const [a,b]=state.draft.floors;state.draft.floors=[b,a];state.draft.floors[0].floor=1;state.draft.floors[1].floor=2;
     for(const axis of state.draft.axes)axis.floor=3-axis.floor;await loadImages();updateFloorNames();render();msg('已交换上下层原图，请核对体块叠加位置。')};
   $('rotate-btn').onclick=()=>{if(!state.draft)return;recordHistory('旋转图纸');state.draft.north_rotation_quadrants=(state.draft.north_rotation_quadrants+1)%4;render();msg(`图纸显示方向已旋转 ${state.draft.north_rotation_quadrants*90}°，请核对北向。`)};
   $('reset-view-btn').onclick=()=>{state.zoom=1;state.pan={x:0,y:0};render()};
   window.addEventListener('keydown',(e)=>{
-    if(e.key==='Escape'){closeRoomContextMenu();closeResizeDialog();if(!drawerPinned('queue'))document.body.classList.remove('queue-open');if(!drawerPinned('inspector'))document.body.classList.remove('inspector-open');$('inspector-toggle').setAttribute('aria-pressed',String(drawerPinned('inspector')));render()}
+    if(e.key==='Escape'){state.calibration=null;state.alignmentPick=null;closeRoomContextMenu();closeResizeDialog();if(!drawerPinned('queue'))document.body.classList.remove('queue-open');if(!drawerPinned('inspector'))document.body.classList.remove('inspector-open');$('inspector-toggle').setAttribute('aria-pressed',String(drawerPinned('inspector')));msg('已取消当前操作。');render()}
   });
 }
 

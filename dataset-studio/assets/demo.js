@@ -20,11 +20,12 @@
   async function builtins(){if(!manifest){const r=await fetch(new URL('manifest.json',base));if(!r.ok)throw Error('示例列表加载失败');manifest=await r.json();}return manifest;}
   async function original(id){
     if((await builtins()).some(c=>c.id===id)){
-      const r=await fetch(new URL(`cases/${id}/draft.json`,base));if(!r.ok)throw Error('示例加载失败');return r.json();
+      const r=await fetch(new URL(`cases/${id}/draft.json`,base),{cache:'no-store'});if(!r.ok)throw Error('示例加载失败');return r.json();
     }
     const item=await read('uploads',id);if(!item)throw Error('找不到本地案例');return structuredClone(item.draft);
   }
   async function attachImages(draft){
+    await upgradeRegistration(draft);
     // Revoke previous upload URLs only when changing the active document.
     for(const url of activeURLs)URL.revokeObjectURL(url);activeURLs=[];
     const item=await read('uploads',draft.case_id);
@@ -32,6 +33,25 @@
       if(item){const blob=item.images.find(x=>x.name===floor.image_name)?.blob;if(!blob)throw Error('本地图片缺失');
         floor.image_url=URL.createObjectURL(blob);activeURLs.push(floor.image_url);
       }else floor.image_url=new URL(`cases/${draft.case_id}/${floor.image_name}`,base).href;
+    }
+    return draft;
+  }
+  function sameGeometry(a,b){
+    const geometry=d=>JSON.stringify({size:d.building_size,rooms:d.rooms.map(r=>({id:r.id,type:r.type,floor:r.floor,box_min:r.box_min,box_max:r.box_max}))});
+    return geometry(a)===geometry(b);
+  }
+  async function upgradeRegistration(draft){
+    if(draft.pilot)return draft;
+    if(!(await builtins()).some(c=>c.id===draft.case_id))return draft;
+    const prepared=await original(draft.case_id);
+    if(!sameGeometry(draft,prepared))return draft;
+    for(const floor of draft.floors){
+      if(floor.registration_auto_disabled||floor.image_registration&&!floor.image_registration.version)continue;
+      const current=prepared.floors.find(f=>f.floor===floor.floor&&f.image_name===floor.image_name);
+      if(!current?.image_registration)continue;
+      for(const key of ['image_registration','registration_check','image_viewport']){
+        if(current[key]!==undefined)floor[key]=structuredClone(current[key]);
+      }
     }
     return draft;
   }
@@ -104,7 +124,12 @@
     if(action==='validate')return validate(draft);
     if(action==='vision'){
       if(!(await builtins()).some(c=>c.id===id))throw Error('上传图纸请手动标注；当前演示版没有在线 AI 识别');
-      const prepared=await original(id);prepared.revision=draft.revision;return attachImages(prepared);
+      let prepared;
+      if((await builtins()).find(c=>c.id===id)?.pilot&&document.getElementById('pilot-view').value==='human'){
+        const response=await fetch(new URL(`cases/${id}/human.json`,base),{cache:'no-store'});
+        if(!response.ok)throw Error('人工对照加载失败');prepared=await response.json();
+      }else prepared=await original(id);
+      prepared.revision=draft.revision;return attachImages(prepared);
     }
     if(action==='approve'){
       const result=validate(draft);if(!result.valid)throw Error('检测未通过，请修正后再导出');
@@ -124,9 +149,26 @@
       await put('uploads',id,{draft,images:files.map((file,i)=>({name:`floor-${i+1}-${file.name}`,blob:file}))});return id;
     }finally{bitmaps.forEach(b=>b.close());}
   }
-  window.REVIEW_DEMO={request,validate,geometry,upload,updateStatus(){document.getElementById('cloud-state').textContent='预置示例 · 本地标注';document.getElementById('vision-btn').disabled=false;},install(){
+  function updatePilotUI(){
+    const pilot=state.draft?.pilot,select=document.getElementById('pilot-view');
+    select.hidden=!pilot;document.getElementById('pilot-info').hidden=!pilot;
+    if(!pilot){document.getElementById('vision-btn').textContent='载入预置标注';return;}
+    const label=pilot.label||(pilot.model==='qwen3-vl-plus'?'千问':'Astra'),candidateView=pilot.candidate_view||'astra';
+    select.options[0].value=candidateView;select.options[0].textContent=`${label} 原始候选`;
+    document.getElementById('pilot-heading').textContent=`${label} 历史识别测试 · 原图 ID1002`;
+    select.value=pilot.view;
+    document.getElementById('case-title').textContent=state.draft.case_name;
+    document.getElementById('vision-btn').textContent=pilot.view==='human'?'载入人工对照':`载入历史${label}结果`;
+    const size=pilot.human_building_size,old=pilot.historical_candidate_size,m=pilot.metrics;
+    document.getElementById('pilot-summary').textContent=`${pilot.model} · 当前：${pilot.view==='human'?'人工数据对照':'当时的原始识别候选，未经修正'}。与另一模型使用同一套 ID1002 原图。真实尺寸 ${size.x} × ${size.y} mm；历史候选估算尺度 ${old.x} × ${old.y} mm。`;
+    document.getElementById('pilot-metrics').textContent=`历史评估：候选 ${m.candidate_rooms} 个 / 人工 ${m.human_rooms} 个；同类同层 IoU≥0.5 匹配 ${m.correct_type_and_floor_iou_50} 个；召回率 ${(m.recall_iou_50*100).toFixed(1)}%，精确率 ${(m.precision_iou_50*100).toFixed(1)}%，功能区域像素 IoU ${(m.semantic_micro_iou*100).toFixed(1)}%。`;
+    const errors=pilot.validation_errors||[];
+    document.getElementById('pilot-issues').textContent=`历史检测未通过：${errors.length} 项问题，包含楼梯高度、体块重叠及边界内漏块。原始结果保留供检查。`;
+  }
+  window.REVIEW_DEMO={request,validate,geometry,upload,upgradeRegistration,updatePilotUI,updateStatus(){document.getElementById('cloud-state').textContent='预置示例 · 本地标注';document.getElementById('vision-btn').disabled=false;},install(){
     const dialog=document.getElementById('upload-dialog'),form=document.getElementById('upload-form');
     document.getElementById('demo-show-rooms').onchange=()=>render();
+    document.getElementById('pilot-view').onchange=event=>{const label=state.draft.pilot?.label||'Astra';document.getElementById('vision-btn').textContent=event.target.value==='human'?'载入人工对照':`载入历史${label}结果`;};
     if(innerWidth>=1100&&!drawerPinned('inspector'))toggleDrawerPin('inspector');
     document.getElementById('upload-plans-btn').onclick=()=>dialog.showModal();
     document.getElementById('upload-cancel').onclick=()=>dialog.close();
@@ -143,6 +185,7 @@
       }catch(error){msg(`导出失败：${error.message}`);}
     };
     document.getElementById('case-filter').value='all';renderCaseList();
-    openCase(2107);
+    const requested=Number(new URL(location.href).searchParams.get('case'));
+    openCase([1002,1002002].includes(requested)?requested:2107);
   }};
 })();
