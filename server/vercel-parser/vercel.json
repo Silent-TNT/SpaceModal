@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm test",
+  "outputDirectory": "public",
+  "regions": ["hkg1"],
+  "functions": {"api/*.js": {"maxDuration": 60}},
+  "rewrites": [
+    {"source": "/parse", "destination": "/api/parse"},
+    {"source": "/health", "destination": "/api/health"}
+  ]
+}
