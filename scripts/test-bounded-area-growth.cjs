@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs'),Module=require('node:module');
 const file=require.resolve('../generator-studio/layout-core.js'),compiled=new Module(file,module);
 compiled.filename=file;compiled.paths=module.paths;
-compiled._compile(fs.readFileSync(file,'utf8').replace('const api = Object.freeze({','const api = Object.freeze({routeAndFill, boundedTopologyDimensions,'),file);
+compiled._compile(fs.readFileSync(file,'utf8').replace('const api = Object.freeze({','const api = Object.freeze({routeAndFill, boundedTopologyDimensions, compactSpineCandidate,'),file);
 const C=compiled.exports;
 function fixture(grouped){
   const nx=16,ny=12;
@@ -35,3 +35,16 @@ assert.ok(dimensions.length>1,'bounded joint planning must offer multiple dimens
 assert.equal(JSON.stringify(program),before,'planning must preserve the allocated program');
 assert.deepEqual(C.boundedTopologyDimensions(50,40,program.filter(r=>r.key!=='living-1'),1.2),[],'unsupported programs must use ordinary search');
 console.log('PASS individual/shared residual-growth capacities, joint dimension alternatives, input preservation and unsupported-program fallback');
+const compact={...d,length:10800,width:10200};
+const compactBase=A.apply(C.createRoomProgram(3,2,[0,2],compact),profile,110.16,compact);
+const compactProgram=J.allocate(compactBase,new J.JointAreaModel(require('../generator-studio/joint-area-model.json')),10800,10200,profile).program;
+for(const seed of [123,42,999]){
+  const candidate=C.compactSpineCandidate(36,34,seed,0,compactProgram,1.2,'hall');
+  assert.ok(candidate,'compact default program must fit without rule relaxation');
+  assert.ok(C.validateProgram(candidate,compactProgram).accepted);
+  assert.ok(require('../generator-studio/organization.js').evaluate(candidate).accepted);
+  assert.ok(require('../generator-studio/circulation.js').evaluate(candidate,compactProgram).accepted);
+  assert.ok(candidate.geometry.jointDimensionPlanning.branch>0,'activity and through-route need jointly reserved width');
+}
+assert.equal(C.compactSpineCandidate(36,34,123,0,compactProgram.filter(r=>r.key!=='living-1'),1.2,'hall'),null);
+console.log('PASS compact activity/route coexistence, capacities, facade and traffic rules across three seeds; unsupported programs fall back');

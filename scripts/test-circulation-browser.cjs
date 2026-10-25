@@ -2,7 +2,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {chromium}=require(process.env.PLAN_PLAYWRIGHT_PATH||'playwright');
 const root=path.resolve(__dirname,'..');
 const largeEnvelope=process.argv.includes('--large-envelope');
-const outputDirectory=path.join(root,largeEnvelope?'.qa/large-envelope':'.qa/circulation');
+const compactEnvelope=process.argv.includes('--compact-envelope');
+const outputDirectory=path.join(root,compactEnvelope?'.qa/compact-envelope':largeEnvelope?'.qa/large-envelope':'.qa/circulation');
 const server=http.createServer((req,res)=>{
  const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
  const target=path.resolve(root,'.'+pathname+(pathname.endsWith('/')?'index.html':''));
@@ -15,8 +16,8 @@ const server=http.createServer((req,res)=>{
  try{
   const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(`http://127.0.0.1:${server.address().port}/generator-studio/`);
-  await page.evaluate(budget=>{GeneratorState.mode='local';GeneratorState.conditions.budget=budget;},largeEnvelope?80:2400);
-  await page.locator('#prompt').fill((largeEnvelope?'15×12':'13.5×11.4')+'米，三间卧室，一层一间卧室，二层增加客厅和家政用房，一层不要阳台，二层两个阳台');await page.locator('#send').click();
+  await page.evaluate(budget=>{GeneratorState.mode='local';GeneratorState.conditions.budget=budget;},largeEnvelope||compactEnvelope?80:2400);
+  await page.locator('#prompt').fill((compactEnvelope?'10.8×10.2':largeEnvelope?'15×12':'13.5×11.4')+'米，三间卧室，一层一间卧室，二层增加客厅和家政用房，一层不要阳台，二层两个阳台');await page.locator('#send').click();
   await page.waitForSelector('.condition-card');
   for(const [key,value] of Object.entries({bedrooms:3,bedrooms0:1,living1:1,utility1:1,balconies0:0,balconies1:2}))assert.equal(await page.locator(`.condition-card [name="${key}"]`).last().inputValue(),String(value));
   assert.equal(await page.locator('.condition-card .warning').count(),0);
@@ -29,13 +30,14 @@ const server=http.createServer((req,res)=>{
   }else{
    await page.locator('.generate-button').last().click();
    await page.waitForFunction(()=>GeneratorState.result||!GeneratorState.busy,{},{timeout:600000});
-   if(largeEnvelope)await page.waitForFunction(()=>!GeneratorState.busy,{},{timeout:600000});
+   if(largeEnvelope||compactEnvelope)await page.waitForFunction(()=>!GeneratorState.busy,{},{timeout:600000});
   }
   assert.ok(await page.evaluate(()=>GeneratorState.result),'actual Worker must produce a valid layout');
   // Preserve the first admitted preview so all following UI/export checks use it.
   if(await page.evaluate(()=>GeneratorState.busy))await page.locator('#cancel').click();
   const result=await page.evaluate(()=>GeneratorState.result),m=result.model;
   if(largeEnvelope){assert.equal(m.nx,50);assert.equal(m.ny,40);assert.ok(m.generation.geometry.jointDimensionPlanning);assert.ok(m.traffic.accepted);}
+  if(compactEnvelope){assert.equal(m.nx,36);assert.equal(m.ny,34);assert.equal(m.generation.geometry.strategy,'compact-public-spine');assert.ok(m.traffic.accepted);}
   assert.ok(m.validation.accepted&&m.programValidation.accepted&&m.organization.accepted&&m.daylight.accepted&&m.mealGeometry.accepted&&m.kitchenDining.accepted);
   assert.equal(m.functional.revision,'functional-joint-v1');assert.ok(m.functional.accepted&&m.functionalRelations.accepted);assert.ok(m.functionalRelations.reports.filter(r=>['service','laundry'].includes(r.role)).every(r=>!r.viaEntry));assert.ok(m.generation.geometry.functionalStages.length>=2);
   const program=result.areaPrior.program;
