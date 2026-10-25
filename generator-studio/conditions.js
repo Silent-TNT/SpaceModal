@@ -6,6 +6,7 @@
   function validate(patch) {
     if(!patch||typeof patch!=='object'||Array.isArray(patch))throw Error('需求解析没有返回有效字段');
     for(const [k,v] of Object.entries(patch)) {
+      if(['utilityRole0','utilityRole1'].includes(k)){if(!['service','laundry','entry-storage'].includes(v)||k==='utilityRole1'&&v==='entry-storage')throw Error('家政用途无效；入户收纳仅适用于一层');continue;}
       if(k==='anchorMode'){if(!['near','hall','public'].includes(v))throw Error('入口—楼梯模式无效');continue;}
       if(!keys.includes(k))throw Error('解析返回了未支持的条件：'+k);
       if(typeof v!=='number'||!Number.isFinite(v)||!Number.isInteger(v))throw Error(k+' 必须为整数');
@@ -78,7 +79,7 @@ patch 只包含用户本轮明确修改的字段：length,width（毫米，6000�
     const localEndpoint=typeof location!=='undefined'&&location.origin==='http://127.0.0.1:8080'&&url.href===location.origin+'/api/generator/parse';
     if(url.protocol!=='https:'&&!localEndpoint)throw Error('大模型接口需要 HTTPS 地址或本机同源解析服务');
     let response;
-    const {anchorMode,...numericCurrent}=current;
+    const {anchorMode,utilityRole0,utilityRole1,...numericCurrent}=current;
     let legacyParser=false;
     const request=fields=>fetch(url,{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({current:fields,text})});
     try{

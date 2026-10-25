@@ -1,5 +1,5 @@
-importScripts('meal-routing.js?v=meal-public-route-v1','meal-geometry.js?v=meal-joint-v1','daylight.js?v=tiered-facade-v2','organization.js?v=stair-terminal-v6&meal=v1','layout-core.js?v=joint-area-v1','inference.js','area-prior.js?v=stair-terminal-v6','joint-area.js?v=joint-area-v1');
-let modelPromise,areaPromise,stairPromise,mealPromise,jointPromise;
+importScripts('circulation.js?v=circulation-facade-joint-v1','functional-rules.js?v=circulation-facade-joint-v1','meal-routing.js?v=meal-public-route-v1','meal-geometry.js?v=meal-joint-v1','daylight.js?v=tiered-facade-v2','organization.js?v=circulation-facade-joint-v1','layout-core.js?v=bounded-joint-geometry-v1','inference.js','area-prior.js?v=circulation-facade-joint-v1','joint-area.js?v=circulation-facade-joint-v1');
+let modelPromise,areaPromise,stairPromise,mealPromise,jointPromise,functionalPromise,trafficPromise;
 self.onmessage=async ({data})=>{
   try {
     modelPromise ||= fetch('model.json').then(r=>{if(!r.ok)throw Error('模型加载失败，请刷新重试');return r.json();}).then(j=>new BrowserModel(j));
@@ -8,7 +8,13 @@ self.onmessage=async ({data})=>{
     stairPromise ||= fetch('stair-prior.json?v=stair-joint-v1').then(r=>{if(!r.ok)throw Error('楼梯联合统计加载失败');return r.json();});
     mealPromise ||= fetch('meal-prior.json?v=meal-joint-v1').then(r=>{if(!r.ok)throw Error('餐厨联合统计加载失败');return r.json();});
     jointPromise ||= fetch('joint-area-model.json?v=joint-area-v1').then(r=>{if(!r.ok)throw Error('联合面积模型加载失败');return r.json();}).then(j=>new JointArea.JointAreaModel(j));
-    const [neural,areaProfile,stairProfile,mealProfile,joint]=await Promise.all([modelPromise,areaPromise,stairPromise,mealPromise,jointPromise]);
+    functionalPromise ||= fetch('functional-prior.json?v=circulation-facade-joint-v1').then(r=>{if(!r.ok)throw Error('全功能训练统计加载失败');return r.json();});
+    trafficPromise ||= fetch('circulation-prior.json?v=circulation-facade-joint-v1').then(r=>{if(!r.ok)throw Error('交通统计加载失败');return r.json();});
+    const [neural,areaProfile,stairProfile,mealProfile,joint,functionalProfile,trafficProfile]=await Promise.all([modelPromise,areaPromise,stairPromise,mealPromise,jointPromise,functionalPromise,trafficPromise]);
+    self.CirculationPriorProfile=trafficProfile;
+    if(trafficProfile.sourceSha256!==areaProfile.source_sha256||trafficProfile.trainingCaseCount!==300)throw Error('交通统计来源不一致');
+    self.FunctionalPriorProfile=functionalProfile;
+    if(functionalProfile.sourceSha256!==areaProfile.source_sha256||functionalProfile.trainingCaseCount!==300)throw Error('全功能统计与面积模型来源不一致');
     self.StairPriorProfile=stairProfile;
     self.MealPriorProfile=mealProfile;
     if(stairProfile.sourceSha256!==areaProfile.source_sha256)throw Error('楼梯统计与面积统计来源不一致');
@@ -23,7 +29,7 @@ self.onmessage=async ({data})=>{
     // Typed grids are retained; bulky voxel arrays and candidate lists are not needed for display.
     const pack=m=>({nx:m.nx,ny:m.ny,cell:m.cell,floorCount:2,floorHeight:3000,seed:m.seed,
       floors:m.floors.map(g=>Array.from(g)),floorSpaces:m.floorSpaces.map(g=>Array.from(g)),spaces:m.spaces,connections:m.connections,kitchenDining:m.kitchenDining,mealPolicy:m.mealPolicy,mealGeometry:m.mealGeometry,daylightPolicy:m.daylightPolicy,daylight:m.daylight,
-      validation:m.validation,circulation:m.circulation,programValidation:m.programValidation,anchorValidation:m.anchorValidation,organization:m.organization,organizationPolicy:m.organizationPolicy,publicShapePolicy:m.publicShapePolicy,corridorWidth:m.corridorWidth,
+      validation:m.validation,traffic:m.traffic,functional:m.functional,functionalRelations:m.functionalRelations,circulation:m.circulation,programValidation:m.programValidation,anchorValidation:m.anchorValidation,organization:m.organization,organizationPolicy:m.organizationPolicy,publicShapePolicy:m.publicShapePolicy,corridorWidth:m.corridorWidth,
       generation:{...m.generation,candidateScores:undefined}});
     const metadata={areaPrior:{schema:areaProfile.schema,trainingCaseCount:areaProfile.training_case_count,sourceSha256:areaProfile.source_sha256,grouping:areaProfile.grouping,balconyStatistics:areaProfile.balcony_statistics,balconyCounts,program,areaBudget,jointTrainingCases:joint.meta.provenance.usable_counts.training},
       forecast:{assignments:forecast.assignments,query:forecast.query,priors:forecast.priors},

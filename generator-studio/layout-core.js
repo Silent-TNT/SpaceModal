@@ -4,6 +4,8 @@
   const MealRouting=typeof require==='function'?require('./meal-routing.js'):root.MealRouting;
   const MealGeometry=typeof require==='function'?require('./meal-geometry.js'):root.MealGeometry;
   const BedroomDaylight=typeof require==='function'?require('./daylight.js'):root.BedroomDaylight;
+  const Functional=typeof require==='function'?require('./functional-rules.js'):root.FunctionalRules;
+  const Traffic=typeof require==='function'?require('./circulation.js'):root.CirculationRules;
 
   // Result constraints remain separate from generation and circulation preferences.
   const RULES = Object.freeze({ cell: 300, floorCount: 2, floorHeight: 3000 });
@@ -311,6 +313,14 @@
       const balconyDoors=doors.filter(e=>spaces[e.a].label===ID['阳台']||spaces[e.b].label===ID['阳台']);
       doors.splice(0,doors.length,...organization.connections,...balconyDoors);
     }
+    // A balcony lobby needs both its public approach and its balcony portal.
+    // Use an actual continuous shared face rather than leaving a renamed dead end.
+    for(const hall of spaces.filter(s=>s.generated&&s.key.includes(':shared-hall-'))){
+      const incident=doors.filter(e=>e.a===hall.id||e.b===hall.id);
+      if(incident.length!==1)continue;
+      const face=edges.find(e=>(e.a===hall.id||e.b===hall.id)&&spaces[e.a===hall.id?e.b:e.a].label===ID['阳台']&&portalFace(e));
+      if(face)doors.push(portal(face,'door'));
+    }
     const kitchenDining=MealRouting.evaluate(candidate,doors);
     const access = validateCirculation({...candidate,floorSpaces:owners,spaces,connections:doors});
     // A proxy for through-traffic in open rooms: span between planned entry points
@@ -331,7 +341,8 @@
     const routeCost=organization?organization.meanRouteLength/(Math.sqrt(slab)*.3):0;
     const score = areaPenalty * 40 + shapePenalty * 2 + exteriorPenalty * 20 +
       traffic * 35 + routeCost*12 + adjacencyPenalty * 2 + (1 - wetAlignment) * 5 + openTraversal * 2 + stairDaylightPenalty * 12 + facadeCompetition * 8 + kitchenDining.penalty;
-    return { score, reachable: access.accepted&&organization?.accepted!==false&&kitchenDining.accepted, access, doors, organization,kitchenDining,areaReports: reports, relations: relationReports, wetAlignment,
+    const functionalRelations=Functional.relations(candidate,doors);
+    return { score:score+functionalRelations.penalty, reachable: access.accepted&&organization?.accepted!==false&&kitchenDining.accepted&&functionalRelations.accepted, access, doors, organization,kitchenDining,functionalRelations,areaReports: reports, relations: relationReports, wetAlignment,
       corridorFraction, openFraction, openTraversal, stairDaylight,
       penalties: { area: areaPenalty, shape: shapePenalty, exterior: exteriorPenalty,
         circulation: traffic,routeLength:routeCost, adjacency: adjacencyPenalty, openTraversal,
@@ -493,10 +504,10 @@
     const add = (key, label, floor, targetArea, minArea, minWidth) => rooms.push({key,label:ID[label],floor,targetArea,minArea,minWidth});
     add('entry','玄关',0,3,1.8,.9); add('living','客厅',0,30,12,2.4);
     add('dining','餐厅',0,20,8,1.8); add('kitchen','厨房',0,12,5,1.5);
-    add('utility','家政空间',0,5,2,1.2);
+    add('utility','家政空间',0,5,2,1.2);rooms.at(-1).functionalRole=floorOptions.utilityRole0||'service';
     add('multi','多功能室',1,25,8,1.8);
     if(living1)add('living-1','客厅',1,25,12,2.4);
-    if(utility1)add('utility-1','家政空间',1,5,2,1.2);
+    if(utility1){add('utility-1','家政空间',1,5,2,1.2);rooms.at(-1).functionalRole=floorOptions.utilityRole1||'laundry';}
     for(let f=0;f<2;f++)for(let i=0;i<balconyCounts[f];i++)add(i===0?`balcony-${f}`:`balcony-${f}-${i+1}`,'阳台',f,6,2,.9);
     for(let i=0;i<bedrooms;i++) add(`bedroom-${i+1}`,'卧室',i<bedrooms0?0:1,16,9,BEDROOM_RULES.minWidth);
     for(let i=0;i<bathrooms;i++) add(`bathroom-${i+1}`,'卫生间',i%2,5,3,1.2);
@@ -562,12 +573,17 @@
       }
       const area=cells.length*.09, width=minRun*.3;
       const aspectRatio=Math.max(w,h)/Math.min(w,h);
+      if(!Functional.fits({...room,resourceMaxArea:undefined},w,h,area))issues.push(`${room.key}未满足全功能尺寸限制`);
       const maxArea=Number.isFinite(room.resourceMaxArea)?Math.min(room.resourceMaxArea,room.key==='entry'?entryMaxArea(room,map.length*.09):Infinity):room.key==='entry'?entryMaxArea(room,map.length*.09):undefined;
       if(room.key==='entry'&&maxArea!==undefined&&area>maxArea+1e-8)issues.push(`${room.key}玄关面积不得超过${maxArea.toFixed(2)}㎡`);
-      if(Number.isFinite(room.resourceMaxArea)&&area>room.resourceMaxArea+1e-8)issues.push(`${room.key}超过联合面积容量${room.resourceMaxArea.toFixed(2)}㎡`);
+      if(Number.isFinite(room.resourceMaxArea)&&area>room.resourceMaxArea+1e-8)issues.push(`${room.key}超过联合面积容量${room.resourceMaxArea.toFixed(2)}㎡（实际${area.toFixed(2)}㎡，超出${(area-room.resourceMaxArea).toFixed(2)}㎡）`);
       if(room.label===ID['卧室']&&(width+1e-8<BEDROOM_RULES.minWidth||aspectRatio>BEDROOM_RULES.maxAspect+1e-8))issues.push(`${room.key}卧室短边须至少2.4 m且长宽比不超过1.8`);
       // A bounding box alone cannot prove usable width after carving an open room.
-      if((cells.length!==w*h && !OPEN_LABELS.includes(room.label)) || area+1e-8<(room.resourceMinArea??room.minArea) || width+1e-8<room.minWidth) issues.push(`${room.key}未满足最小面积或宽度`);
+      const minimumFailures=[];
+      if(cells.length!==w*h && !OPEN_LABELS.includes(room.label))minimumFailures.push('须保持完整矩形');
+      if(area+1e-8<(room.resourceMinArea??room.minArea))minimumFailures.push(`面积${area.toFixed(2)}㎡，至少需要${(room.resourceMinArea??room.minArea).toFixed(2)}㎡`);
+      if(width+1e-8<room.minWidth)minimumFailures.push(`局部宽度${width.toFixed(2)}m，至少需要${room.minWidth.toFixed(2)}m`);
+      if(minimumFailures.length)issues.push(`${room.key}未满足最小面积或宽度（${minimumFailures.join('；')}）`);
       const shape=cells.length===w*h?'rectangle':classifySpaceShape(map,model.nx,sid);
       const shapeMetrics=spaceShapeMetrics(map,model.nx,sid);
       if(model.publicShapePolicy&&OPEN_LABELS.includes(room.label)){
@@ -583,7 +599,7 @@
     for(const room of program.filter(r=>r.resourceGroupKey))if(!resourceGroups.some(g=>g.floor===room.floor&&g.key===room.resourceGroupKey)){
       const members=program.filter(r=>r.floor===room.floor&&r.resourceGroupKey===room.resourceGroupKey),area=reports.filter(r=>members.some(m=>m.key===r.key)).reduce((s,r)=>s+r.area,0),maximum=room.resourceGroupMaxArea;
       resourceGroups.push({floor:room.floor,key:room.resourceGroupKey,area,maximum,accepted:area<=maximum+1e-8});
-      if(area>maximum+1e-8)issues.push(`${room.floor+1}层${room.resourceGroupKey}超过联合面积容量${maximum.toFixed(2)}㎡`);
+      if(area>maximum+1e-8)issues.push(`${room.floor+1}层${room.resourceGroupKey}超过联合面积容量${maximum.toFixed(2)}㎡（实际${area.toFixed(2)}㎡，超出${(area-maximum).toFixed(2)}㎡）`);
     }
     if(model.mealPolicy)issues.push(...MealGeometry.evaluate(model).issues);
     if(model.daylightPolicy)issues.push(...BedroomDaylight.evaluate(model).issues);
@@ -670,6 +686,16 @@
     candidate.routingEvidence=[];
     for(let f=0;f<2;f++) {
       const grid=floors[f],map=owners[f],claimed=new Uint8Array(grid.length);
+      const canAbsorb=(room,count)=>{
+        const area=Array.from(map).filter(sid=>sid===room.id).length*.09+count*.09;
+        if(area>(room.resourceMaxArea??Infinity)+1e-8)return false;
+        if(room.resourceGroupKey){
+          const members=new Set(program.filter(r=>r.floor===f&&r.resourceGroupKey===room.resourceGroupKey).map(r=>spaces.find(s=>s.key===r.key)?.id));
+          const groupArea=Array.from(map).filter(sid=>members.has(sid)).length*.09+count*.09;
+          if(groupArea>room.resourceGroupMaxArea+1e-8)return false;
+        }
+        return true;
+      };
       if(!Array.from(map).some(id=>id>=0&&spaces[id]?.label!==ID['楼梯间']))continue;
       const root=spaces.find(s=>s.key===(f===0?'entry':'1:stair-landing'))?.id;if(root===undefined)return false;
       const network=()=>{
@@ -697,6 +723,7 @@
             if(room.key==='entry'&&newW*newH*.09>entryMaxArea(room,nx*ny*.09)+1e-8)continue;
             if(room.label===ID['卧室']&&Math.max(newW,newH)/Math.min(newW,newH)>BEDROOM_RULES.maxAspect+1e-8)continue;
             if(candidate.mealPolicy&&!MealGeometry.fits(room,newW,newH))continue;
+            if(!Functional.fits(room,newW,newH)||!canAbsorb(room,strips[d].length))continue;
             for(const i of strips[d]){map[i]=room.id;grid[i]=room.label;}changed=true;break;
           }
         }
@@ -714,12 +741,23 @@
             if(!block.some(i=>neighbors(i,nx,ny,1).some(j=>map[j]===room.id)))continue;
             if(room.key==='entry'&&Array.from(map).filter(sid=>sid===room.id).length*.09+block.length*.09>entryMaxArea(room,nx*ny*.09)+1e-8)continue;
             if(candidate.mealPolicy&&room.label===2&&Array.from(map).filter(sid=>sid===room.id).length*.09+block.length*.09>MealGeometry.maxArea(room)+1e-8)continue;
+            if(!canAbsorb(room,block.length))continue;
             for(const i of block)map[i]=room.id;
             const shape=classifySpaceShape(map,nx,room.id);
             if(room.key==='living-1'?shape==='rectangle':['rectangle','L'].includes(shape)||candidate.publicShapePolicy==='activity-verified'&&!hasRoomHole(map,nx,room.id)) {
               for(const i of block)grid[i]=room.label;changed=true;break;
             }
             for(const i of block)map[i]=-1;
+          }
+          // A real shared hall must have continuous width and connect distinct
+          // spaces. Isolated leftover pockets still cannot be renamed corridors.
+          if(block.every(i=>map[i]<0)&&program.some(r=>r.functionalRevision===Functional.REVISION)){
+            const w=Math.max(...xs)-Math.min(...xs)+1,h=Math.max(...ys)-Math.min(...ys)+1;
+            const adjacentIds=new Set(block.flatMap(i=>neighbors(i,nx,ny,1).map(j=>map[j])).filter(id=>id>=0&&spaces[id].label!==7));
+            if(block.length===w*h&&Math.min(w,h)>=width&&block.length*.09<=nx*ny*.09*.18&&adjacentIds.size>=2&&[...adjacentIds].some(id=>isTransit(spaces[id].label))){
+              const sid=spaces.length;spaces.push({id:sid,key:`${f}:shared-hall-${sid}`,label:6,floor:f,generated:true});
+              for(const i of block){map[i]=sid;grid[i]=6;}changed=true;
+            }
           }
         }
         if(!changed)break;
@@ -885,6 +923,59 @@
     return current;
   }
 
+  // Joint moves alter room envelopes and circulation together; never relabel an
+  // isolated strip as a usable room. All accepted moves retain activity/access.
+  function coordinateCirculation(candidate,program){
+    const enabled=program.some(r=>r.circulationRevision===Traffic.REVISION);
+    if(!enabled)return candidate;
+    const clone=m=>({...m,floorSpaces:undefined,connections:undefined,organization:null,quality:null,owners:(m.owners||m.floorSpaces).map(g=>Int32Array.from(g)),floors:m.floors.map(g=>Int16Array.from(g)),spaces:m.spaces.map(s=>({...s})),geometry:{...(m.geometry||m.generation?.geometry)}});
+    const compact=m=>{
+      const used=new Set(m.owners.flatMap(g=>Array.from(g))),ids=new Map(),spaces=[];
+      for(const s of m.spaces)if(used.has(s.id)||!s.generated){ids.set(s.id,spaces.length);spaces.push({...s,id:spaces.length});}
+      m.spaces=spaces;m.owners=m.owners.map(g=>Int32Array.from(g,id=>ids.get(id)));return m;
+    };
+    const rectangle=(map,nx,id)=>{const cells=Array.from(map).flatMap((v,i)=>v===id?[i]:[]);if(!cells.length)return null;const xs=cells.map(i=>i%nx),ys=cells.map(i=>Math.floor(i/nx)),x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x+1,h=Math.max(...ys)-y+1;return cells.length===w*h?{x,y,w,h,cells}:null;};
+    const objective=m=>{const budget=Traffic.actualBudget(m,program),check=validateProgram(m,budget.program);return Traffic.evaluate(m,program).penalty+(budget.accepted?0:1000)+check.reports.reduce((s,r)=>s+areaDeviation(r,r.area)*2,0);};
+    const feasible=m=>roomConnectivity(m)&&validateProgram(m,program).accepted&&validateAnchors(m).accepted&&assessCandidate(m).reachable;
+    let current=clone(candidate);
+    for(let step=0;step<8;step++){
+      const proposals=[],before=objective(current);
+      const add=(trial,move)=>{compact(trial);const score=objective(trial);if(score<before-.001)proposals.push({trial,move,score});};
+      for(let floor=0;floor<2;floor++){
+        const map=current.owners[floor],nx=current.nx,ny=map.length/nx;
+        const traffic=current.spaces.filter(s=>s.floor===floor&&s.label===6&&s.key!=='1:stair-landing');
+        for(const hall of traffic){
+          const b=rectangle(map,nx,hall.id);if(!b)continue;
+          const adjacent=[...new Set(b.cells.flatMap(i=>neighbors(i,nx,ny,1).map(j=>map[j])))].filter(id=>id!==hall.id&&program.some(r=>r.key===current.spaces[id]?.key));
+          for(const receiver of adjacent){
+            const s=current.spaces[receiver];
+            // Remove the whole hall, or transfer a complete boundary band.
+            const bands=[b,...[1,2,3,4,6].flatMap(d=>[{x:b.x,y:b.y,w:Math.min(d,b.w),h:b.h},{x:b.x+b.w-Math.min(d,b.w),y:b.y,w:Math.min(d,b.w),h:b.h},{x:b.x,y:b.y,w:b.w,h:Math.min(d,b.h)},{x:b.x,y:b.y+b.h-Math.min(d,b.h),w:b.w,h:Math.min(d,b.h)}])];
+            for(const band of bands){const trial=clone(current);for(let y=band.y;y<band.y+band.h;y++)for(let x=band.x;x<band.x+band.w;x++){trial.owners[floor][y*nx+x]=receiver;trial.floors[floor][y*nx+x]=s.label;}add(trial,{type:'hall-to-room-boundary',floor,from:hall.key,to:s.key,area:band.w*band.h*.09});}
+          }
+        }
+        // Translate a complete service/bedroom envelope into traffic space and
+        // give its vacated edge to an adjacent public room in the SAME move.
+        for(const room of program.filter(r=>r.floor===floor&&[4,5,8].includes(r.label))){
+          const sid=current.spaces.find(s=>s.key===room.key)?.id,b=rectangle(map,nx,sid);if(!b)continue;
+          for(const depth of [1,2,3,4,6,8])for(const [dx,dy] of [[depth,0],[-depth,0],[0,depth],[0,-depth]]){
+            if(b.x+dx<0||b.y+dy<0||b.x+dx+b.w>nx||b.y+dy+b.h>ny)continue;
+            const moved=[];for(let y=b.y+dy;y<b.y+dy+b.h;y++)for(let x=b.x+dx;x<b.x+dx+b.w;x++)moved.push(y*nx+x);
+            const additions=moved.filter(i=>map[i]!==sid);if(!additions.length||additions.some(i=>current.spaces[map[i]]?.label!==6||current.spaces[map[i]]?.key==='1:stair-landing'))continue;
+            const kept=new Set(moved),vacated=b.cells.filter(i=>!kept.has(i));
+            const recipients=[...new Set(vacated.flatMap(i=>neighbors(i,nx,ny,1).map(j=>map[j])))].filter(id=>id!==sid&&[1,2,10].includes(current.spaces[id]?.label));
+            for(const receiver of recipients){const trial=clone(current);for(const i of vacated){trial.owners[floor][i]=receiver;trial.floors[floor][i]=current.spaces[receiver].label;}for(const i of moved){trial.owners[floor][i]=sid;trial.floors[floor][i]=room.label;}add(trial,{type:'shift-room-and-reclaim-traffic',floor,room:room.key,shiftMm:[dx*300,dy*300],to:current.spaces[receiver].key,area:additions.length*.09});}
+          }
+        }
+      }
+      proposals.sort((a,b)=>a.score-b.score);let best=null;
+      for(const p of proposals.slice(0,30))if(feasible(p.trial)){best=p;break;}
+      if(!best)break;
+      best.trial.geometry.circulationAdjustments=[...(current.geometry.circulationAdjustments||[]),{...best.move,beforeCost:before,afterCost:best.score}];current=best.trial;
+    }
+    current.geometry.circulationRevision=Traffic.REVISION;current.geometry.actualAreaCoordination=Traffic.actualBudget(current,program);delete current.geometry.actualAreaCoordination.program;current.traffic=Traffic.evaluate(current,program);return current;
+  }
+
   function coordinateResources(candidate,program){
     if(!program.some(r=>r.areaBudgetRevision))return candidate;
     const score=m=>{
@@ -1019,6 +1110,20 @@
     return {stairX,stairY,stairW,stairH,entryX,entryY,entryW,entryH,stairEvidence:{revision:profile.revision,sourceSha256:profile.sourceSha256,trainingCaseCount:profile.trainingCaseCount,sourceCase:sample.case,templateMm:[stairW*300,stairH*300],sampleMode:sample.mode}};
   }
   function freePartitionCandidate(nx,ny,seed,index,program,corridorWidth,neuralPrior=null,influence=0,anchorMode=null,diagnostics=null,anchorOverride=null,refine=true){
+    if(refine&&!anchorOverride&&index%12===0&&program.some(r=>r.circulationRevision===Traffic.REVISION)){
+      const topology=interiorTopologyCandidate(nx,ny,seed,index,program,corridorWidth,anchorMode);
+      if(topology)return topology;
+      const dimensions=boundedTopologyDimensions(nx,ny,program,corridorWidth);
+      if(dimensions.length){
+        const start=(Math.floor(index/12)+seed)>>>0;
+        // A bounded number of joint proposals shares this candidate's budget.
+        for(let offset=0;offset<2;offset++){
+          if(diagnostics)diagnostics.jointTopologyTrials=(diagnostics.jointTopologyTrials||0)+1;
+          const joint=interiorTopologyCandidate(nx,ny,seed,index,program,corridorWidth,anchorMode,null,dimensions[(start+offset)%dimensions.length]);
+          if(joint)return joint;
+        }
+      }
+    }
     const args=[nx,ny,seed,index,program,corridorWidth,neuralPrior,influence,anchorMode,diagnostics,anchorOverride,refine];
     const first=freePartitionAttempt(...args);if(first||!refine)return first;
     if(diagnostics)diagnostics.mealRepartitions=(diagnostics.mealRepartitions||0)+1;
@@ -1026,12 +1131,140 @@
     if(diagnostics)diagnostics.publicRepartitions=(diagnostics.publicRepartitions||0)+1;
     return freePartitionAttempt(...args,0,true,true);
   }
+
+  const topologyDimensionCache=new Map();
+  function boundedTopologyDimensions(nx,ny,program,corridorWidth){
+    const keys=['entry','living','dining','kitchen','utility','multi','living-1','utility-1','bedroom-1','bedroom-2','bedroom-3','bathroom-1','bathroom-2','balcony-1','balcony-1-2'];
+    if(nx<38||ny<34||program.length!==keys.length||keys.some(k=>!program.some(r=>r.key===k))||program.find(r=>r.key==='bedroom-1').floor!==0||program.find(r=>r.key==='bedroom-2').floor!==1)return [];
+    const q=Math.round(corridorWidth/.3),rooms=Object.fromEntries(program.map(r=>[r.key,r]));
+    const cacheKey=JSON.stringify([nx,ny,q,program]);
+    if(topologyDimensionCache.has(cacheKey))return topologyDimensionCache.get(cacheKey);
+    const fit=(key,w,h,area=w*h*.09)=>{
+      const room=rooms[key];
+      return w>0&&h>0&&area+1e-8>=(room.resourceMinArea??room.minArea)&&area<=(room.resourceMaxArea??Infinity)+1e-8&&Math.min(w,h)*.3+1e-8>=room.minWidth&&Functional.fits(room,w,h,area)&&MealGeometry.fits(room,w,h,area)&&(room.label!==4||Math.max(w,h)/Math.min(w,h)<=BEDROOM_RULES.maxAspect+1e-8);
+    };
+    const score=(key,area)=>areaDeviation(rooms[key],area);
+    const keep=(list,item)=>{list.push(item);list.sort((a,b)=>a.score-b.score);if(list.length>16)list.pop();};
+    const profile=typeof require==='function'?require('./stair-prior.json'):root.StairPriorProfile;
+    const templates=[...new Map(profile.observations.map(o=>[o.stair.slice(2).join(':'),o.stair.slice(2)])).values()];
+    const result=[];
+    // Solve complete bands against the same capacities used by final validation.
+    // The public spine and its side branch exist before any residual allocation.
+    for(const [sw,sh] of templates){
+      const y5=ny-sh-q;if(y5<22)continue;
+      const lower=[];
+      for(let a=sw+5;a<=Math.min(nx-16,Math.floor(rooms.dining.resourceGroupMaxArea/((ny-sh)*.09)+1e-8));a++){
+        if(!fit('bathroom-1',a-sw,sh))continue;
+        for(let k=7;k<=ny-sh-6;k++){
+          if(!fit('kitchen',a,k)||!fit('dining',a,ny-sh-k))continue;
+          for(let b=8;b<=Math.min(nx-a-8,Math.floor(rooms.living.resourceMaxArea/(ny*.09)));b++){
+            const right=nx-a-b;
+            for(let c=4;c<=Math.floor(rooms.entry.resourceMaxArea/(right*.09)+1e-8);c++){
+              if(!fit('entry',right,c)||right*c*.09>entryMaxArea(rooms.entry,nx*ny*.09)+1e-8)continue;
+              for(let d=8;d<=Math.floor(rooms['bedroom-1'].resourceMaxArea/(right*.09)+1e-8);d++){
+                const h=ny-c-d;if(h<8||ny-8-c-d<q||!fit('bedroom-1',right,d))continue;
+                for(let e=5;e<=nx-a-b-q-8;e++){
+                  if(!fit('utility',e,h))continue;
+                  const living=(b*ny+(nx-e-a-b-q)*h+q*8)*.09;
+                  if(!fit('living',nx-a-e,ny,living))continue;
+                  const cost=score('entry',right*c*.09)+score('bedroom-1',right*d*.09)+score('utility',e*h*.09)+score('living',living)+score('kitchen',a*k*.09)+score('dining',a*(ny-sh-k)*.09);
+                  keep(lower,{sw,sh,a,b,c,d,e,k,score:cost});
+                }
+              }
+            }
+          }
+        }
+      }
+      if(!lower.length)continue;
+      const bands=[];
+      for(let x4=sw+8;x4<nx-8;x4++)for(let x5=x4+5;x5<nx-2;x5++){
+        if(!fit('bedroom-2',x4-sw,sh+q)||!fit('utility-1',x5-x4,sh+q)||!fit('balcony-1-2',nx-x5,sh+q))continue;
+        keep(bands,{x4,x5,score:score('bedroom-2',(x4-sw)*(sh+q)*.09)+score('utility-1',(x5-x4)*(sh+q)*.09)+score('balcony-1-2',(nx-x5)*(sh+q)*.09)});
+      }
+      if(!bands.length)continue;
+      const upper=[];
+      for(let x1=8;x1<nx-13;x1++)for(let y1=6;y1<=y5-16;y1++)for(let y4=y1+8;y4<=y5-8;y4++){
+        if(!fit('bedroom-3',x1,y4-y1))continue;
+        for(let x2=x1+6;x2<nx-7;x2++)for(let y2=y1+1;y2<=y5-8;y2++){
+          const multi=(x2*y1+(x2-x1)*(y2-y1))*.09;
+          if(!fit('multi',x2,y2,multi))continue;
+          for(let x3=x2+5;x3<nx-2;x3++){
+            if(x3-x1<8||!fit('bathroom-2',x3-x2,y2))continue;
+            for(let y3=y2;y3<=y5-8;y3++){
+              if(!fit('balcony-1',nx-x3,y3))continue;
+              const living=((x3-x1)*(y3-y2)+(nx-x1)*(y5-y3)+x1*(y5-y4))*.09;
+              if(!fit('living-1',nx,y5-y2,living)||living+multi>rooms.multi.resourceGroupMaxArea+1e-8)continue;
+              keep(upper,{x1,x2,x3,y1,y2,y3,y4,score:score('multi',multi)+score('living-1',living)+score('bedroom-3',x1*(y4-y1)*.09)+score('bathroom-2',(x3-x2)*y2*.09)+score('balcony-1',(nx-x3)*y3*.09)});
+            }
+          }
+        }
+      }
+      for(let i=0;i<Math.min(lower.length,upper.length,bands.length);i++)result.push({...lower[i],...upper[i],...bands[i],score:lower[i].score+upper[i].score+bands[i].score});
+    }
+    result.sort((a,b)=>a.score-b.score);
+    if(topologyDimensionCache.size>=8)topologyDimensionCache.delete(topologyDimensionCache.keys().next().value);
+    topologyDimensionCache.set(cacheKey,result);
+    return result;
+  }
+
+  // An explicit engineering topology family, not a learned floorplan/template.
+  // It jointly reserves room envelopes, a short interior spine and upper arrival.
+  // Unsupported programs continue through the ordinary partition search.
+  function interiorTopologyCandidate(nx,ny,seed,index,program,corridorWidth,anchorMode='hall',diagnostics=null,dimensions=null){
+    const keys=['entry','living','dining','kitchen','utility','multi','living-1','utility-1','bedroom-1','bedroom-2','bedroom-3','bathroom-1','bathroom-2','balcony-1','balcony-1-2'];
+    if(program.length!==keys.length||keys.some(k=>!program.some(r=>r.key===k))||program.find(r=>r.key==='bedroom-1').floor!==0||program.find(r=>r.key==='bedroom-2').floor!==1||program.some(r=>r.key==='balcony-0'))return null;
+    const profile=typeof require==='function'?require('./stair-prior.json'):root.StairPriorProfile;
+    const stairSource=profile.observations.filter(o=>o.stair[2]===(dimensions?.sw??8)&&o.stair[3]===(dimensions?.sh??10)).sort((a,b)=>Math.abs(a.houseArea-nx*ny*.09)-Math.abs(b.houseArea-nx*ny*.09))[0];
+    if(!stairSource||nx<38||ny<34)return null;
+    const sw=dimensions?.sw??8,sh=dimensions?.sh??10,q=Math.round(corridorWidth/.3),r=rng(seed+index*103),variant=Math.floor(index/12);
+    const jitter=()=>variant?Math.floor(r()*3)-1:0;
+    const a=dimensions?.a??Math.min(Math.floor(.28*nx*ny/(ny-sh)),Math.round(nx*17/45)+jitter()),b=dimensions?.b??Math.max(8,Math.round(nx*8/45)+jitter()),c=dimensions?.c??Math.max(4,Math.round(ny*7/38)+jitter()),d=dimensions?.d??Math.max(8,Math.round(ny*14/38)+jitter()),e=dimensions?.e??Math.max(5,Math.round(nx*7/45)+jitter()),top=c+d,bridge=ny-8,k=dimensions?.k??Math.round((ny-sh)/2)+jitter();
+    const spaces=[{id:0,key:'stairs',label:7}],floors=[new Int16Array(nx*ny).fill(-1),new Int16Array(nx*ny).fill(-1)],owners=[new Int32Array(nx*ny).fill(-1),new Int32Array(nx*ny).fill(-1)];
+    const put=(floor,key,x,y,w,h,label)=>{
+      if(x<0||y<0||w<=0||h<=0||x+w>nx||y+h>ny)throw Error('bounds');
+      let s=spaces.find(s=>s.key===key);if(!s){const room=program.find(r=>r.key===key);s={id:spaces.length,...(room||{key,label:label??6,floor,generated:true})};spaces.push(s);}
+      for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++){const i=yy*nx+xx;if(owners[floor][i]!==-1)throw Error('overlap');owners[floor][i]=s.id;floors[floor][i]=s.label;}
+    };
+    try{
+      put(0,'stairs',0,ny-sh,sw,sh);put(0,'bathroom-1',sw,ny-sh,a-sw,sh);
+      put(0,'kitchen',0,0,a,k);put(0,'dining',0,k,a,ny-sh-k);
+      put(0,'entry',a+b,0,nx-a-b,c);put(0,'bedroom-1',a+b,c,nx-a-b,d);
+      put(0,'utility',nx-e,top,e,ny-top);
+      put(0,'0:interior-spine',a+b,top,q,bridge-top,6);
+      put(0,'living',a,0,b,ny);put(0,'living',a+b+q,top,nx-e-a-b-q,ny-top);put(0,'living',a+b,bridge,q,ny-bridge);
+      // Upper public room wraps two private wings; the south facade belongs to
+      // multifunction/bath/balcony, with no south corridor or leftover lobby.
+      const x1=dimensions?.x1??Math.round(nx*15/45)+jitter(),x2=dimensions?.x2??Math.max(x1+8,Math.round(nx*23/45)+jitter()),x3=dimensions?.x3??Math.max(x2+7,Math.round(nx*30/45)+jitter()),x4=dimensions?.x4??Math.min(sw+Math.floor(program.find(r=>r.key==='bedroom-2').resourceMaxArea/((sh+q)*.09)),Math.round(nx*28/45)+jitter()),x5=dimensions?.x5??x4+8+jitter();
+      const y5=ny-sh-q,y1=dimensions?.y1??Math.round(ny*6/38),y2=dimensions?.y2??Math.round(ny*12/38),y3=dimensions?.y3??Math.round(ny*13/38),y4=dimensions?.y4??Math.min(y5-8,Math.round(ny*16/38));
+      put(1,'stairs',0,ny-sh,sw,sh);put(1,'1:stair-landing',0,y5,sw,q,6);
+      put(1,'bedroom-2',sw,y5,x4-sw,ny-y5);put(1,'utility-1',x4,y5,x5-x4,ny-y5);put(1,'balcony-1-2',x5,y5,nx-x5,ny-y5);
+      put(1,'bedroom-3',0,y1,x1,y4-y1);put(1,'multi',0,0,x2,y1);put(1,'multi',x1,y1,x2-x1,y2-y1);
+      put(1,'bathroom-2',x2,0,x3-x2,y2);put(1,'balcony-1',x3,0,nx-x3,y3);
+      put(1,'living-1',x1,y2,x3-x1,y3-y2);put(1,'living-1',x1,y3,nx-x1,y5-y3);put(1,'living-1',0,y4,x1,y5-y4);
+    }catch(e){if(diagnostics)diagnostics.error=e.message;return null;}
+    if(owners.some(m=>m.some(id=>id<0)))return null;
+    const candidate={nx,ny,floors,owners,spaces,corridorWidth,anchorMode,daylightPolicy:BedroomDaylight.RULES.revision,mealPolicy:MealGeometry.RULES.revision,organizationPolicy:'activity-protected-v5',publicShapePolicy:'activity-verified',geometry:{strategy:'engineering-interior-spine-family',topologyVariant:variant,jointDimensionPlanning:dimensions?{revision:'bounded-joint-geometry-v1',...dimensions}:undefined,stairX:0,stairY:ny-sh,stairW:sw,stairH:sh,entryX:a+b,entryY:0,entryW:nx-a-b,entryH:c,publicHub:'living',publicHubs:['living','dining'],freeAnchors:true,circulationRevision:Traffic.REVISION,stairEvidence:{sourceCase:stairSource.case,sourceSha256:profile.sourceSha256,templateMm:[sw*300,sh*300],revision:'stair-joint-v1'},functionalStages:[]},routingEvidence:[{floor:0,repairs:[],method:'room-and-interior-spine-joint-topology'},{floor:1,repairs:[],method:'room-and-landing-joint-topology'}]};
+    const check=validateProgram(candidate,program);if(diagnostics){diagnostics.model=candidate;diagnostics.program=check;}
+    if(!roomConnectivity(candidate)||!check.accepted||!validateAnchors(candidate).accepted)return null;
+    candidate.organization=Organization.evaluate(candidate);
+    const quality=assessCandidate(candidate);if(diagnostics){diagnostics.organization=candidate.organization;diagnostics.quality=quality;diagnostics.traffic=Traffic.evaluate(candidate,program);}
+    if(!candidate.organization.accepted||!quality.reachable||!Traffic.evaluate(candidate,program).accepted)return null;
+    candidate.geometry.functionalStages.push({stage:'joint-topology',issues:[],rooms:Functional.evaluate(candidate,program).reports.map(r=>({key:r.key,area:r.area,aspect:r.aspect}))});
+    return coordinateCirculation(candidate,program);
+  }
   function freePartitionAttempt(nx,ny,seed,index,program,corridorWidth,neuralPrior=null,influence=0,anchorMode=null,diagnostics=null,anchorOverride=null,refine=true,upperVariant=0,pairedOverride=null,protectLiving=false) {
     let r=rng((seed+Math.imul(index+1,0x85EBCA6B))>>>0);const trees=[];
     // Leave geometric packing slack: the budget is a final allocation goal, not
     // a demand that every initial rectangle consumes its full share before routing.
     const resourceProgram=program.some(room=>room.areaBudgetRevision)?program:null;
-    if(resourceProgram)program=program.map(room=>({...room,budgetTargetArea:room.targetArea,targetArea:room.placementTargetArea}));
+    if(resourceProgram)program=program.map(room=>{
+      const reference=room.placementTargetArea??room.targetArea;
+      // Explore packing slack around the joint allocation, while retaining a
+      // reference-sized branch for compact programs. Final targets stay frozen.
+      const fraction=[0,.55,.8,1][index%4];
+      return {...room,budgetTargetArea:room.budgetTargetArea??room.targetArea,
+        targetArea:Math.min(room.resourceMaxArea,Math.max(room.minArea,reference+fraction*((room.budgetTargetArea??room.targetArea)-reference)))};
+    });
     const evaluationProgram=program;
     const hubKey=index%2===0?'dining':'living',hub=program.find(room=>room.key===hubKey);
     const hubs=anchorMode==='public'&&index%3===2?[hub,program.find(room=>room.key===(hubKey==='dining'?'living':'dining'))]:[hub];
@@ -1068,7 +1301,7 @@
         patch.room=room;
       }return true;
     };
-    let mealEvidence=null;const pairedBands=pairedOverride??index%4!==2;
+    let mealEvidence=null;const serviceEvidence=[];const pairedBands=pairedOverride??index%4!==2;
     const reserveMeals=(tree,besideStair)=>{
       const profile=typeof require==='function'?require('./meal-prior.json'):root.MealPriorProfile;
       if(!profile?.observations?.length)throw Error('缺少餐厨联合统计');
@@ -1191,6 +1424,25 @@
         options.sort((a,b)=>a.score-b.score);const best=options[0];
         if(!best||!reserve(root,best.x,best.y,best.w,best.h,living))return null;
       }
+      // Reserve a compact service room beside its kitchen before it becomes a leftover.
+      if(f===0&&index%3!==2){
+        const utility=rooms.find(room=>room.label===8&&room.functionalRevision===Functional.REVISION&&room.functionalRole!=='entry-storage');
+        if(utility){
+          const nodes=leaves(root),kitchens=nodes.filter(n=>n.room?.label===3),choices=[];
+          const pool=Functional.profile().observations.filter(o=>o.floor===f&&o.label===8).sort((a,b)=>Math.abs(a.shape[0]*a.shape[1]*.09-utility.targetArea)-Math.abs(b.shape[0]*b.shape[1]*.09-utility.targetArea)).slice(0,12);
+          for(const o of pool)for(const shape of [o.shape,[...o.shape].reverse()]){
+            const scale=Math.sqrt(utility.targetArea/(shape[0]*shape[1]*.09)),w=Math.max(5,Math.round(shape[0]*scale)),h=Math.max(5,Math.round(shape[1]*scale));
+            if(!Functional.fits(utility,w,h))continue;
+            for(const k of kitchens)for(const [x,y] of [[k.x-w,k.y],[k.x-w,k.y+k.h-h],[k.x+k.w,k.y],[k.x+k.w,k.y+k.h-h],[k.x,k.y-h],[k.x+k.w-w,k.y-h],[k.x,k.y+k.h],[k.x+k.w-w,k.y+k.h]]){
+              if(x<0||y<0||x+w>nx||y+h>ny||nodes.some(n=>n.room&&n.x<x+w&&n.x+n.w>x&&n.y<y+h&&n.y+n.h>y))continue;
+              if(x!==0&&y!==0&&x+w!==nx&&y+h!==ny)continue;
+              choices.push({x,y,w,h,o,score:Math.abs(w*h*.09-utility.targetArea)/utility.targetArea+Math.max(w,h)/Math.min(w,h)+r()*.3});
+            }
+          }
+          choices.sort((a,b)=>a.score-b.score);const best=choices[0];
+          if(best&&reserve(root,best.x,best.y,best.w,best.h,utility))serviceEvidence.push({key:utility.key,sourceCase:best.o.case,sourceSha256:Functional.profile().sourceSha256,placement:'kitchen-service-pair',initial:{x:best.x,y:best.y,w:best.w,h:best.h,area:best.w*best.h*.09}});
+        }
+      }
       const balcony=rooms.find(room=>room.label===ID['阳台']);
       // Pairing is an optional placement aid, with a variable host. Other balconies
       // are placed independently; the final access check chooses their actual host.
@@ -1227,6 +1479,7 @@
           const w=Math.min(node.w,Math.max(min,Math.round(Math.sqrt(area)*(.75+r()*.55))));
           const h=Math.min(node.h,Math.max(min,Math.ceil(area/w)));
           if(room.label===ID['卧室']&&Math.max(w,h)/Math.min(w,h)>BEDROOM_RULES.maxAspect+1e-8)continue;
+          if(!Functional.fits(room,w,h))continue;
           if(w*h*.09+1e-8<room.minArea || (node.w-w>0&&node.w-w<publicMin)||(node.h-h>0&&node.h-h<publicMin))continue;
           let xHigh=r()<.5,yHigh=r()<.5;
           if(prior && r()<influence) {
@@ -1241,7 +1494,14 @@
               return ((x===0||x+w===nx)&&h*.3+1e-8>=frontage)||((y===0||y+h===ny)&&w*.3+1e-8>=frontage);
             });
             if(!corners.length)continue;
-            if(prior&&r()<influence)corners.sort((a,b)=>energy(node.x+(a[0]?node.w-w:0)+w/2,node.y+(a[1]?node.h-h:0)+h/2)-energy(node.x+(b[0]?node.w-w:0)+w/2,node.y+(b[1]?node.h-h:0)+h/2));
+            const servicePosition=corner=>{
+              const x=node.x+(corner[0]?node.w-w:0),y=node.y+(corner[1]?node.h-h:0);
+              const targets=leaves(root).filter(n=>n.room&&(room.label===8?[3,5].includes(n.room.label):room.label===5?[5,8].includes(n.room.label):false));
+              const distance=targets.length?Math.min(...targets.map(n=>Math.max(0,n.x-x-w,x-n.x-n.w)+Math.max(0,n.y-y-h,y-n.y-n.h))):0;
+              return distance+(prior?influence*energy(x+w/2,y+h/2)*.15:0);
+            };
+            if(room.functionalRevision&&[5,8].includes(room.label))corners.sort((a,b)=>servicePosition(a)-servicePosition(b));
+            else if(prior&&r()<influence)corners.sort((a,b)=>energy(node.x+(a[0]?node.w-w:0)+w/2,node.y+(a[1]?node.h-h:0)+h/2)-energy(node.x+(b[0]?node.w-w:0)+w/2,node.y+(b[1]?node.h-h:0)+h/2));
             [xHigh,yHigh]=corners[0];
           }
           const xFirst=r()<.5;
@@ -1286,15 +1546,24 @@
         floors.push(grid);owners.push(map);
       }
       let candidate={nx,ny,floors,owners,spaces,daylightPolicy:BedroomDaylight.RULES.revision,mealPolicy:MealGeometry.RULES.revision,organizationPolicy:'activity-protected-v5',publicShapePolicy:'rect-or-L',corridorWidth,anchorMode,geometry:{upperPlacement:'bedrooms-before-service-and-multi',freeAnchors,mealEvidence,stairEvidence:anchor.stairEvidence,publicHubs:hubs.map(s=>s.key),publicHub:hubKey,stairX,stairY,stairW,stairH,entryX:anchorMode?entryX:null,entryW,entryY:anchorMode?entryY:null,entryH:anchorMode?entryH:null,anchorMode,stairPlacement:stairX===0||stairY===0||stairX+stairW===nx||stairY+stairH===ny?'boundary':'interior',localMoves:0,globalAdjustments:[]}};
+      candidate.geometry.functionalRevision=Functional.REVISION;candidate.geometry.serviceEvidence=serviceEvidence;
+      const record=stage=>{const check=Functional.evaluate(candidate,evaluationProgram);candidate.geometry.functionalStages=[...(candidate.geometry.functionalStages||[]),{stage,issues:check.issues,rooms:check.reports.map(r=>({key:r.key,area:r.area,aspect:r.aspect}))}];};
       const relaxed={...candidate,publicShapePolicy:'activity-verified',floors:floors.map(g=>Int16Array.from(g)),owners:owners.map(g=>Int32Array.from(g)),spaces:spaces.map(s=>({...s}))};
       if(!routeAndFill(candidate,program)){candidate=relaxed;if(!routeAndFill(candidate,program)&&candidate.owners.some(map=>Array.from(map).some(id=>id<0))){if(diagnostics)diagnostics.rejectionChecks.fill++;return null;}}
+      record('after-routing-and-fill');
       if(!validateProgram(candidate,evaluationProgram).accepted)candidate=repairPublicIntegrity(candidate,evaluationProgram);
-      if(resourceProgram&&validateProgram(candidate,evaluationProgram).issues.every(issue=>issue.includes('超过联合面积容量')))candidate=coordinateResources(candidate,evaluationProgram);
+      record('after-public-integrity');
+      if(resourceProgram&&!validateProgram(candidate,evaluationProgram).accepted){
+        candidate=coordinateResources(candidate,evaluationProgram);
+        if(!validateProgram(candidate,evaluationProgram).accepted)candidate=repairPublicIntegrity(candidate,evaluationProgram);
+      }
+      record('after-resource-coordination');
       const programCheck=validateProgram(candidate,evaluationProgram);
       const lowerKeys=program.filter(room=>room.floor===0).map(room=>room.key);
       retryUpper=!programCheck.issues.some(issue=>lowerKeys.some(key=>issue.startsWith(key)))&&candidate.owners[0].every(id=>id>=0);
       if(!roomConnectivity(candidate)||!programCheck.accepted){if(diagnostics){diagnostics.rejectionChecks.dimensions++;if(diagnostics.examples.length<5)diagnostics.examples.push({stage:'program',issues:programCheck.issues});}return null;}
-      return repairOrganization(candidate,evaluationProgram,diagnostics);
+      const organized=repairOrganization(candidate,evaluationProgram,diagnostics);
+      return organized?coordinateCirculation(organized,evaluationProgram):null;
     };
     const accepted=candidate=>{
       if(!candidate||!roomConnectivity(candidate)||!validateProgram(candidate,evaluationProgram).accepted)return false;
@@ -1302,7 +1571,7 @@
       if(!validateAnchors(candidate).accepted){if(diagnostics)diagnostics.rejectionChecks.anchors++;return false;}
       return true;
     };
-    const preference=candidate=>{const check=validateProgram(candidate,evaluationProgram);return assessCandidate(candidate).score+MealGeometry.evaluate(candidate).penalty+check.reports.reduce((sum,room)=>sum+areaDeviation(room,room.area)*20,0)+check.corridorBudgets.reduce((sum,b)=>sum+b.excessArea/(nx*ny*.09)*30,0)+influence*50*neuralEnergy(candidate,neuralPrior);};
+    const preference=candidate=>{const actual=program.some(r=>r.circulationRevision===Traffic.REVISION)?Traffic.actualBudget(candidate,evaluationProgram):{program:evaluationProgram};const check=validateProgram(candidate,actual.program);return assessCandidate(candidate).score+(program.some(r=>r.circulationRevision===Traffic.REVISION)?Traffic.evaluate(candidate,evaluationProgram).penalty:0)+MealGeometry.evaluate(candidate).penalty+check.reports.reduce((sum,room)=>sum+areaDeviation(room,room.area)*20,0)+check.corridorBudgets.reduce((sum,b)=>sum+b.excessArea/(nx*ny*.09)*30,0)+influence*50*neuralEnergy(candidate,neuralPrior);};
     let candidate=materialize();
     if(!accepted(candidate)){
       // Preserve a usable downstairs meal arrangement while locally resampling
@@ -1480,10 +1749,11 @@
         const f = Math.floor(z / FLOOR_CELLS);
         voxels.set(c.floors[f], z * slab); spaceIds.set(c.owners[f], z * slab);
       }
+      const actualCoordination=roomProgram?.some(r=>r.circulationRevision===Traffic.REVISION)?Traffic.actualBudget(c,roomProgram):null;
       const model = { nx, ny, nz: TOTAL_CELLS, cell: RULES.cell, floorCount: RULES.floorCount,
         floorHeight: RULES.floorHeight, seed, voxels, spaceIds, spaces: c.spaces, floors: c.floors,
-        floorSpaces: c.owners, daylightPolicy:c.daylightPolicy,daylight:c.daylightPolicy?BedroomDaylight.evaluate(c):undefined,mealPolicy:c.mealPolicy,mealGeometry:c.mealPolicy?MealGeometry.evaluate(c):undefined,kitchenDining:c.quality.kitchenDining, connections: c.quality.doors, organization:c.organization,organizationPolicy:c.organizationPolicy,publicShapePolicy:c.publicShapePolicy, corridorWidth:c.corridorWidth,
-        generation: { areaBudgetRevision:roomProgram?.some(r=>r.areaBudgetRevision)?'joint-area-v1':undefined,floorProgramRevision:'floor-program-v1',ruleRevision:'stair-terminal-v6',shapeRevision:'public-shape-v1',entryRevision:ENTRY_RULES.revision,stairRevision:searchMode==='free'?'stair-joint-v1':undefined,diagnostics,organization:c.organization,routingEvidence:c.routingEvidence,bedroomRules:BEDROOM_RULES,strategy: searchMode==='free'?'free-bsp-local':roomProgram?'room-program-partition':'shared-open-circulation', candidateCount: budget,
+        floorSpaces: c.owners, traffic:roomProgram?.some(r=>r.circulationRevision===Traffic.REVISION)?Traffic.evaluate(c,roomProgram):undefined,functional:Functional.evaluate(c,actualCoordination?.program||roomProgram||[]),functionalRelations:c.quality.functionalRelations,daylightPolicy:c.daylightPolicy,daylight:c.daylightPolicy?BedroomDaylight.evaluate(c):undefined,mealPolicy:c.mealPolicy,mealGeometry:c.mealPolicy?MealGeometry.evaluate(c):undefined,kitchenDining:c.quality.kitchenDining, connections: c.quality.doors, organization:c.organization,organizationPolicy:c.organizationPolicy,publicShapePolicy:c.publicShapePolicy, corridorWidth:c.corridorWidth,
+        generation: { functionalRevision:roomProgram?.some(r=>r.functionalRevision)?Functional.REVISION:undefined,areaBudgetRevision:roomProgram?.some(r=>r.areaBudgetRevision)?'joint-area-v1':undefined,floorProgramRevision:'floor-program-v1',ruleRevision:'stair-terminal-v6',shapeRevision:'public-shape-v1',entryRevision:ENTRY_RULES.revision,stairRevision:searchMode==='free'?'stair-joint-v1':undefined,diagnostics,organization:c.organization,routingEvidence:c.routingEvidence,bedroomRules:BEDROOM_RULES,strategy: searchMode==='free'?'free-bsp-local':roomProgram?'room-program-partition':'shared-open-circulation', candidateCount: budget,
           selectedCandidate: c.index, geometry: c.geometry, score: c.quality.score,
           neuralEnergy:c.quality.neuralEnergy, neuralUsed:!!neuralPrior, influence,
           validCandidateCount:candidates.length,
@@ -1492,21 +1762,25 @@
           reachable: c.quality.reachable, corridorFraction: c.quality.corridorFraction,
           openFraction: c.quality.openFraction, stairDaylight: c.quality.stairDaylight, openTraversal: c.quality.openTraversal, repairCount: c.repairs, wetAlignment: c.quality.wetAlignment,
           areaReports: c.quality.areaReports, relations: c.quality.relations, penalties: c.quality.penalties } };
+      if(actualCoordination){const {program:actualProgram,...budgetReport}=actualCoordination;model.generation.geometry.actualAreaCoordination=budgetReport;}
       model.validation = validateLayout(model);
+      if(roomProgram?.some(r=>r.functionalRevision))model.generation.geometry={...model.generation.geometry,functionalStages:[...(model.generation.geometry.functionalStages||[]),{stage:'final-export-check',issues:model.functional.issues,rooms:model.functional.reports.map(r=>({key:r.key,area:r.area,aspect:r.aspect}))}]};
       model.anchorValidation=validateAnchors(model);
       model.circulation = validateCirculation(model);
       if(roomProgram)model.programValidation=validateProgram(model,roomProgram);
-      return model.validation.accepted && model.circulation.accepted && model.programValidation?.accepted!==false && model.anchorValidation.accepted ? model : null;
+      return model.validation.accepted && model.circulation.accepted && model.programValidation?.accepted!==false && model.anchorValidation.accepted && model.functional.accepted && model.functionalRelations.accepted && model.traffic?.accepted!==false && actualCoordination?.accepted!==false ? model : null;
     }
     let firstLayoutSent=false;
     for (let index = 0; index < budget; index++) {
       if(index%100===0)onCandidateProgress?.(index,budget);
       const candidate = searchMode==='free'?freePartitionCandidate(nx,ny,seed,index,roomProgram,corridorWidth,neuralPrior,influence,anchorMode,diagnostics):roomProgram?programCandidate(nx,ny,seed,plan,index,roomProgram):partitionCandidate(nx, ny, seed, plan, index);
       if(!candidate){diagnostics.rejectionChecks.partition++;continue;}
+      if(roomProgram?.some(r=>r.circulationRevision===Traffic.REVISION)&&!Traffic.evaluate(candidate,roomProgram).accepted){diagnostics.rejectionChecks.traffic=(diagnostics.rejectionChecks.traffic||0)+1;continue;}
       if (!roomConnectivity(candidate)) continue;
       const result = roomProgram?{quality:assessCandidate(candidate),repairs:0}:repairAccess(candidate);
       if(roomProgram) {
-        const check=validateProgram(candidate,roomProgram);
+        const actual=roomProgram.some(r=>r.circulationRevision===Traffic.REVISION)?Traffic.actualBudget(candidate,roomProgram):{program:roomProgram};
+        const check=validateProgram(candidate,actual.program);
         if(!result.quality.reachable || !check.accepted)continue;
         result.quality.score+=check.reports.reduce((sum,room)=>sum+areaDeviation(room,room.area)*20,0)+check.corridorBudgets.reduce((sum,b)=>sum+b.excessArea/(slab*.09)*30,0);
         if(candidate.mealPolicy)result.quality.score+=MealGeometry.evaluate(candidate).penalty;
@@ -1574,7 +1848,7 @@
     return {model:chosen[0],searchSummary:{policy:'all-anchor-modes',budget,validCandidateCount:searches.reduce((sum,s)=>sum+s.validCandidateCount,0),selectedCount:chosen.length,selectedRelations:[...new Set(chosen.map(m=>m.anchorValidation.relation))],selectionPolicy:'protected-activity-quality-first; comparable-score; distinct-relations-and-access-graphs',searches}};
   }
 
-  const api = Object.freeze({ RULES, ENTRY_RULES, entryMaxArea, BEDROOM_RULES, FLOOR_CELLS, TOTAL_CELLS, LABELS, ID, SEARCH_BUDGET, OPEN_LABELS, createRoomProgram, sampleStairAnchor, classifySpaceShape, validateProgram, buildLayout, buildLayoutOptions, selectPortfolio,validateLayout, validateCirculation, validateAnchors, repairAccess, coordinateResources });
+  const api = Object.freeze({ RULES, ENTRY_RULES, entryMaxArea, BEDROOM_RULES, FLOOR_CELLS, TOTAL_CELLS, LABELS, ID, SEARCH_BUDGET, OPEN_LABELS, createRoomProgram, sampleStairAnchor, classifySpaceShape, validateProgram, buildLayout, buildLayoutOptions, selectPortfolio,validateLayout, validateCirculation, validateAnchors, repairAccess, coordinateResources, coordinateCirculation, interiorTopologyCandidate });
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.LayoutCore = api;
 })(globalThis);

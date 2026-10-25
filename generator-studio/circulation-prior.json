@@ -1,0 +1,744 @@
+{
+  "schema": "training_circulation_prior_v1",
+  "trainingCaseCount": 300,
+  "sourceSha256": "b1d3e3173a04f9c4ed5f47967fe0ddf933132bd576a0e145d072ea90c62f0a22",
+  "profiles": {
+    "0:all": {
+      "count": 300,
+      "nonzero": 291,
+      "exteriorCount": 65,
+      "annotatedOutdoorCount": 88,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 2.88,
+          "p25": 5.4,
+          "median": 8.64,
+          "p75": 13.4325,
+          "p90": 19.476,
+          "max": 63.81
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.02175,
+          "p25": 0.03528,
+          "median": 0.05817,
+          "p75": 0.08393,
+          "p90": 0.11164,
+          "max": 0.2077
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 11.1
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.02941,
+          "max": 0.26429
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 5.4
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 6.0
+        },
+        "annotationCoverage": {
+          "min": 0.47085,
+          "p10": 0.70911,
+          "p25": 0.78569,
+          "median": 0.85665,
+          "p75": 0.90125,
+          "p90": 0.94856,
+          "max": 1.0
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.8,
+          "max": 18.0
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 13.8
+        }
+      }
+    },
+    "0:small": {
+      "count": 49,
+      "nonzero": 46,
+      "exteriorCount": 12,
+      "annotatedOutdoorCount": 13,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 2.088,
+          "p25": 3.6,
+          "median": 5.04,
+          "p75": 7.92,
+          "p90": 13.338,
+          "max": 15.03
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.02162,
+          "p25": 0.03025,
+          "median": 0.05273,
+          "p75": 0.07553,
+          "p90": 0.11823,
+          "max": 0.15625
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 11.1
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.03531,
+          "max": 0.26429
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 5.4
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 5.7
+        },
+        "annotationCoverage": {
+          "min": 0.59911,
+          "p10": 0.83764,
+          "p25": 0.85859,
+          "median": 0.90605,
+          "p75": 0.93932,
+          "p90": 1.0,
+          "max": 1.0
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.5,
+          "max": 11.1
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 5.4
+        }
+      }
+    },
+    "0:medium": {
+      "count": 166,
+      "nonzero": 161,
+      "exteriorCount": 29,
+      "annotatedOutdoorCount": 40,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 2.88,
+          "p25": 5.4,
+          "median": 8.55,
+          "p75": 11.88,
+          "p90": 16.2,
+          "max": 36.9
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.02118,
+          "p25": 0.03519,
+          "median": 0.05906,
+          "p75": 0.08362,
+          "p90": 0.10411,
+          "max": 0.2077
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 6.0
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.02941,
+          "max": 0.12821
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 6.0
+        },
+        "annotationCoverage": {
+          "min": 0.59225,
+          "p10": 0.74401,
+          "p25": 0.81286,
+          "median": 0.86788,
+          "p75": 0.89954,
+          "p90": 0.94525,
+          "max": 1.0
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 15.0
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 9.0
+        }
+      }
+    },
+    "0:large": {
+      "count": 85,
+      "nonzero": 84,
+      "exteriorCount": 24,
+      "annotatedOutdoorCount": 35,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 5.076,
+          "p25": 8.19,
+          "median": 13.05,
+          "p75": 19.8,
+          "p90": 30.114,
+          "max": 63.81
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.02418,
+          "p25": 0.03896,
+          "median": 0.05455,
+          "p75": 0.09346,
+          "p90": 0.12809,
+          "max": 0.1939
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.5,
+          "max": 3.9
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.02041,
+          "p90": 0.02632,
+          "max": 0.05714
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 2.1
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.5,
+          "max": 3.6
+        },
+        "annotationCoverage": {
+          "min": 0.47085,
+          "p10": 0.61789,
+          "p25": 0.71129,
+          "median": 0.79469,
+          "p75": 0.86195,
+          "p90": 0.9089,
+          "max": 0.96542
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.5,
+          "p90": 4.08,
+          "max": 18.0
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.9,
+          "max": 13.8
+        }
+      }
+    },
+    "1:all": {
+      "count": 297,
+      "nonzero": 294,
+      "exteriorCount": 79,
+      "annotatedOutdoorCount": 99,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 4.5,
+          "p25": 6.84,
+          "median": 11.88,
+          "p75": 16.74,
+          "p90": 23.148,
+          "max": 56.16
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.03095,
+          "p25": 0.04743,
+          "median": 0.07351,
+          "p75": 0.10259,
+          "p90": 0.13088,
+          "max": 0.24167
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.5,
+          "max": 5.7
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.02062,
+          "p90": 0.03472,
+          "max": 0.1
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 1.5
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.5,
+          "max": 5.7
+        },
+        "annotationCoverage": {
+          "min": 0.32544,
+          "p10": 0.71904,
+          "p25": 0.82841,
+          "median": 0.89904,
+          "p75": 0.94464,
+          "p90": 0.99238,
+          "max": 1.0
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.5,
+          "p90": 2.1,
+          "max": 15.9
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 9.9
+        }
+      }
+    },
+    "1:small": {
+      "count": 49,
+      "nonzero": 48,
+      "exteriorCount": 17,
+      "annotatedOutdoorCount": 18,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 3.96,
+          "p25": 5.4,
+          "median": 8.1,
+          "p75": 12.96,
+          "p90": 14.58,
+          "max": 20.88
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.03632,
+          "p25": 0.05147,
+          "median": 0.07553,
+          "p75": 0.11997,
+          "p90": 0.15262,
+          "max": 0.24167
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.86,
+          "max": 3.6
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.03472,
+          "p90": 0.04857,
+          "max": 0.08955
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.8,
+          "max": 3.6
+        },
+        "annotationCoverage": {
+          "min": 0.8227,
+          "p10": 0.88687,
+          "p25": 0.91554,
+          "median": 0.95066,
+          "p75": 1.0,
+          "p90": 1.0,
+          "max": 1.0
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.5,
+          "p90": 2.16,
+          "max": 3.6
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        }
+      }
+    },
+    "1:medium": {
+      "count": 163,
+      "nonzero": 162,
+      "exteriorCount": 38,
+      "annotatedOutdoorCount": 50,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 4.5,
+          "p25": 6.705,
+          "median": 10.8,
+          "p75": 14.76,
+          "p90": 18.648,
+          "max": 35.1
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.0316,
+          "p25": 0.04368,
+          "median": 0.07,
+          "p75": 0.09665,
+          "p90": 0.12104,
+          "max": 0.20937
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 3.9
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.03034,
+          "max": 0.07792
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 0.0
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 1.5,
+          "max": 3.9
+        },
+        "annotationCoverage": {
+          "min": 0.50659,
+          "p10": 0.79018,
+          "p25": 0.85575,
+          "median": 0.90336,
+          "p75": 0.94467,
+          "p90": 0.99744,
+          "max": 1.0
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.8,
+          "max": 11.1
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 9.9
+        }
+      }
+    },
+    "1:large": {
+      "count": 85,
+      "nonzero": 84,
+      "exteriorCount": 24,
+      "annotatedOutdoorCount": 31,
+      "metrics": {
+        "area": {
+          "min": 0.0,
+          "p10": 7.344,
+          "p25": 9.9,
+          "median": 16.74,
+          "p75": 23.76,
+          "p90": 29.628,
+          "max": 56.16
+        },
+        "areaFraction": {
+          "min": 0.0,
+          "p10": 0.02923,
+          "p25": 0.04835,
+          "median": 0.07725,
+          "p75": 0.1,
+          "p90": 0.1289,
+          "max": 0.18113
+        },
+        "facadeLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.5,
+          "max": 5.7
+        },
+        "facadeFraction": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.02041,
+          "p90": 0.02747,
+          "max": 0.1
+        },
+        "southLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 1.5
+        },
+        "maxFacadeRun": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.2,
+          "p90": 1.5,
+          "max": 5.7
+        },
+        "annotationCoverage": {
+          "min": 0.32544,
+          "p10": 0.62228,
+          "p25": 0.72294,
+          "median": 0.82607,
+          "p75": 0.89904,
+          "p90": 0.93989,
+          "max": 0.9714
+        },
+        "annotatedOutdoorLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 1.5,
+          "p90": 3.66,
+          "max": 15.9
+        },
+        "annotatedSouthLength": {
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "median": 0.0,
+          "p75": 0.0,
+          "p90": 0.0,
+          "max": 8.7
+        }
+      }
+    }
+  },
+  "semanticDifferences": [
+    {
+      "case": 10,
+      "floor": 1,
+      "sourceArea": 16.56,
+      "canonicalArea": 9.629999999999999
+    },
+    {
+      "case": 1353,
+      "floor": 1,
+      "sourceArea": 8.37,
+      "canonicalArea": 2.52
+    },
+    {
+      "case": 1607,
+      "floor": 1,
+      "sourceArea": 14.04,
+      "canonicalArea": 0.0
+    }
+  ],
+  "notes": [
+    "Geometric envelope contact and source direct_lighting_surfaces(outdoor) reported separately; neither is a measured window. No door annotation. Tall boxes assume uniform vertical exposure.",
+    "All boundary sides are geometric; south is coordinate -Y, site orientation unverified.",
+    "Zero-corridor floors retained. Partial annotation coverage retained; overlaps/out-of-bounds and source/canonical corridor disagreement floors excluded."
+  ]
+}

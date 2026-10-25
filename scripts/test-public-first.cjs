@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 // Exercise routing independently from the randomized architectural search.
-const sandbox = {module:{exports:{}},Organization:require('../generator-studio/organization.js')};
+const sandbox = {module:{exports:{}},Organization:require('../generator-studio/organization.js'),MealRouting:require('../generator-studio/meal-routing.js'),FunctionalRules:require('../generator-studio/functional-rules.js'),MealGeometry:require('../generator-studio/meal-geometry.js')};
 vm.runInNewContext(fs.readFileSync(require.resolve('../generator-studio/layout-core.js'),'utf8')
   .replace('const api = Object.freeze({', 'const api = Object.freeze({routeAndFill, publicNetwork,'), sandbox);
 const core = sandbox.module.exports, ID=core.ID;

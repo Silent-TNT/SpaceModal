@@ -28,8 +28,11 @@
   }
   function endpoint(map,spaces,nx,net,sid){
     let result=null;const faces=new Map();
-    const preferred=end=>spaces[sid].label===3&&spaces[map[end.outside]]?.label===2?0:1;
-    const better=end=>!result||preferred(end)<preferred(result)||preferred(end)===preferred(result)&&end.cost<result.cost;
+    const room=spaces[sid],serviceTargets=room.circulationRevision&&[4,5,8].includes(room.label)?spaces.filter(s=>map.includes(s.id)&&(room.label===8?[3,5].includes(s.label):room.label===4?s.label===5:[4,8].includes(s.label))):[];
+    const targetPoints=serviceTargets.map(s=>{const cells=Array.from(map).flatMap((id,i)=>id===s.id?[i]:[]);return {x:cells.reduce((sum,i)=>sum+i%nx,0)/cells.length,y:cells.reduce((sum,i)=>sum+Math.floor(i/nx),0)/cells.length};});
+    const jointCost=end=>end.cost+(targetPoints.length?2*Math.min(...targetPoints.map(p=>Math.abs(end.outside%nx-p.x)+Math.abs(Math.floor(end.outside/nx)-p.y))):0);
+    const preferred=end=>spaces[sid].label===4&&spaces[sid].circulationRevision?(spaces[map[end.outside]]?.key==='1:stair-landing'?1:({6:0,1:1,2:1,10:1,0:5}[spaces[map[end.outside]]?.label]??2)):spaces[sid].label===8&&spaces[sid].functionalRevision?({6:0,2:1,1:1,10:1,0:5}[spaces[map[end.outside]]?.label]??2):spaces[sid].label===3&&spaces[map[end.outside]]?.label===2?0:1;
+    const better=end=>!result||preferred(end)<preferred(result)||preferred(end)===preferred(result)&&jointCost(end)<jointCost(result);
     for(let i=0;i<map.length;i++)if(map[i]===sid){
       if(transit(spaces[sid].label)&&net.cover[i]>=0){const square=net.cover[i],cost=net.distance[square];const end={square,cost,inside:i,outside:i};if(better(end))result=end;}
       for(const j of adjacent(i,nx,map.length/nx).filter(j=>map[j]!==sid&&net.cover[j]>=0&&!(spaces[sid].label===4&&spaces[map[j]].label===7))){
@@ -122,7 +125,7 @@
       // Utility may be reached through its kitchen, without treating a kitchen as a through-route.
       for(const room of present.filter(s=>s.label===8)){
         const direct=endpoint(map,spaces,nx,net,room.id);
-        if(direct){addDoor(portal(room.id,map[direct.outside],floor,direct.inside,direct.outside,nx,'door'));continue;}
+        if(direct&&room.functionalRole!=='service'){addDoor(portal(room.id,map[direct.outside],floor,direct.inside,direct.outside,nx,'door'));continue;}
         const kitchen=present.find(s=>s.label===3),groups=new Map();
         if(kitchen)for(let i=0;i<map.length;i++)if(map[i]===room.id)for(const j of adjacent(i,nx,ny).filter(j=>map[j]===kitchen.id)){
           const vertical=Math.abs(i-j)===1,key=`${vertical?'x':'y'}:${vertical?Math.max(i%nx,j%nx):Math.max(Math.floor(i/nx),Math.floor(j/nx))}`;
@@ -133,6 +136,7 @@
           faces.sort((a,b)=>a.position-b.position);face=faces.find((f,k)=>k>0&&k+1<faces.length&&faces[k-1].position+1===f.position&&f.position+1===faces[k+1].position);if(face)break;
         }
         if(face&&endpoint(map,spaces,nx,net,kitchen.id))addDoor(portal(room.id,kitchen.id,floor,face.i,face.j,nx,'door'));
+        else if(direct)addDoor(portal(room.id,map[direct.outside],floor,direct.inside,direct.outside,nx,'door'));
         else unreachable.push({floor,key:room.key,spaceId:room.id});
       }
       const publicCells=Array.from(used).reduce((sum,n,i)=>sum+Number(n&&[0,1,2,10].includes(spaces[map[i]]?.label)),0);

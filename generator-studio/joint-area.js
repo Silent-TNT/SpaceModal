@@ -1,5 +1,6 @@
 (function(root){
   'use strict';
+  const Functional=typeof require==='function'?require('./functional-rules.js'):root.FunctionalRules;
   const sigmoid=x=>1/(1+Math.exp(-x)),silu=x=>x*sigmoid(x),sum=xs=>xs.reduce((a,b)=>a+b,0);
   class JointAreaModel {
     constructor(payload){if(payload?.schema!=='joint_area_model_v1')throw Error('联合面积模型格式无效');this.meta=payload;this.weights=payload.weights;}
@@ -49,10 +50,17 @@
       if(r.label===4)maximum+=.3*Math.sqrt(maximum*1.8);
       if(r.key==='entry')maximum=Math.min(maximum,Math.max(12,fp*.12));
       if(r.label===5||r.label===8)maximum=Math.min(maximum,r.label===5?16:14);
+      const functional=Functional.evidence(r,fp).stats?.metrics;
+      if(r.functionalRevision===Functional.REVISION&&functional){
+        if(r.label===0)maximum=Math.min(maximum,Math.max(4.86,fp*.09));
+        if(r.label===5||r.label===8)maximum=Math.min(maximum,Math.max(r.minArea,functional.area.p90*1.2),12);
+        if(r.label===4)maximum=Math.min(maximum,functional.area.p90*1.35+.3*Math.sqrt(functional.area.p90*1.35*1.8));
+      }
+      const minimum=r.functionalRevision===Functional.REVISION&&[5,8].includes(r.label)?Math.max(r.minArea,Math.min(functional.area.p25,predicted*.7)):r.minArea;
       const explicit=options.areas?.[r.key];
-      if(explicit!==undefined&&(!Number.isFinite(explicit)||explicit<r.minArea||explicit>maximum))throw Error(r.key+'指定面积超出可行容量');
+      if(explicit!==undefined&&(!Number.isFinite(explicit)||explicit<minimum||explicit>maximum))throw Error(r.key+'指定面积超出可行容量');
       const groupKey=[2,3].includes(r.label)?'meal':r.floor===1&&[1,10].includes(r.label)?'upper-public':null;
-      return {...r,placementTargetArea:r.targetArea,placementPreferredAreaMin:r.preferredAreaMin,placementPreferredAreaMax:r.preferredAreaMax,predictedArea:predicted,resourceMinArea:explicit??r.minArea,resourceMaxArea:explicit??Math.floor((maximum+1e-8)/.09)*.09,resourceGroupKey:groupKey,resourceGroupMaxArea:groupKey==='meal'?fp*.28:groupKey==='upper-public'?fp*.4:undefined,areaBudgetRevision:'joint-area-v1'};
+      return {...r,placementTargetArea:Math.max(r.targetArea,minimum),placementPreferredAreaMin:r.preferredAreaMin,placementPreferredAreaMax:r.preferredAreaMax,predictedArea:predicted,resourceMinArea:explicit??minimum,resourceMaxArea:explicit??Math.floor((maximum+1e-8)/.09)*.09,resourceGroupKey:groupKey,resourceGroupMaxArea:groupKey==='meal'?fp*.28:groupKey==='upper-public'?fp*.4:undefined,areaBudgetRevision:'joint-area-v1'};
     });
     const floors=[0,1].map(floor=>{
       const indices=rooms.flatMap((r,i)=>r.floor===floor?[i]:[]),rs=indices.map(i=>rooms[i]);

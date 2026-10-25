@@ -1,5 +1,6 @@
 (function(root){
   'use strict';
+  const Functional=typeof require==='function'?require('./functional-rules.js'):root.FunctionalRules;
   const TYPES=['entryway','living_room','dining_room','kitchen','bedroom','bathroom','corridor','stairs','utility','balcony','multi_purpose'];
   function apply(program,profile,floorArea,dimensions={}){
     if(profile?.schema!=='training_area_prior_v1'||profile.training_case_count<1||!Number.isFinite(floorArea)||floorArea<=0)throw Error('面积统计配置无效');
@@ -30,7 +31,7 @@
         for(const room of rooms){for(const key of ['targetArea','preferredAreaMin','preferredAreaMax'])room[key]=room.minArea+(room[key]-room.minArea)*factor;room.capacityAdjusted=true;}
       }
     }
-    return result;
+    return Functional.apply(result,floorArea);
   }
   function balconyCounts(conditions,profile){
     return [0,1].map(f=>{
