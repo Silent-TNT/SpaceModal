@@ -7,6 +7,9 @@
   const Functional=typeof require==='function'?require('./functional-rules.js'):root.FunctionalRules;
   const Traffic=typeof require==='function'?require('./circulation.js'):root.CirculationRules;
 
+  const Planning=typeof require==='function'?require('./planning-rules.js'):root.PlanningRules;
+  const JointPlanner=typeof require==='function'?require('./joint-planner.js'):root.JointPlanner;
+
   // Result constraints remain separate from generation and circulation preferences.
   const RULES = Object.freeze({ cell: 300, floorCount: 2, floorHeight: 3000 });
   const FLOOR_CELLS = RULES.floorHeight / RULES.cell;
@@ -1127,6 +1130,8 @@
         const compact=compactSpineCandidate(nx,ny,seed,index,program,corridorWidth,anchorMode);
         if(compact)return compact;
       }
+      const demand=demandJointCandidate(nx,ny,seed,index,program,corridorWidth,anchorMode,diagnostics);
+      if(demand)return demand;
     }
     const args=[nx,ny,seed,index,program,corridorWidth,neuralPrior,influence,anchorMode,diagnostics,anchorOverride,refine];
     const first=freePartitionAttempt(...args);if(first||!refine)return first;
@@ -1137,6 +1142,87 @@
   }
 
   const topologyDimensionCache=new Map();
+  function demandJointCandidate(nx,ny,seed,index,program,corridorWidth,anchorMode,diagnostics){
+    const q=Math.round(corridorWidth/.3),key=JSON.stringify(['demand',nx,ny,q,program]);
+    const profile=typeof require==='function'?require('./stair-prior.json'):root.StairPriorProfile;
+    let plans=topologyDimensionCache.get(key);
+    if(!plans){plans=JointPlanner.plan(program,nx,ny,q,profile);if(topologyDimensionCache.size>=8)topologyDimensionCache.delete(topologyDimensionCache.keys().next().value);topologyDimensionCache.set(key,plans);}
+    for(let trial=0;trial<Math.min(8,plans.length);trial++){
+      const plan=plans[(((seed+Math.floor(index/12))>>>0)+trial)%plans.length],{left,sh,spine,right,source}=plan.spec;
+      const spaces=[{id:0,key:'stairs',label:7}],owners=[new Int32Array(nx*ny).fill(-1),new Int32Array(nx*ny).fill(-1)],floors=[new Int16Array(nx*ny).fill(-1),new Int16Array(nx*ny).fill(-1)];
+      const put=(f,room,x,y,w,h)=>{let s=spaces.find(s=>s.key===room.key);if(!s){s={...room,id:spaces.length};spaces.push(s);}for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++){const i=yy*nx+xx;owners[f][i]=s.id;floors[f][i]=s.label;}};
+      for(let f=0;f<2;f++){
+        for(const r of plan.floors[f])put(f,r.room,r.x,r.y,r.w,r.h);
+        put(f,spaces[0],0,ny-sh,left,sh);
+        if(f)put(f,{key:'1:stair-landing',label:6,floor:1,generated:true},0,ny-sh-q,left,q);
+      }
+      const entry=plan.floors[0].find(r=>r.room.key==='entry');if(!entry||owners.some(g=>g.some(id=>id<0)))continue;
+      const candidate={nx,ny,spaces,owners,floors,corridorWidth,anchorMode,publicShapePolicy:'rect-or-L',daylightPolicy:BedroomDaylight.RULES.revision,mealPolicy:MealGeometry.RULES.revision,organizationPolicy:'activity-protected-v5',geometry:{strategy:'demand-joint-bands',planningRevision:'demand-joint-v1',stairX:0,stairY:ny-sh,stairW:left,stairH:sh,entryX:entry.x,entryY:entry.y,entryW:entry.w,entryH:entry.h,freeAnchors:true,publicHub:plan.main[0],publicHubs:[plan.main[0]],functionalRevision:Functional.REVISION,stairEvidence:{revision:'stair-joint-v1',sourceCase:source.case,sourceSha256:profile.sourceSha256,templateMm:[left*300,sh*300]},functionalStages:[]},routingEvidence:[0,1].map(floor=>({floor,repairs:[],method:'demand-program-joint-bands'}))};
+      if(diagnostics)diagnostics.demandJointTrials=(diagnostics.demandJointTrials||0)+1;
+      const check=validateProgram(candidate,program);
+      if(!roomConnectivity(candidate)||!check.accepted||!validateAnchors(candidate).accepted)continue;
+      candidate.organization=Organization.evaluate(candidate);const quality=assessCandidate(candidate);
+      if(!candidate.organization.accepted||!quality.reachable||!Traffic.evaluate(candidate,program).accepted||!Functional.relations(candidate,quality.doors).accepted)continue;
+      candidate.geometry.functionalStages.push({stage:'joint-demand-planning',issues:[],rooms:check.reports.map(r=>({key:r.key,area:r.area}))});
+      return coordinateCirculation(candidate,program);
+    }
+    return insertDemandRooms(nx,ny,seed,index,program,corridorWidth,anchorMode,diagnostics);
+  }
+  // Existing geometry can seed a richer program. Incomplete construction states
+  // never leave this function; every requested room and all final gates remain.
+  function insertDemandRooms(nx,ny,seed,index,program,corridorWidth,anchorMode,diagnostics){
+    const required=createRoomProgram(3,2,[0,2],{bedrooms0:1,living1:1,utility1:1});
+    const base=required.map(r=>program.find(s=>s.key===r.key&&s.floor===r.floor&&s.label===r.label));
+    if(base.some(r=>!r)||base.length>=program.length)return null;
+    const missing=program.filter(r=>!base.includes(r)),cacheKey=JSON.stringify(['insert',nx,ny,corridorWidth,program]);
+    let seeds=topologyDimensionCache.get(cacheKey);
+    if(!seeds){
+      seeds=[];
+      const dimensions=boundedTopologyDimensions(nx,ny,base,corridorWidth);
+      for(const dims of [null,...dimensions.slice(0,12)]){
+        const candidate=interiorTopologyCandidate(nx,ny,seed,0,base,corridorWidth,anchorMode,null,dims);
+        if(candidate)seeds.push(candidate);
+        if(seeds.length>=4)break;
+      }
+      if(topologyDimensionCache.size>=8)topologyDimensionCache.delete(topologyDimensionCache.keys().next().value);
+      topologyDimensionCache.set(cacheKey,seeds);
+    }
+    const clone=c=>({...c,organization:null,connections:undefined,quality:null,owners:c.owners.map(g=>Int32Array.from(g)),floors:c.floors.map(g=>Int16Array.from(g)),spaces:c.spaces.map(s=>({...s})),geometry:{...c.geometry}});
+    const preference=c=>program.reduce((cost,r)=>{const sid=c.spaces.find(s=>s.key===r.key)?.id;if(sid===undefined)return cost;const area=Array.from(c.owners[r.floor]).filter(id=>id===sid).length*.09;return cost+areaDeviation(r,area);},0);
+    let beam=seeds.map(clone);
+    for(const room of missing){
+      const proposals=[];
+      for(const state of beam)for(const donor of base.filter(r=>r.floor===room.floor)){
+        const sid=state.spaces.find(s=>s.key===donor.key)?.id,map=state.owners[room.floor],cells=Array.from(map).flatMap((id,i)=>id===sid?[i]:[]);
+        if(!cells.length)continue;
+        const xs=cells.map(i=>i%nx),ys=cells.map(i=>Math.floor(i/nx)),x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x+1,h=Math.max(...ys)-y+1;
+        if(cells.length!==w*h)continue;
+        for(const axis of ['x','y'])for(let cut=1;cut<(axis==='x'?w:h);cut++)for(const high of [false,true]){
+          const patch=axis==='x'?{x:high?x+w-cut:x,y,w:cut,h}:{x,y:high?y+h-cut:y,w,h:cut};
+          const dw=axis==='x'?w-cut:w,dh=axis==='y'?h-cut:h;
+          if(!Planning.rectangle(room,patch.w,patch.h,nx*ny*.09)||!Planning.rectangle(donor,dw,dh,nx*ny*.09))continue;
+          if(BedroomDaylight.requiredFrontage(room.label)&&patch.x>0&&patch.y>0&&patch.x+patch.w<nx&&patch.y+patch.h<ny)continue;
+          const trial=clone(state),id=trial.spaces.length;trial.spaces.push({...room,id});
+          for(let yy=patch.y;yy<patch.y+patch.h;yy++)for(let xx=patch.x;xx<patch.x+patch.w;xx++){trial.owners[room.floor][yy*nx+xx]=id;trial.floors[room.floor][yy*nx+xx]=room.label;}
+          trial.geometry.programInsertions=[...(state.geometry.programInsertions||[]),{key:room.key,from:donor.key,rectangle:patch,area:patch.w*patch.h*.09}];
+          proposals.push({trial,score:preference(trial)});
+        }
+      }
+      beam=proposals.sort((a,b)=>a.score-b.score).slice(0,12).map(p=>p.trial);
+      if(!beam.length)return null;
+    }
+    for(const candidate of beam){
+      if(diagnostics)diagnostics.demandInsertionTrials=(diagnostics.demandInsertionTrials||0)+1;
+      candidate.anchorMode=anchorMode;candidate.geometry.strategy='demand-envelope-insertion';candidate.geometry.planningRevision='demand-joint-v1';
+      const check=validateProgram(candidate,program);
+      if(!roomConnectivity(candidate)||!check.accepted||!validateAnchors(candidate).accepted)continue;
+      candidate.organization=Organization.evaluate(candidate);const quality=assessCandidate(candidate);
+      if(!candidate.organization.accepted||!quality.reachable||!Traffic.evaluate(candidate,program).accepted||!Functional.relations(candidate,quality.doors).accepted)continue;
+      candidate.geometry.functionalStages=[{stage:'joint-program-insertion',issues:[],rooms:check.reports.map(r=>({key:r.key,area:r.area}))}];
+      return coordinateCirculation(candidate,program);
+    }
+    return null;
+  }
   // Compact envelopes use two exterior room bands and one continuous public
   // spine. Every occupied cell belongs to a planned room, stair or arrival.
   function compactSpineCandidate(nx,ny,seed,index,program,corridorWidth,anchorMode,diagnostics=null){

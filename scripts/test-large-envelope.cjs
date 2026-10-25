@@ -12,7 +12,10 @@ const joint = new J.JointAreaModel(require('../generator-studio/joint-area-model
 const neural = new Neural(require('../generator-studio/model.json'));
 const arg = (name, fallback) => process.argv.find(a => a.startsWith(`--${name}=`))?.split('=')[1] ?? fallback;
 const d = {...require('../generator-studio/conditions.js').DEFAULTS,
-  length:Number(arg('length',15000)),width:Number(arg('width',12000)),seed:Number(arg('seed',123))};
+  length:Number(arg('length',15000)),width:Number(arg('width',12000)),seed:Number(arg('seed',123)),
+  bedrooms:Number(arg('bedrooms',3)),bathrooms:Number(arg('bathrooms',2)),
+  bedrooms0:Number(arg('bedrooms0',1)),living1:Number(arg('living1',1)),utility1:Number(arg('utility1',1)),
+  balconies0:Number(arg('balconies0',-1)),balconies1:Number(arg('balconies1',-1))};
 const budget=Number(arg('budget',2400)), mode=arg('mode','all'),tag=arg('tag','current');
 assert.match(tag,/^[a-z0-9-]+$/);
 const base=A.apply(C.createRoomProgram(d.bedrooms,d.bathrooms,A.balconyCounts(d,profile),d),profile,d.length*d.width/1e6,d);
@@ -39,4 +42,4 @@ try {
   console.log('FAIL',JSON.stringify(output));process.exitCode=1;
 }
 const dir=path.join(__dirname,'../.qa/large-envelope');fs.mkdirSync(dir,{recursive:true});
-fs.writeFileSync(path.join(dir,`${d.length}-${d.width}-${d.seed}-${mode}-${tag}.json`),JSON.stringify(output,(k,v)=>ArrayBuffer.isView(v)?Array.from(v):v));
+fs.writeFileSync(path.join(dir,`${d.length}-${d.width}-${d.bedrooms}bed-${d.seed}-${mode}-${tag}.json`),JSON.stringify(output,(k,v)=>ArrayBuffer.isView(v)?Array.from(v):v));

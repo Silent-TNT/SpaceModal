@@ -71,7 +71,7 @@ async function send(text){
 function generate(conditions,sources){
   if(state.busy)return;state.conditions={...conditions};state.sources={...sources};setBusy(true);status('正在启动浏览器生成');
   state.generationPhase='正在启动浏览器生成';state.receivedPreview=false;
-  const worker=new Worker('worker.js?v=compact-joint-geometry-v1');state.worker=worker;
+  const worker=new Worker('worker.js?v=demand-program-v1');state.worker=worker;
   message('开始生成：首个合格方案会立即显示，随后继续优化并补充可比较的方案。');
   let timeout;
   const watchProgress=()=>{clearTimeout(timeout);timeout=setTimeout(()=>{if(state.worker===worker){worker.terminate();state.worker=null;setBusy(false);retainPreview('计算超时');message(state.receivedPreview?'后续计算连续三分钟没有报告进度，已停止；已生成方案已保留。':'计算连续三分钟没有报告进度，已停止。可以减少搜索预算或调整需求。','error');}},180000);};

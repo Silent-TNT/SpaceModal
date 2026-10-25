@@ -1,4 +1,4 @@
-importScripts('circulation.js?v=circulation-facade-joint-v1','functional-rules.js?v=circulation-facade-joint-v1','meal-routing.js?v=meal-public-route-v1','meal-geometry.js?v=meal-joint-v1','daylight.js?v=tiered-facade-v2','organization.js?v=circulation-facade-joint-v1','layout-core.js?v=compact-joint-geometry-v1','inference.js','area-prior.js?v=circulation-facade-joint-v1','joint-area.js?v=circulation-facade-joint-v1');
+importScripts('circulation.js?v=circulation-facade-joint-v1','functional-rules.js?v=circulation-facade-joint-v1','meal-routing.js?v=meal-public-route-v1','meal-geometry.js?v=meal-joint-v1','daylight.js?v=tiered-facade-v2','organization.js?v=circulation-facade-joint-v1','planning-rules.js?v=demand-program-v1','joint-planner.js?v=demand-program-v1','layout-core.js?v=demand-program-v1','inference.js','area-prior.js?v=circulation-facade-joint-v1','joint-area.js?v=circulation-facade-joint-v1');
 let modelPromise,areaPromise,stairPromise,mealPromise,jointPromise,functionalPromise,trafficPromise;
 self.onmessage=async ({data})=>{
   try {
